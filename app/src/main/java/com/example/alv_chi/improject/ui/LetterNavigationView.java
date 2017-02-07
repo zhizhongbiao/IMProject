@@ -27,6 +27,7 @@ public class LetterNavigationView extends View {
     private String chosenLetter;
     private final int defautColor = Color.BLACK;
     private final float defautTextSize = 40;
+    private Rect rect;
 
     public LetterNavigationView(Context context) {
         this(context, null);
@@ -43,6 +44,7 @@ public class LetterNavigationView extends View {
     public LetterNavigationView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         initialPaint();
+        rect = new Rect();
     }
 
     private void initialPaint() {
@@ -73,7 +75,7 @@ public class LetterNavigationView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if (mHeightCenter == 0 || mHeightCenter == 0) {
+        if (mHeightCenter == 0 || mWidthCwnter == 0) {
             getHeightAndWidthParameters();
             invalidate();
             return;
@@ -81,7 +83,7 @@ public class LetterNavigationView extends View {
 
         perLetterAreaHeight = mHeight / 27.0;
         String letter = "Empty";
-        Rect rect = new Rect();
+
         for (int i = 0; i < 27; i++) {
 
             if (i == 26) {
@@ -98,6 +100,7 @@ public class LetterNavigationView extends View {
                 settingPaint(defautColor, defautTextSize);
             }
             canvas.drawText(letter, mWidthCwnter - (letterWidth / 2), ((float) (i * perLetterAreaHeight + ((perLetterAreaHeight + letterHeight) / 2))), mPaint);
+            rect.setEmpty();
         }
 
     }

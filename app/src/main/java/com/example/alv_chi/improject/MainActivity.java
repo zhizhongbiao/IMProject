@@ -96,6 +96,10 @@ public class MainActivity extends AppCompatActivity {
 
         setSupportActionBar(tb);//Use the Toolbar as the Actionbar
         ActionBar supportActionBar = getSupportActionBar();
+        if (supportActionBar==null)
+        {
+            return;
+        }
         supportActionBar.setHomeButtonEnabled(true);
         supportActionBar.setDisplayHomeAsUpEnabled(true);// Make the homebutton in the actionbar shows up
 //        Make the DrawerLayout work with the homebutton in the actionbar

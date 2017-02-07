@@ -1,6 +1,7 @@
 package com.example.alv_chi.improject.util;
 
 import android.os.Build;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
 
@@ -16,7 +17,13 @@ public class GetSystemParameterUtil {
      */
     public static int getActionBarHeight(AppCompatActivity activity) {
 
-        int actionBarHeight = activity.getSupportActionBar().getHeight();
+        ActionBar supportActionBar = activity.getSupportActionBar();
+        if (supportActionBar==null)
+        {
+            return 0;
+        }
+
+        int actionBarHeight = (int) supportActionBar. getHeight();
         if (actionBarHeight != 0) {
             return actionBarHeight;
         }
