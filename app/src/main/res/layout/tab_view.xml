@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+
+    >
+
+    <com.example.alv_chi.improject.ui.IconfontTextView
+        android:id="@+id/iconfontTv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/small_padding_II"
+        android:gravity="center"
+        android:textSize="@dimen/middle_text_size"
+
+        />
+
+    <TextView
+        android:id="@+id/tvCommon"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:textSize="@dimen/middle_text_size" />
+
+</LinearLayout>

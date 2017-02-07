@@ -1,3 +1,23 @@
 <resources>
     <string name="app_name">IMProject</string>
+
+
+    <!--tab in TabLayout-->
+    <string name="chatting">&#xe60c;</string>
+    <string name="friend_chat">&#xe611;</string>
+    <string name="group_chat">&#xe766;</string>
+    <string name="share">&#xe612;</string>
+
+    <!--toolbar-->
+    <string name="menu">&#xe6c1;</string>
+    <string name="left_arrow">&#xe767;</string>
+
+    <!--left drawer menu-->
+    <string name="setting">&#xe613;</string>
+    <string name="feedback">&#xe60b;</string>
+    <string name="help">&#xe6b6;</string>
+    <string name="donate">&#xe60a;</string>
+    <string name="social_share">&#xe861;</string>
+    <string name="logout">&#xe6dc;</string>
+
 </resources>

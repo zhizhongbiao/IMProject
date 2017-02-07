@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/cyan"
+    android:orientation="vertical">
+
+
+    <com.example.alv_chi.improject.ui.CircleImageView
+        android:id="@+id/civAvatar"
+        android:layout_width="110dp"
+        android:layout_height="110dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/middle_margin"
+        android:layout_marginBottom="@dimen/middle_margin"
+        android:src="@mipmap/meinv4"
+        android:scaleType="centerCrop"
+        />
+
+    <TextView
+        android:id="@+id/textViewUserName"
+        style="@style/BigBlackTextStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/big_padding"
+        android:text="UserName" />
+
+    <LinearLayout
+        android:id="@+id/llLogOut"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/big_margin_III"
+        android:orientation="horizontal">
+
+        <com.example.alv_chi.improject.ui.IconfontTextView
+            style="@style/BigBlackTextStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:gravity="center"
+            android:text="@string/logout" />
+
+        <TextView
+            style="@style/BigBlackTextStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="8"
+            android:gravity="center_vertical"
+            android:paddingLeft="@dimen/middle_padding"
+            android:text="登出" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llSetting"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/big_margin_III"
+        android:orientation="horizontal">
+
+        <com.example.alv_chi.improject.ui.IconfontTextView
+            style="@style/BigBlackTextStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:gravity="center"
+            android:text="@string/setting" />
+
+        <TextView
+            style="@style/BigBlackTextStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="8"
+            android:gravity="center_vertical"
+            android:paddingLeft="@dimen/middle_padding"
+            android:text="设置" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llSocialShare"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/big_margin_III"
+        android:orientation="horizontal">
+
+        <com.example.alv_chi.improject.ui.IconfontTextView
+            style="@style/BigBlackTextStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:gravity="center"
+            android:text="@string/social_share" />
+
+        <TextView
+            style="@style/BigBlackTextStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="8"
+            android:gravity="center_vertical"
+            android:paddingLeft="@dimen/middle_padding"
+            android:text="分享" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llDonate"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/big_margin_III"
+        android:orientation="horizontal">
+
+        <com.example.alv_chi.improject.ui.IconfontTextView
+            style="@style/BigBlackTextStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:gravity="center"
+            android:text="@string/donate" />
+
+        <TextView
+            style="@style/BigBlackTextStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="8"
+            android:gravity="center_vertical"
+            android:paddingLeft="@dimen/middle_padding"
+            android:text="捐赠" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llFeedback"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/big_margin_III"
+        android:orientation="horizontal">
+
+        <com.example.alv_chi.improject.ui.IconfontTextView
+            style="@style/BigBlackTextStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:gravity="center"
+            android:text="@string/feedback" />
+
+        <TextView
+            style="@style/BigBlackTextStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="8"
+            android:gravity="center_vertical"
+            android:paddingLeft="@dimen/middle_padding"
+            android:text="反馈" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llHelp"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/big_margin_III"
+        android:orientation="horizontal">
+
+        <com.example.alv_chi.improject.ui.IconfontTextView
+            style="@style/BigBlackTextStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:gravity="center"
+            android:text="@string/help" />
+
+        <TextView
+            style="@style/BigBlackTextStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="8"
+            android:gravity="center_vertical"
+            android:paddingLeft="@dimen/middle_padding"
+            android:text="帮助" />
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/yellow"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.example.alv_chi.improject.ui.LetterNavigationView
+            android:id="@+id/lnvLetterNavigationView"
+            android:layout_width="@dimen/big_margin"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            />
+
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/cvLetterCardView"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_centerInParent="true"
+            android:elevation="100dp"
+            android:visibility="gone"
+            app:cardCornerRadius="@dimen/middle_margin">
+
+            <TextView
+                android:id="@+id/tvCenterNavigationLetter"
+                style="@style/SuperBigWihteTextStyle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:background="@color/blackTransparent"
+                android:text="Letter"
+                />
+        </android.support.v7.widget.CardView>
+    </RelativeLayout>
+
+</LinearLayout>
