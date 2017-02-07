@@ -14,6 +14,19 @@ buildscript {
     }
 }
 
+//            buildscript below for the freeline quick compile
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.antfortune.freeline:gradle:0.8.5'
+    }
+}
+
+
+
+
 allprojects {
     repositories {
         jcenter()
