@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="65dp"
+    android:background="@color/blue"
+    android:elevation="@dimen/big_margin_III"
+    app:cardCornerRadius="@dimen/middle_padding">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.example.alv_chi.improject.ui.CircleImageView
+            android:id="@+id/civChatMateAvatar"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerVertical="true"
+            android:layout_margin="@dimen/big_padding"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/meinv4" />
+
+
+        <TextView
+            android:id="@+id/tvChatMateName"
+            style="@style/BigBlackTextStyleII"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/civChatMateAvatar"
+            android:layout_marginLeft="@dimen/big_padding"
+            android:layout_toLeftOf="@+id/tvTheLatestMessageTimeStamp"
+            android:layout_toRightOf="@id/civChatMateAvatar"
+            android:gravity="center_vertical"
+            android:singleLine="true"
+            android:text="ChatMateName" />
+
+        <TextView
+            android:id="@+id/tvTheLatestMassage"
+            style="@style/BigGrayTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/civChatMateAvatar"
+            android:layout_marginLeft="@dimen/big_padding"
+            android:layout_toLeftOf="@+id/tvTheLatestMessageTimeStamp"
+            android:layout_toRightOf="@id/civChatMateAvatar"
+            android:gravity="center_vertical"
+            android:singleLine="true"
+            android:text="TheLatestMassage" />
+
+
+        <TextView
+            android:id="@+id/tvTheLatestMessageTimeStamp"
+            style="@style/MiddleBlackTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_margin="@dimen/big_padding"
+            android:gravity="center_vertical"
+            android:text="20:30" />
+
+
+    </RelativeLayout>
+
+</android.support.v7.widget.CardView>

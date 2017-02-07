@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+    android:layout_width="match_parent"
+    android:layout_height="75dp"
+
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tvLetterNavigation"
+        style="@style/BigBlackTextStyle"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:background="@color/gray"
+        android:paddingLeft="@dimen/middle_margin"
+        android:text="A" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/yellow">
+
+        <ImageView
+            android:id="@+id/civChatMateAvatar"
+            android:layout_width="45dp"
+            android:layout_height="48dp"
+            android:layout_centerVertical="true"
+            android:layout_margin="@dimen/big_padding"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/meinv4" />
+
+
+        <TextView
+            android:id="@+id/tvChatMateName"
+            style="@style/BigBlackTextStyleII"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/big_padding"
+            android:layout_toLeftOf="@+id/tvTheLatestMessageTimeStamp"
+            android:layout_toRightOf="@id/civChatMateAvatar"
+            android:gravity="center_vertical"
+            android:singleLine="true"
+            android:text="ChatMateName" />
+
+
+    </RelativeLayout>
+
+</LinearLayout>

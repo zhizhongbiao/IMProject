@@ -12,7 +12,7 @@
     <dimen name="big_padding">8dp</dimen>
 
     <dimen name="small_margin_I">6dp</dimen>
-    <dimen name="middle_margin">16dp</dimen>
+    <dimen name="middle_margin">15dp</dimen>
     <dimen name="big_margin">22dp</dimen>
     <dimen name="big_margin_II">27dp</dimen>
     <dimen name="big_margin_III">45dp</dimen>
@@ -23,6 +23,7 @@
         <!--Text size-->
     <dimen name="middle_text_size">13sp</dimen>
     <dimen name="big_text_size">16sp</dimen>
+    <dimen name="big_text_size_II">21sp</dimen>
     <dimen name="big_text_size_III">39sp</dimen>
 
 </resources>

@@ -28,7 +28,7 @@
 
         <TextView
             android:id="@+id/tvCenterNavigationLetter"
-            style="@style/SuperBigWihteTextStyle"
+            style="@style/BigWihteTextStyleIII"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/blackTransparent"
