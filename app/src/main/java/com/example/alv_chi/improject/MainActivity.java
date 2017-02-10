@@ -27,6 +27,7 @@ import com.example.alv_chi.improject.fragment.FriendChatFragment;
 import com.example.alv_chi.improject.fragment.GroupChatFragment;
 import com.example.alv_chi.improject.fragment.ShareFragment;
 import com.example.alv_chi.improject.ui.CircleImageView;
+import com.example.alv_chi.improject.ui.DepthPageTransformer;
 import com.example.alv_chi.improject.ui.TabView;
 import com.example.alv_chi.improject.util.BitmapUtil;
 
@@ -138,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
         tlBottom.setupWithViewPager(vpContent);
         mVpFragmentAdapter = new VpFragmentAdapter(mSupportFragmentManager, fragments);
         vpContent.setAdapter(mVpFragmentAdapter);
+        vpContent.setPageTransformer(false,new DepthPageTransformer());
 
         int tabCount = tlBottom.getTabCount();
         for (int i = 0; i < tabCount; i++) {
