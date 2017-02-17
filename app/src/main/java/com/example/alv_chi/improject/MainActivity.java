@@ -30,6 +30,7 @@ import com.example.alv_chi.improject.ui.CircleImageView;
 import com.example.alv_chi.improject.ui.DepthPageTransformer;
 import com.example.alv_chi.improject.ui.TabView;
 import com.example.alv_chi.improject.util.BitmapUtil;
+import com.example.alv_chi.improject.util.ThreadUtil;
 
 import java.util.ArrayList;
 
@@ -91,14 +92,20 @@ public class MainActivity extends AppCompatActivity {
 
         initialToolbar();
 
+        ThreadUtil.executeThreadTask(new Runnable() {
+            @Override
+            public void run() {
+//                connectXMPP();
+            }
+        });
+
     }
 
     private void initialToolbar() {
 
         setSupportActionBar(tb);//Use the Toolbar as the Actionbar
         ActionBar supportActionBar = getSupportActionBar();
-        if (supportActionBar==null)
-        {
+        if (supportActionBar == null) {
             return;
         }
         supportActionBar.setHomeButtonEnabled(true);
@@ -139,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
         tlBottom.setupWithViewPager(vpContent);
         mVpFragmentAdapter = new VpFragmentAdapter(mSupportFragmentManager, fragments);
         vpContent.setAdapter(mVpFragmentAdapter);
-        vpContent.setPageTransformer(false,new DepthPageTransformer());
+        vpContent.setPageTransformer(false, new DepthPageTransformer());
 
         int tabCount = tlBottom.getTabCount();
         for (int i = 0; i < tabCount; i++) {
@@ -214,8 +221,10 @@ public class MainActivity extends AppCompatActivity {
             case R.id.llFeedback:
                 break;
             case R.id.llHelp:
-                Snackbar.make(view,"help",Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(view, "help", Snackbar.LENGTH_SHORT).show();
                 break;
         }
     }
+
+
 }

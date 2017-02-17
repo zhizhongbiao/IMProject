@@ -3,7 +3,7 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
-        <!--Margin and Padding Size-->
+    <!--Margin and Padding Size-->
     <dimen name="drawer_menu_width">250dp</dimen>
 
     <dimen name="small_padding">1dp</dimen>
@@ -16,11 +16,12 @@
     <dimen name="big_margin">22dp</dimen>
     <dimen name="big_margin_II">27dp</dimen>
     <dimen name="big_margin_III">45dp</dimen>
+    <dimen name="big_margin_IIII">50dp</dimen>
 
     <dimen name="toolbar_title_margin">30dp</dimen>
 
 
-        <!--Text size-->
+    <!--Text size-->
     <dimen name="middle_text_size">13sp</dimen>
     <dimen name="big_text_size">16sp</dimen>
     <dimen name="big_text_size_II">21sp</dimen>
