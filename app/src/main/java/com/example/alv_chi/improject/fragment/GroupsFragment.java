@@ -12,7 +12,7 @@ import com.example.alv_chi.improject.R;
  * Created by Alv_chi on 2017/1/14.
  */
 
-public class GroupChatFragment extends Fragment {
+public class GroupsFragment extends Fragment {
 
     private View mContentView;
 

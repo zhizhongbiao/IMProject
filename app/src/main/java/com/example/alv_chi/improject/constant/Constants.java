@@ -24,4 +24,10 @@ public class Constants {
         public static final String CLIENT_USER_NAME="植钟标";
         public static final String CLIENT_PASSWORD="zhizhongbiao";
     }
+
+    public static class HandlerMessageType
+    {
+        public static final int LOGIN_SUCCESS=0;
+
+    }
 }

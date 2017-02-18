@@ -28,7 +28,7 @@
     <LinearLayout
         android:id="@+id/llLogOut"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/big_margin_III"
+        android:layout_height="@dimen/big_margin_IIII"
         android:orientation="horizontal">
 
         <com.example.alv_chi.improject.ui.IconfontTextView
@@ -53,7 +53,7 @@
     <LinearLayout
         android:id="@+id/llSetting"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/big_margin_III"
+        android:layout_height="@dimen/big_margin_IIII"
         android:orientation="horizontal">
 
         <com.example.alv_chi.improject.ui.IconfontTextView

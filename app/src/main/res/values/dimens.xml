@@ -14,9 +14,10 @@
     <dimen name="small_margin_I">6dp</dimen>
     <dimen name="middle_margin">15dp</dimen>
     <dimen name="big_margin">22dp</dimen>
-    <dimen name="big_margin_II">27dp</dimen>
-    <dimen name="big_margin_III">45dp</dimen>
-    <dimen name="big_margin_IIII">50dp</dimen>
+    <dimen name="big_margin_II">29dp</dimen>
+    <dimen name="big_margin_III">38dp</dimen>
+    <dimen name="big_margin_IIII">45dp</dimen>
+    <dimen name="big_margin_IIIII">50dp</dimen>
 
     <dimen name="toolbar_title_margin">30dp</dimen>
 
@@ -26,5 +27,6 @@
     <dimen name="big_text_size">16sp</dimen>
     <dimen name="big_text_size_II">21sp</dimen>
     <dimen name="big_text_size_III">39sp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
 
 </resources>

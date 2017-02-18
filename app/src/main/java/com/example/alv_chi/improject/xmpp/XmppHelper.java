@@ -4,11 +4,15 @@ import android.util.Log;
 
 import com.example.alv_chi.improject.constant.Constants;
 import com.example.alv_chi.improject.exception.ConnectException;
-import com.example.alv_chi.improject.exception.LoginException;
+import com.example.alv_chi.improject.exception.LoginNameOrPasswordException;
 
 import org.jivesoftware.smack.ConnectionConfiguration;
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
+
+import java.io.IOException;
 
 
 /**
@@ -76,16 +80,23 @@ public class XmppHelper implements XMPP {
 
 
     @Override
-    public void login(String userName, String password) throws LoginException, ConnectException {
+    public void login(String userName, String password) throws LoginNameOrPasswordException, ConnectException {
         XMPPTCPConnection xmppConnectionInstance = getXMPPConnectionInstance();
+
         try {
             xmppConnectionInstance.login(userName, password);
             Log.e(TAG, "login: login success!");
-        } catch (Exception e) {
+        } catch (XMPPException e) {
             e.printStackTrace();
             Log.e(TAG, "login: Exception=" + e.getMessage());
-            throw new LoginException();
+            throw new LoginNameOrPasswordException();//此处有可能是登陆名或密码错误；
+        } catch (SmackException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
+
     }
 
     @Override
@@ -97,7 +108,6 @@ public class XmppHelper implements XMPP {
     public void sendMessage(String Message) {
 
     }
-
 
 
 }

@@ -11,6 +11,7 @@
     <!--toolbar-->
     <string name="menu">&#xe6c1;</string>
     <string name="left_arrow">&#xe767;</string>
+    <string name="plus">&#xe614;</string>
 
     <!--left drawer menu-->
     <string name="setting">&#xe613;</string>
@@ -19,5 +20,6 @@
     <string name="donate">&#xe60a;</string>
     <string name="social_share">&#xe861;</string>
     <string name="logout">&#xe6dc;</string>
+    <string name="title_activity_basic">BasicActivity</string>
 
 </resources>

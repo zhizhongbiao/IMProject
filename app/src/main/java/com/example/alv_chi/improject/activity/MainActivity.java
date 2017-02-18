@@ -1,9 +1,8 @@
-package com.example.alv_chi.improject;
+package com.example.alv_chi.improject.activity;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -12,25 +11,21 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.example.alv_chi.improject.R;
 import com.example.alv_chi.improject.adapter.VpFragmentAdapter;
 import com.example.alv_chi.improject.fragment.ChattingFragment;
-import com.example.alv_chi.improject.fragment.FriendChatFragment;
-import com.example.alv_chi.improject.fragment.GroupChatFragment;
+import com.example.alv_chi.improject.fragment.ContactsFragment;
+import com.example.alv_chi.improject.fragment.GroupsFragment;
 import com.example.alv_chi.improject.fragment.ShareFragment;
 import com.example.alv_chi.improject.ui.CircleImageView;
 import com.example.alv_chi.improject.ui.DepthPageTransformer;
+import com.example.alv_chi.improject.ui.IconfontTextView;
 import com.example.alv_chi.improject.ui.TabView;
-import com.example.alv_chi.improject.util.BitmapUtil;
-import com.example.alv_chi.improject.util.ThreadUtil;
 
 import java.util.ArrayList;
 
@@ -38,21 +33,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MainActivity extends AppCompatActivity {
+
+public class MainActivity extends BasicActivity {
 
     private static final String TAG = "MainActivity";
     @BindView(R.id.vpContent)
     ViewPager vpContent;
     @BindView(R.id.tlBottom)
     TabLayout tlBottom;
-    @BindView(R.id.rlLeftDrawer)
-    RelativeLayout rlLeftDrawer;
-    @BindView(R.id.dlDrawerRoot)
-    DrawerLayout dlDrawerRoot;
-    @BindView(R.id.tb)
-    Toolbar tb;
-
-
     @BindView(R.id.civAvatar)
     CircleImageView civAvatar;
     @BindView(R.id.textViewUserName)
@@ -69,6 +57,11 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout llFeedback;
     @BindView(R.id.llHelp)
     LinearLayout llHelp;
+    @BindView(R.id.rlLeftDrawer)
+    RelativeLayout rlLeftDrawer;
+    @BindView(R.id.dlDrawerRoot)
+    DrawerLayout dlDrawerRoot;
+
     private FragmentManager mSupportFragmentManager;
 
     private String[] mTitles = {"聊天", "好友", "群聊", "分享"};
@@ -76,8 +69,8 @@ public class MainActivity extends AppCompatActivity {
     private VpFragmentAdapter mVpFragmentAdapter;
     private ArrayList<Fragment> fragments;
     private ChattingFragment mChattingFragment;
-    private FriendChatFragment mFriendChatFragment;
-    private GroupChatFragment mGroupChatFragment;
+    private ContactsFragment mContactsFragment;
+    private GroupsFragment mGroupsFragment;
     private ShareFragment mShareFragment;
     private TabView mTabView;
 
@@ -90,57 +83,65 @@ public class MainActivity extends AppCompatActivity {
         initialFragments();
         initialVpAndTabLayout();
 
-        initialToolbar();
+        initializeDrawerLayout();
 
-        ThreadUtil.executeThreadTask(new Runnable() {
-            @Override
-            public void run() {
-//                connectXMPP();
-            }
-        });
 
     }
 
-    private void initialToolbar() {
+    private void initializeDrawerLayout() {
+        dlDrawerRoot.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
 
-        setSupportActionBar(tb);//Use the Toolbar as the Actionbar
-        ActionBar supportActionBar = getSupportActionBar();
-        if (supportActionBar == null) {
-            return;
-        }
-        supportActionBar.setHomeButtonEnabled(true);
-        supportActionBar.setDisplayHomeAsUpEnabled(true);// Make the homebutton in the actionbar shows up
-//        Make the DrawerLayout work with the homebutton in the actionbar
-        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, dlDrawerRoot, R.string.menu, R.string.left_arrow);
-        actionBarDrawerToggle.syncState();//Synchronize with the homeButton
-        dlDrawerRoot.addDrawerListener(actionBarDrawerToggle);
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
 
-        tb.setNavigationOnClickListener(new View.OnClickListener() {
+                if (slideOffset < 0.5) {
+                    toolbarViewHolder.itvToolbarLeft.setText(R.string.menu);
+                    toolbarViewHolder.itvToolbarLeft.setAlpha(1 - slideOffset * 2);
+                } else {
+                    toolbarViewHolder.itvToolbarLeft.setText(R.string.left_arrow);
+                    toolbarViewHolder.itvToolbarLeft.setAlpha(1 * slideOffset);
+                }
+
+
+            }
+        });
+    }
+
+    @Override
+    protected void intializeToolbar() {
+//        toolbarViewHolder.civToolbarCenter.setImageBitmap();
+        toolbarViewHolder.tvToolbarCenter.setText("yourLoginName");
+        toolbarViewHolder.itvToolbarLeft.setText(R.string.menu);
+        toolbarViewHolder.itvToolbarRight.setText(R.string.plus);
+
+        toolbarViewHolder.itvToolbarLeft.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (dlDrawerRoot.isDrawerOpen(GravityCompat.START)) {
                     dlDrawerRoot.closeDrawer(GravityCompat.START);
+                    changeText(v, R.string.menu);
                 } else {
                     dlDrawerRoot.openDrawer(GravityCompat.START);
+                    changeText(v, R.string.left_arrow);
                 }
             }
+
+            private void changeText(final View v, final int text) {
+
+                ObjectAnimator alpha = ObjectAnimator.ofFloat(v, "alpha", 1, 0, 1);
+                alpha.setStartDelay(2000);
+                alpha.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator animation) {
+                        if (animation.getAnimatedFraction() == 0.5)
+                            ((IconfontTextView) v).setText(text);
+                    }
+                });
+
+            }
         });
-
-
-        tb.setCollapsible(true);
-        setUserName("UserName");
-        setUserLogo(BitmapFactory.decodeResource(getResources(), R.mipmap.meinv4));
     }
 
-    public void setUserName(String userName) {
-        tb.setTitle(userName);
-    }
-
-    public void setUserLogo(Bitmap bitmap) {
-
-        Bitmap circleBitmap = BitmapUtil.createCircleBitmap(bitmap, bitmap.getHeight() > bitmap.getWidth() ? bitmap.getWidth() : bitmap.getHeight());
-        tb.setLogo(new BitmapDrawable(getResources(), circleBitmap));
-    }
 
     private void initialVpAndTabLayout() {
         tlBottom.setupWithViewPager(vpContent);
@@ -194,10 +195,10 @@ public class MainActivity extends AppCompatActivity {
         fragments = new ArrayList<>();
         mChattingFragment = new ChattingFragment();
         fragments.add(mChattingFragment);
-        mFriendChatFragment = new FriendChatFragment();
-        fragments.add(mFriendChatFragment);
-        mGroupChatFragment = new GroupChatFragment();
-        fragments.add(mGroupChatFragment);
+        mContactsFragment = new ContactsFragment();
+        fragments.add(mContactsFragment);
+        mGroupsFragment = new GroupsFragment();
+        fragments.add(mGroupsFragment);
         mShareFragment = new ShareFragment();
         fragments.add(mShareFragment);
     }

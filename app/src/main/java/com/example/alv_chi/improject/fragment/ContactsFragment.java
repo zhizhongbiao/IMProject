@@ -18,7 +18,7 @@ import butterknife.ButterKnife;
  * Created by Alv_chi on 2017/1/14.
  */
 
-public class FriendChatFragment extends Fragment implements LetterNavigationView.OnLetterChooseListener {
+public class ContactsFragment extends Fragment implements LetterNavigationView.OnLetterChooseListener {
 
     @BindView(R.id.lnvLetterNavigationView)
     LetterNavigationView lnvLetterNavigationView;
