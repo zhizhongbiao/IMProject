@@ -8,7 +8,7 @@ import com.example.alv_chi.improject.exception.LoginNameOrPasswordException;
  */
 
 public interface XMPP {
-    void login(String userName,String password) throws LoginNameOrPasswordException, ConnectException;
+    void login(String userName, String password) throws LoginNameOrPasswordException, ConnectException;
     void logOut(String userName,String password);
     void sendMessage(String Message);
 

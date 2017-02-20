@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
-    tools:context="com.example.alv_chi.improject.activity.BasicActivity">
+    tools:context="com.example.alv_chi.improject.activity.BaseActivity">
 
     <RelativeLayout
         android:id="@+id/rlCusotmToolbarRoot"
@@ -23,17 +23,6 @@
             android:gravity="center"
             android:text="Title" />
 
-        <com.example.alv_chi.improject.ui.IconfontTextView
-            android:id="@+id/itvToolbarRight"
-            style="@style/BigBlackTextStyleII"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="@dimen/middle_margin"
-            android:gravity="center"
-            android:text="TbLeftMenu" />
-
         <com.example.alv_chi.improject.ui.CircleImageView
             android:id="@+id/civToolabrCenter"
             android:layout_width="@dimen/big_margin_III"
@@ -46,15 +35,24 @@
         <com.example.alv_chi.improject.ui.IconfontTextView
             android:id="@+id/itvToolbarLeft"
             style="@style/BigBlackTextStyleII"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/middle_margin"
+            android:layout_width="@dimen/big_margin_IIII"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/small_padding_II"
             android:gravity="center"
-            android:text="backOut"
-            android:layout_marginStart="14dp"
-            android:layout_alignBaseline="@+id/itvToolbarRight"
-            android:layout_alignBottom="@+id/itvToolbarRight"
-            android:layout_alignParentStart="true" />
+            android:text="backOut" />
+
+        <com.example.alv_chi.improject.ui.IconfontTextView
+            android:id="@+id/itvToolbarRight"
+            style="@style/BigBlackTextStyleII"
+            android:layout_width="@dimen/big_margin_IIII"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="@dimen/small_padding_II"
+            android:gravity="center"
+            android:text="TbLeftMenu" />
     </RelativeLayout>
 
 

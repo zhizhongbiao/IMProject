@@ -1,32 +1,65 @@
 package com.example.alv_chi.improject.activity;
 
+
+import android.animation.ObjectAnimator;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.alv_chi.improject.R;
+import com.example.alv_chi.improject.fragment.BaseFragment;
 import com.example.alv_chi.improject.handler.ActivityHandler;
 import com.example.alv_chi.improject.ui.CircleImageView;
 import com.example.alv_chi.improject.ui.IconfontTextView;
 
-public class BasicActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity {
 
-    private static final String TAG = "BasicActivity";
+    private static final String TAG = "BaseActivity";
+    protected static final int PUPOP_WINDOW_WRAP_CONTEN = -1;
+    protected static final int NO_FRAGMENT = -1;
+    protected float currentAngle = 0.0f;
+    protected boolean isPopupWindowShowing = false;
     private LinearLayout rootLayout;
     protected ToolbarViewHolder toolbarViewHolder;
     private View lastContentView;
     private static ActivityHandler activityHandler;
+    private BaseFragment mCurrentFragment;
 
 
-    public ActivityHandler getActivityHandler() {
+    //       subclasses can override this method for customing the toolbar
+    protected abstract void intializeToolbar();
+
+    //    subClasses need return their LayoutResId
+    protected abstract int getContentViewId();
+
+    //    subClasses can override this method to their intent if have
+    protected void handleIntent(Intent intent) {
+    }
+
+    ;
+
+    //    subClasses need return their LayoutResId if have
+    protected int getFragmentContentId() {
+        if (mCurrentFragment == null) return NO_FRAGMENT;
+        return mCurrentFragment.getLayoutId();
+    }
+
+    ;
+
+    protected ActivityHandler getActivityHandler() {
         if (activityHandler == null) {
             activityHandler = new ActivityHandler(this);
         }
@@ -40,6 +73,12 @@ public class BasicActivity extends AppCompatActivity {
         super.setContentView(R.layout.activity_basic);
         initial();
 
+        if (getIntent() != null) {
+            handleIntent(getIntent());
+        } else {
+            Log.e(TAG, "onCreate: intent=null");
+        }
+
     }
 
     //        initial View
@@ -49,14 +88,54 @@ public class BasicActivity extends AppCompatActivity {
         intializeToolbar();
     }
 
+    protected void startRotationAnimation(View view, float angle, int duration) {
+        ObjectAnimator rotation = ObjectAnimator.ofFloat(view, "rotation", currentAngle, angle);
+        rotation
+                .setDuration(duration)
+                .setInterpolator(new AccelerateInterpolator());
+        rotation.setAutoCancel(true);
+        rotation.start();
+        currentAngle = angle;
+    }
+
+    protected PopupWindow createThePopupWindow(View customCotentView
+            , int width, int height, PopupWindow.OnDismissListener onDismissListener) {
+
+        PopupWindow popupWindow = new PopupWindow(this);
+        popupWindow.setElevation(100);
+        if (height == PUPOP_WINDOW_WRAP_CONTEN) {
+            popupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
+        } else {
+            popupWindow.setHeight(height);
+
+        }
+        if (width == PUPOP_WINDOW_WRAP_CONTEN) {
+            popupWindow.setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
+        } else {
+            popupWindow.setWidth(width);
+        }
+
+        popupWindow.setOutsideTouchable(true);
+        popupWindow.setContentView(customCotentView);
+        if (onDismissListener != null) {
+            popupWindow.setOnDismissListener(onDismissListener);
+        }
+
+//        popupWindow.setAnimationStyle(R.anim.scale_and_alpha);
+        popupWindow.setTouchable(true);
+
+        return popupWindow;
+    }
+
 
     protected void showAlertDialog(String title, String message
             , String positiveButtonMsg, final DialogInterface.OnClickListener positiveButtonOnClickListener
             , String negativeButtonMsg, final DialogInterface.OnClickListener negativeButtonOnClickListener
             , String neutralButtonMsg, final DialogInterface.OnClickListener neutralButtonOnClickListener) {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(BasicActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(BaseActivity.this);
         builder
+                .setIcon(R.mipmap.meinv4)
                 .setTitle(title)
                 .setMessage(message)
                 .setCancelable(true);
@@ -93,8 +172,27 @@ public class BasicActivity extends AppCompatActivity {
     }
 
 
-    //    subclass can override this method for customing the toolbar
-    protected void intializeToolbar() {
+    protected void replaceFragmentAndAddToBackStack(BaseFragment fragment) {
+        if (fragment == null || mCurrentFragment == fragment) return;
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(getContentViewId(), fragment, fragment.getClass().getSimpleName())
+                .addToBackStack(fragment.getClass().getSimpleName())
+                .commit();
+        mCurrentFragment = fragment;
+
+    }
+
+    protected void removeFragment() {
+        if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
+            getSupportFragmentManager().popBackStack();
+        } else {
+            finish();
+        }
+    }
+
+    public void setmCurrentFragment(BaseFragment mCurrentFragment) {
+        this.mCurrentFragment = mCurrentFragment;
     }
 
 
@@ -140,5 +238,17 @@ public class BasicActivity extends AppCompatActivity {
 //            kill all tasks in the queue when BacicActivity is destroy:
             activityHandler.removeCallbacksAndMessages(null);
         }
+    }
+
+    //    this method is for making sure Activity be dead when the last fragment is dead;
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (getSupportFragmentManager().getBackStackEntryCount() == 1) {
+                finish();
+                return true;
+            }
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

@@ -1,27 +1,26 @@
 package com.example.alv_chi.improject.fragment;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.example.alv_chi.improject.R;
+
+import butterknife.ButterKnife;
 
 /**
  * Created by Alv_chi on 2017/1/14.
  */
 
-public class ChattingFragment extends Fragment {
-
-    private View mContentView;
+public class ChattingFragment extends BaseFragment {
 
     @Override
-    public View onCreateView(LayoutInflater inflater,  ViewGroup container,Bundle savedInstanceState) {
-        if (mContentView ==null)
-        {
-            mContentView = inflater.inflate(R.layout.chatting_fragment, container, false);
-        }
-        return mContentView;
+    public int getLayoutId() {
+        return R.layout.chatting_fragment;
     }
+
+    @Override
+    protected void initializeView(View view, Bundle savedInstanceState) {
+        ButterKnife.bind(view);
+    }
+
 }

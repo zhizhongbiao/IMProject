@@ -43,7 +43,7 @@ public class XmppHelper implements XMPP {
     //          initialize XMPP
     private void initial() {
         xmppConfigBuilder = XMPPTCPConnectionConfiguration.builder()
-                .setConnectTimeout(15000)
+                .setConnectTimeout(2000)
                 .setDebuggerEnabled(true)
                 .setHost(Constants.AppConfigConstants.OPEN_FIRE_SERVER_IP)
                 .setSecurityMode(ConnectionConfiguration.SecurityMode.disabled)
@@ -73,6 +73,7 @@ public class XmppHelper implements XMPP {
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(TAG, "connectServer: Exception=" + e.getMessage());
+            xmppTcpConnectionInstance=null;
             throw new ConnectException();
         }
 
@@ -80,7 +81,8 @@ public class XmppHelper implements XMPP {
 
 
     @Override
-    public void login(String userName, String password) throws LoginNameOrPasswordException, ConnectException {
+    public synchronized void login(String userName, String password) throws LoginNameOrPasswordException, ConnectException {
+
         XMPPTCPConnection xmppConnectionInstance = getXMPPConnectionInstance();
 
         try {

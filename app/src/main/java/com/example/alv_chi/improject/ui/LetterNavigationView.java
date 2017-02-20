@@ -117,22 +117,22 @@ public class LetterNavigationView extends View {
                 chosenLetter = getChosenLetter(y);
                 invalidate();
                 if (onLetterChooseListenerCallback != null) {
-                    onLetterChooseListenerCallback.isOnTouch(true);
-                    onLetterChooseListenerCallback.dealWithChosenLetter(chosenLetter);
+                    onLetterChooseListenerCallback.isTouching(true);
+                    onLetterChooseListenerCallback.getChosenLetter(chosenLetter);
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
                 chosenLetter = getChosenLetter(y);
                 invalidate();
                 if (onLetterChooseListenerCallback != null) {
-                    onLetterChooseListenerCallback.dealWithChosenLetter(chosenLetter);
+                    onLetterChooseListenerCallback.getChosenLetter(chosenLetter);
                 }
                 break;
             case MotionEvent.ACTION_UP:
 
                 setBackgroundColor(Color.TRANSPARENT);
                 if (onLetterChooseListenerCallback != null) {
-                    onLetterChooseListenerCallback.isOnTouch(false);
+                    onLetterChooseListenerCallback.isTouching(false);
                 }
                 break;
         }
@@ -160,9 +160,9 @@ public class LetterNavigationView extends View {
     }
 
     public interface OnLetterChooseListener {
-        void dealWithChosenLetter(String letter);
+        void getChosenLetter(String letter);
 
-        void isOnTouch(boolean isOnTouch);
+        void isTouching(boolean isOnTouch);
     }
 
     private OnLetterChooseListener onLetterChooseListenerCallback = null;

@@ -13,6 +13,10 @@
     <string name="left_arrow">&#xe767;</string>
     <string name="plus">&#xe614;</string>
 
+    <!--toolbarRightPopupWindow-->
+    <string name="add_new_friend">&#xe600;</string>
+    <string name="scan_q_code">&#xecf0;</string>
+
     <!--left drawer menu-->
     <string name="setting">&#xe613;</string>
     <string name="feedback">&#xe60b;</string>

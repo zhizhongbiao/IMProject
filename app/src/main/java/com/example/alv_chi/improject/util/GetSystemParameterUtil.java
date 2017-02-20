@@ -1,5 +1,6 @@
 package com.example.alv_chi.improject.util;
 
+import android.content.Context;
 import android.os.Build;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -13,17 +14,17 @@ public class GetSystemParameterUtil {
 
     /**
      * 获取actionbar的像素高度，默认使用android官方兼容包做actionbar兼容
+     *
      * @return
      */
     public static int getActionBarHeight(AppCompatActivity activity) {
 
         ActionBar supportActionBar = activity.getSupportActionBar();
-        if (supportActionBar==null)
-        {
+        if (supportActionBar == null) {
             return 0;
         }
 
-        int actionBarHeight = (int) supportActionBar. getHeight();
+        int actionBarHeight = supportActionBar.getHeight();
         if (actionBarHeight != 0) {
             return actionBarHeight;
         }
@@ -35,8 +36,7 @@ public class GetSystemParameterUtil {
                 actionBarHeight = TypedValue.complexToDimensionPixelSize(
                         tv.data, activity.getResources().getDisplayMetrics());
             }
-        }
-        else {
+        } else {
             // 使用android.support.v7.appcompat包做actionbar兼容的情况
             if (activity.getTheme()
                     .resolveAttribute(
@@ -57,5 +57,17 @@ public class GetSystemParameterUtil {
         // }
 
         return actionBarHeight;
+    }
+
+    //    getScreenWidth
+    public static int getScreenWidth(Context context) {
+        if (context == null) return -1;
+        return context.getResources().getDisplayMetrics().widthPixels;
+    }
+
+    //    getScreenHeight
+    public static int getScreenHeight(Context context) {
+        if (context == null) return -1;
+        return context.getResources().getDisplayMetrics().heightPixels;
     }
 }

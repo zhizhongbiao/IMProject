@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/llPupopWindowContent"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/gray"
+    android:gravity="center"
+    android:orientation="vertical"
+
+    >
+
+    <LinearLayout
+        android:id="@+id/llAddNewFirend"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/big_margin_III"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <com.example.alv_chi.improject.ui.IconfontTextView
+            android:id="@+id/iconfontTextView"
+            style="@style/BigBlackTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/middle_margin"
+            android:gravity="center"
+            android:text="@string/add_new_friend" />
+
+        <View
+            android:id="@+id/view2"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <TextView
+            style="@style/MiddleBlackTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginRight="@dimen/middle_margin"
+            android:gravity="center"
+            android:text="添加好友"
+            android:id="@+id/textView3" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llScanQCode"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/big_margin_III"
+
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <com.example.alv_chi.improject.ui.IconfontTextView
+            style="@style/BigBlackTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/middle_margin"
+            android:gravity="center"
+            android:text="@string/scan_q_code" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/view3" />
+
+        <TextView
+            android:id="@+id/textView2"
+            style="@style/MiddleBlackTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginRight="@dimen/middle_margin"
+            android:gravity="center"
+            android:text="扫二维码" />
+    </LinearLayout>
+
+
+</LinearLayout>

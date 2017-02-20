@@ -54,7 +54,7 @@
         android:id="@+id/llUserLoginPassword"
         android:layout_width="match_parent"
         android:layout_height="@dimen/big_margin_III"
-        android:layout_below="@+id/llUserName"
+
         android:layout_gravity="center"
         android:layout_marginBottom="@dimen/middle_margin"
         android:layout_marginLeft="@dimen/big_margin_IIIII"
@@ -92,7 +92,7 @@
         android:layout_height="@dimen/big_margin_III"
         android:layout_marginLeft="@dimen/big_margin_IIIII"
         android:layout_marginRight="@dimen/big_margin_IIIII"
-        android:id="@+id/button"
+        android:id="@+id/btnLoginButton"
         android:text="登陆"
         style="@style/BigBlackTextStyle"
         android:focusable="false"
