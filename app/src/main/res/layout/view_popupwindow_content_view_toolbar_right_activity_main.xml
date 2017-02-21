@@ -17,7 +17,7 @@
         android:gravity="center"
         android:orientation="horizontal">
 
-        <com.example.alv_chi.improject.ui.IconfontTextView
+        <com.example.alv_chi.improject.custom.IconfontTextView
             android:id="@+id/iconfontTextView"
             style="@style/BigBlackTextStyle"
             android:layout_width="wrap_content"
@@ -50,7 +50,7 @@
         android:gravity="center"
         android:orientation="horizontal">
 
-        <com.example.alv_chi.improject.ui.IconfontTextView
+        <com.example.alv_chi.improject.custom.IconfontTextView
             style="@style/BigBlackTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"

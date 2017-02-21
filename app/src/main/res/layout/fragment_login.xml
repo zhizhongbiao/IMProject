@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@mipmap/meinv4"
-    tools:context="com.example.alv_chi.improject.activity.LoginActivity">
+    tools:context="com.example.alv_chi.improject.activity.FirstStartActivity">
 
     <View
         android:layout_width="match_parent"
@@ -87,7 +87,6 @@
     </LinearLayout>
 
     <Button
-        android:onClick="onUserLoginClick"
         android:layout_width="match_parent"
         android:layout_height="@dimen/big_margin_III"
         android:layout_marginLeft="@dimen/big_margin_IIIII"

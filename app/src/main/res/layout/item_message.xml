@@ -13,7 +13,7 @@
         android:visibility="gone"
         >
 
-        <com.example.alv_chi.improject.ui.CircleImageView
+        <com.example.alv_chi.improject.custom.CircleImageView
             android:id="@+id/civOtherAvatar"
             android:layout_width="@dimen/big_margin_IIII"
             android:layout_height="@dimen/big_margin_IIII"
@@ -69,7 +69,7 @@
             android:gravity="end"
             />
 
-        <com.example.alv_chi.improject.ui.CircleImageView
+        <com.example.alv_chi.improject.custom.CircleImageView
             android:id="@+id/civYourAvatar"
             android:layout_width="@dimen/big_margin_IIII"
             android:layout_height="@dimen/big_margin_IIII"

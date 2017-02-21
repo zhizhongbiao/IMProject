@@ -10,7 +10,7 @@
         android:layout_height="match_parent" />
 
 
-    <com.example.alv_chi.improject.ui.LetterNavigationView
+    <com.example.alv_chi.improject.custom.LetterNavigationView
         android:id="@+id/lnvLetterNavigationView"
         android:layout_width="@dimen/big_margin"
         android:layout_height="match_parent"

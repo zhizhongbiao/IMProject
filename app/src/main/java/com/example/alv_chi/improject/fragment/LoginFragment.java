@@ -1,4 +1,4 @@
-package com.example.alv_chi.improject.activity;
+package com.example.alv_chi.improject.fragment;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,6 +13,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.alv_chi.improject.R;
+import com.example.alv_chi.improject.activity.FirstStartActivity;
+import com.example.alv_chi.improject.activity.MainActivity;
 import com.example.alv_chi.improject.constant.Constants;
 import com.example.alv_chi.improject.exception.ConnectException;
 import com.example.alv_chi.improject.exception.LoginNameOrPasswordException;
@@ -25,9 +27,13 @@ import com.example.alv_chi.improject.xmpp.XmppHelper;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class LoginActivity extends BaseActivity implements OnThreadTaskFinishedListener {
+/**
+ * Created by Alv_chi on 2017/1/14.
+ */
 
-    private static final String TAG = "LoginActivity";
+public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedListener, View.OnClickListener {
+
+    private static final String TAG = "LoginFragment";
     @BindView(R.id.etUserName)
     EditText etUserName;
     @BindView(R.id.llUserName)
@@ -44,19 +50,68 @@ public class LoginActivity extends BaseActivity implements OnThreadTaskFinishedL
     View view;
     @BindView(R.id.activity_login)
     LinearLayout activityLogin;
+    private FirstStartActivity mHoldingActivity;
     private ActivityHandler mHandler;
 
+
+    public static LoginFragment newInstance() {
+        return new LoginFragment();
+    }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-        ButterKnife.bind(this);
-        mHandler = getActivityHandler();
+    public int getLayoutId() {
+        return R.layout.fragment_login;
+    }
+
+    @Override
+    protected void initializeView(View view, Bundle savedInstanceState) {
+        ButterKnife.bind(this, view);
+        mHoldingActivity = (FirstStartActivity) getHoldingActivity();
+        mHandler = mHoldingActivity.getActivityHandler();
+        initialContentView();
+        addThisOnThreadTaskFinishedListenerToActivityHandler();//add this listener to handler;
+    }
+
+    private void initialContentView() {
+        btnLoginButton.setOnClickListener(this);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        removeThisOnThreadTaskFinishedListenerFromActivityHandler();//remove listener when this is destroyed
+    }
+
+    @Override
+    public void addThisOnThreadTaskFinishedListenerToActivityHandler() {
         mHandler.addListeners(TAG, this);
     }
 
-//    login logic
-    public void onUserLoginClick(View view) {
+    @Override
+    public void removeThisOnThreadTaskFinishedListenerFromActivityHandler() {
+        mHandler.removeListener(TAG);
+    }
+
+    @Override
+    public void loginSuccess() {
+        Log.e(TAG, "loginSuccess: startActivity");
+        Intent intent = new Intent(mHoldingActivity, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        mHoldingActivity.finish();//kill this FirstStartActivity
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btnLoginButton:
+                onLoginBtnClick(v);
+                break;
+        }
+    }
+
+    //    login logic
+    public void onLoginBtnClick(View view) {
         btnLoginButton.setClickable(false);
         ThreadUtil.executeThreadTask(new Runnable() {
             @Override
@@ -74,26 +129,26 @@ public class LoginActivity extends BaseActivity implements OnThreadTaskFinishedL
                     });
 
                     e.printStackTrace();
-                    showAlertDialogInThread("Tips"
-                            ,"您的用户名或者密码错了，请更正再试！"
-                            ,"知错了，下次改正"
-                            ,new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            if (((AlertDialog) dialog).isShowing()) dialog.dismiss();
+                    mHoldingActivity.showAlertDialogInThread("Tips"
+                            , "您的用户名或者密码错了，请更正再试！"
+                            , "知错了，下次改正"
+                            , new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    if (((AlertDialog) dialog).isShowing()) dialog.dismiss();
 
-                        }
-                    }
-                    ,"觉得不爽，要投诉！"
-                    ,new DialogInterface.OnClickListener() {
+                                }
+                            }
+                            , "觉得不爽，要投诉！"
+                            , new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
 
-                                    Toast.makeText(LoginActivity.this, "temporaryNotSupport", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(mHoldingActivity, "temporaryNotSupport", Toast.LENGTH_SHORT).show();
                                     if (((AlertDialog) dialog).isShowing()) dialog.dismiss();
                                 }
                             }
-                    ,null,null);
+                            , null, null);
 
                 } catch (ConnectException e) {
                     btnLoginButton.post(new Runnable() {
@@ -102,9 +157,9 @@ public class LoginActivity extends BaseActivity implements OnThreadTaskFinishedL
                             btnLoginButton.setClickable(true);
                         }
                     });
-                    Log.e(TAG, "happen Exception" );
+                    Log.e(TAG, "happen Exception");
                     e.printStackTrace();
-                    showAlertDialogInThread("Tips"
+                    mHoldingActivity.showAlertDialogInThread("Tips"
                             , "服务器连接不上，请稍后再试！"
                             , "知道了，下次再试"
                             , new DialogInterface.OnClickListener() {
@@ -119,7 +174,7 @@ public class LoginActivity extends BaseActivity implements OnThreadTaskFinishedL
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
 
-                                    Toast.makeText(LoginActivity.this, "temporaryNotSupport", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(mHoldingActivity, "temporaryNotSupport", Toast.LENGTH_SHORT).show();
                                     if (((AlertDialog) dialog).isShowing()) dialog.dismiss();
                                 }
                             }
@@ -127,7 +182,7 @@ public class LoginActivity extends BaseActivity implements OnThreadTaskFinishedL
                             , new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    Toast.makeText(LoginActivity.this, "temporaryNotSupport", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(mHoldingActivity, "temporaryNotSupport", Toast.LENGTH_SHORT).show();
                                     if (((AlertDialog) dialog).isShowing()) dialog.dismiss();
 
                                 }
@@ -137,32 +192,5 @@ public class LoginActivity extends BaseActivity implements OnThreadTaskFinishedL
         });
 
 
-
-    }
-
-
-    @Override
-    protected void intializeToolbar(ToolbarViewHolder toolbarViewHolder) {
-        toolbarViewHolder.toolbar.setVisibility(View.GONE);
-    }
-
-    @Override
-    protected int getContentViewId() {
-        return R.layout.activity_login;
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mHandler.removeListener(TAG);//remove listener when this is destroyed
-    }
-
-    @Override
-    public void loginSuccess() {
-        Log.e(TAG, "loginSuccess: startActivity");
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-        this.finish();//kill this LoginActivity
     }
 }

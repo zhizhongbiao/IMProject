@@ -23,7 +23,7 @@
             android:gravity="center"
             android:text="Title" />
 
-        <com.example.alv_chi.improject.ui.CircleImageView
+        <com.example.alv_chi.improject.custom.CircleImageView
             android:id="@+id/civToolabrCenter"
             android:layout_width="@dimen/big_margin_III"
             android:layout_height="@dimen/big_margin_III"
@@ -32,7 +32,7 @@
             android:layout_toStartOf="@+id/tvToolbarCenter"
             android:src="@mipmap/meinv4" />
 
-        <com.example.alv_chi.improject.ui.IconfontTextView
+        <com.example.alv_chi.improject.custom.IconfontTextView
             android:id="@+id/itvToolbarLeft"
             style="@style/BigBlackTextStyleII"
             android:layout_width="@dimen/big_margin_IIII"
@@ -43,7 +43,7 @@
             android:gravity="center"
             android:text="backOut" />
 
-        <com.example.alv_chi.improject.ui.IconfontTextView
+        <com.example.alv_chi.improject.custom.IconfontTextView
             android:id="@+id/itvToolbarRight"
             style="@style/BigBlackTextStyleII"
             android:layout_width="@dimen/big_margin_IIII"

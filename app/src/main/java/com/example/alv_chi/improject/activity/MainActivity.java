@@ -22,14 +22,15 @@ import android.widget.Toast;
 
 import com.example.alv_chi.improject.R;
 import com.example.alv_chi.improject.adapter.VpFragmentAdapter;
+import com.example.alv_chi.improject.fragment.BaseFragment;
 import com.example.alv_chi.improject.fragment.ChattingFragment;
 import com.example.alv_chi.improject.fragment.ContactsFragment;
 import com.example.alv_chi.improject.fragment.GroupsFragment;
 import com.example.alv_chi.improject.fragment.ShareFragment;
-import com.example.alv_chi.improject.ui.CircleImageView;
-import com.example.alv_chi.improject.ui.DepthPageTransformer;
-import com.example.alv_chi.improject.ui.IconfontTextView;
-import com.example.alv_chi.improject.ui.TabView;
+import com.example.alv_chi.improject.custom.CircleImageView;
+import com.example.alv_chi.improject.custom.DepthPageTransformer;
+import com.example.alv_chi.improject.custom.IconfontTextView;
+import com.example.alv_chi.improject.custom.TabButton;
 import com.example.alv_chi.improject.util.GetSystemParameterUtil;
 
 import java.util.ArrayList;
@@ -78,7 +79,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private ContactsFragment mContactsFragment;
     private GroupsFragment mGroupsFragment;
     private ShareFragment mShareFragment;
-    private TabView mTabView;
+    private TabButton mTabButton;
     private View pupopWindowContentView;
     private PopupWindow mWindow;
     private LinearLayout mAddNewFirend;
@@ -95,6 +96,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         initializeDrawerLayout();
 
     }
+
 
     private void initializeDrawerLayout() {
         dlDrawerRoot.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
@@ -125,15 +127,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         for (int i = 0; i < tabCount; i++) {
             TabLayout.Tab tab = tlBottom.getTabAt(i);
             if (tab != null) {
-                mTabView = new TabView(this);
+                mTabButton = new TabButton(this);
                 if (i == 0) {
-                    mTabView.setViewColor(Color.CYAN);
+                    mTabButton.setViewColor(Color.CYAN);
                 } else {
-                    mTabView.setViewColor(Color.BLACK);
+                    mTabButton.setViewColor(Color.BLACK);
                 }
 
-                mTabView.setViewText(getString(mIconfontIds[i]), mTitles[i]);
-                tab.setCustomView(mTabView);
+                mTabButton.setViewText(getString(mIconfontIds[i]), mTitles[i]);
+                tab.setCustomView(mTabButton);
             }
         }
 
@@ -141,17 +143,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         tlBottom.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                TabView tabView = (TabView) tab.getCustomView();
-                if (tabView != null) {
-                    tabView.setViewColor(Color.CYAN);
+                TabButton tabButton = (TabButton) tab.getCustomView();
+                if (tabButton != null) {
+                    tabButton.setViewColor(Color.CYAN);
                 }
             }
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-                TabView tabView = (TabView) tab.getCustomView();
-                if (tabView != null) {
-                    tabView.setViewColor(Color.BLACK);
+                TabButton tabButton = (TabButton) tab.getCustomView();
+                if (tabButton != null) {
+                    tabButton.setViewColor(Color.BLACK);
                 }
             }
 
@@ -241,8 +243,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         return R.layout.activity_main;
     }
 
+    @Override
+    protected int getFragmentContainerId() {
+        return NO_FRAGMENT;
+    }
+    @Override
+    protected BaseFragment getFirstFragment() {
+        return null;
+    }
+
     private void initializePopupWindow() {
-        pupopWindowContentView = LayoutInflater.from(this).inflate(R.layout.toolbar_right_content_activity_main, null, false);
+        pupopWindowContentView = LayoutInflater.from(this).inflate(R.layout.view_popupwindow_content_view_toolbar_right_activity_main, null, false);
         mAddNewFirend = (LinearLayout) pupopWindowContentView.findViewById(R.id.llAddNewFirend);
         mScanQCode = (LinearLayout) pupopWindowContentView.findViewById(R.id.llScanQCode);
         mAddNewFirend.setOnClickListener(this);

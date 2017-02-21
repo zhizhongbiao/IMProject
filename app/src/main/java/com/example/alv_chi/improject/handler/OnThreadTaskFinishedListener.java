@@ -6,4 +6,6 @@ package com.example.alv_chi.improject.handler;
 
 public interface OnThreadTaskFinishedListener {
     void loginSuccess();
+    void addThisOnThreadTaskFinishedListenerToActivityHandler();
+    void removeThisOnThreadTaskFinishedListenerFromActivityHandler();
 }

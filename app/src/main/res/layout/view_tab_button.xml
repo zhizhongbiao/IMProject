@@ -7,7 +7,7 @@
 
     >
 
-    <com.example.alv_chi.improject.ui.IconfontTextView
+    <com.example.alv_chi.improject.custom.IconfontTextView
         android:id="@+id/iconfontTv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

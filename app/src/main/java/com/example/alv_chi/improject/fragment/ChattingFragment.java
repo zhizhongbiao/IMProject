@@ -15,7 +15,7 @@ public class ChattingFragment extends BaseFragment {
 
     @Override
     public int getLayoutId() {
-        return R.layout.chatting_fragment;
+        return R.layout.fragment_chatting;
     }
 
     @Override

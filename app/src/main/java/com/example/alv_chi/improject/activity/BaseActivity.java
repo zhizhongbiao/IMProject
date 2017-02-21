@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -22,8 +23,8 @@ import android.widget.TextView;
 import com.example.alv_chi.improject.R;
 import com.example.alv_chi.improject.fragment.BaseFragment;
 import com.example.alv_chi.improject.handler.ActivityHandler;
-import com.example.alv_chi.improject.ui.CircleImageView;
-import com.example.alv_chi.improject.ui.IconfontTextView;
+import com.example.alv_chi.improject.custom.CircleImageView;
+import com.example.alv_chi.improject.custom.IconfontTextView;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
@@ -51,15 +52,12 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     ;
 
-    //    subClasses need return their LayoutResId if have
-    protected int getFragmentContentId() {
-        if (mCurrentFragment == null) return NO_FRAGMENT;
-        return mCurrentFragment.getLayoutId();
-    }
+    //    subClasses need return their FragmentContainerResID
+    protected abstract int getFragmentContainerId();
 
     ;
 
-    protected ActivityHandler getActivityHandler() {
+    public ActivityHandler getActivityHandler() {
         if (activityHandler == null) {
             activityHandler = new ActivityHandler(this);
         }
@@ -70,7 +68,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        super.setContentView(R.layout.activity_basic);
+        super.setContentView(R.layout.activity_base);
         initial();
 
         if (getIntent() != null) {
@@ -154,7 +152,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         alertDialog.show();
     }
 
-    protected void showAlertDialogInThread(final String title, final String message
+    public void showAlertDialogInThread(final String title, final String message
             , final String positiveButtonMsg, final DialogInterface.OnClickListener positiveButtonOnClickListener
             , final String negativeButtonMsg, final DialogInterface.OnClickListener negativeButtonOnClickListener
             , final String neutralButtonMsg, final DialogInterface.OnClickListener neutralButtonOnClickListener) {
@@ -173,17 +171,30 @@ public abstract class BaseActivity extends AppCompatActivity {
 
 
     protected void replaceFragmentAndAddToBackStack(BaseFragment fragment) {
-        if (fragment == null || mCurrentFragment == fragment) return;
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(getContentViewId(), fragment, fragment.getClass().getSimpleName())
-                .addToBackStack(fragment.getClass().getSimpleName())
-                .commit();
-        mCurrentFragment = fragment;
-
+        showFragment(fragment, true);
     }
 
-    protected void removeFragment() {
+    protected void replaceFragmentWithoutAddingToBackStack(BaseFragment fragment) {
+        showFragment(fragment, false);
+    }
+
+    private void showFragment(BaseFragment fragment, boolean isAddToBackStack) {
+        if (fragment == null || mCurrentFragment == fragment) return;
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager()
+                .beginTransaction();
+
+        if (isAddToBackStack) {
+            fragmentTransaction.addToBackStack(fragment.getClass().getSimpleName());
+        }
+        fragmentTransaction
+                .replace(getFragmentContainerId(), fragment, fragment.getClass().getSimpleName())
+                .commit();
+
+        mCurrentFragment = fragment;
+    }
+
+
+    protected void removeTheTopFragmentFromBackStack() {
         if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
             getSupportFragmentManager().popBackStack();
         } else {
@@ -217,6 +228,10 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     public void setContentView(@LayoutRes int layoutResID) {
         setContentView(LayoutInflater.from(this).inflate(layoutResID, null, false));
+//        initialize firstFragment for this activity if have one;
+        BaseFragment firstFragment = getFirstFragment();
+        replaceFragmentAndAddToBackStack(firstFragment);
+
 
     }
 
@@ -251,4 +266,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
         return super.onKeyDown(keyCode, event);
     }
+
+//    this method is for activity initialize its firstFragment if it has one,
+//    if it has not firstFragment ,it must return null;
+    protected abstract BaseFragment getFirstFragment();
 }

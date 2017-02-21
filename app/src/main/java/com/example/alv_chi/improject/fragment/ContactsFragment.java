@@ -6,7 +6,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.example.alv_chi.improject.R;
-import com.example.alv_chi.improject.ui.LetterNavigationView;
+import com.example.alv_chi.improject.custom.LetterNavigationView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -25,7 +25,7 @@ public class ContactsFragment extends BaseFragment implements LetterNavigationVi
 
     @Override
     public int getLayoutId() {
-        return R.layout.friend_chat_fragment;
+        return R.layout.fragment_friend_chat;
     }
 
     @Override

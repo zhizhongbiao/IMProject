@@ -1,4 +1,4 @@
-package com.example.alv_chi.improject.ui;
+package com.example.alv_chi.improject.custom;
 
 import android.support.v4.view.ViewPager;
 import android.view.View;

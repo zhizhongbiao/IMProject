@@ -13,7 +13,7 @@ public class ShareFragment extends BaseFragment {
 
     @Override
     public int getLayoutId() {
-        return R.layout.share_fragment;
+        return R.layout.fragmen_sharet;
     }
 
     @Override

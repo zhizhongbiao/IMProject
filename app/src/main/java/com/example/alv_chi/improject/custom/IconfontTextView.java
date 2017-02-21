@@ -1,4 +1,4 @@
-package com.example.alv_chi.improject.ui;
+package com.example.alv_chi.improject.custom;
 
 import android.content.Context;
 import android.util.AttributeSet;

@@ -6,7 +6,7 @@
     android:orientation="vertical">
 
 
-    <com.example.alv_chi.improject.ui.CircleImageView
+    <com.example.alv_chi.improject.custom.CircleImageView
         android:id="@+id/civAvatar"
         android:layout_width="110dp"
         android:layout_height="110dp"
@@ -31,7 +31,7 @@
         android:layout_height="@dimen/big_margin_IIII"
         android:orientation="horizontal">
 
-        <com.example.alv_chi.improject.ui.IconfontTextView
+        <com.example.alv_chi.improject.custom.IconfontTextView
             style="@style/BigBlackTextStyle"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -56,7 +56,7 @@
         android:layout_height="@dimen/big_margin_IIII"
         android:orientation="horizontal">
 
-        <com.example.alv_chi.improject.ui.IconfontTextView
+        <com.example.alv_chi.improject.custom.IconfontTextView
             style="@style/BigBlackTextStyle"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -81,7 +81,7 @@
         android:layout_height="@dimen/big_margin_III"
         android:orientation="horizontal">
 
-        <com.example.alv_chi.improject.ui.IconfontTextView
+        <com.example.alv_chi.improject.custom.IconfontTextView
             style="@style/BigBlackTextStyle"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -106,7 +106,7 @@
         android:layout_height="@dimen/big_margin_III"
         android:orientation="horizontal">
 
-        <com.example.alv_chi.improject.ui.IconfontTextView
+        <com.example.alv_chi.improject.custom.IconfontTextView
             style="@style/BigBlackTextStyle"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -131,7 +131,7 @@
         android:layout_height="@dimen/big_margin_III"
         android:orientation="horizontal">
 
-        <com.example.alv_chi.improject.ui.IconfontTextView
+        <com.example.alv_chi.improject.custom.IconfontTextView
             style="@style/BigBlackTextStyle"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -156,7 +156,7 @@
         android:layout_height="@dimen/big_margin_III"
         android:orientation="horizontal">
 
-        <com.example.alv_chi.improject.ui.IconfontTextView
+        <com.example.alv_chi.improject.custom.IconfontTextView
             style="@style/BigBlackTextStyle"
             android:layout_width="0dp"
             android:layout_height="match_parent"

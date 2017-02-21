@@ -41,7 +41,7 @@
         android:layout_gravity="start"
         android:background="@color/cyan">
 
-        <include layout="@layout/left_drawer_menu" />
+        <include layout="@layout/view_left_drawer_menu" />
 
     </RelativeLayout>
 

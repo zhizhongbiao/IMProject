@@ -15,7 +15,7 @@ public class GroupsFragment extends BaseFragment {
 
     @Override
     public int getLayoutId() {
-        return R.layout.group_chat_fragment;
+        return R.layout.fragment_group_chat;
     }
 
     @Override
@@ -27,7 +27,7 @@ public class GroupsFragment extends BaseFragment {
 //    public View onCreateView(LayoutInflater inflater,  ViewGroup container,Bundle savedInstanceState) {
 //        if (mContentView ==null)
 //        {
-//            mContentView = inflater.inflate(R.layout.group_chat_fragment, container, false);
+//            mContentView = inflater.inflate(R.layout.fragment_group_chat, container, false);
 //        }
 //        return mContentView;
 //    }

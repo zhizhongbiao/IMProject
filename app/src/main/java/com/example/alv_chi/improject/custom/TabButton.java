@@ -1,4 +1,4 @@
-package com.example.alv_chi.improject.ui;
+package com.example.alv_chi.improject.custom;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -16,7 +16,7 @@ import com.example.alv_chi.improject.R;
  * Created by Alv_chi on 2017/1/14.
  */
 
-public class TabView extends FrameLayout {
+public class TabButton extends FrameLayout {
 
     private TextView mCommonTextView;
     private View mTabView;
@@ -26,33 +26,33 @@ public class TabView extends FrameLayout {
     private String mCommonTextViewText;
     private String mIconfontTextViewText;
 
-    public TabView(Context context) {
+    public TabButton(Context context) {
         this(context, null);
     }
 
-    public TabView(Context context, AttributeSet attrs) {
+    public TabButton(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public TabView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public TabButton(Context context, AttributeSet attrs, int defStyleAttr) {
         this(context, attrs, defStyleAttr, 0);
     }
 
-    public TabView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public TabButton(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         initialTabView(context, attrs, defStyleAttr);
     }
 
     private void initialTabView(Context context, AttributeSet attrs, int defStyleAttr) {
-        mTabView = LayoutInflater.from(context).inflate(R.layout.tab_view, this, true);
+        mTabView = LayoutInflater.from(context).inflate(R.layout.view_tab_button, this, true);
         mCommonTextView = (TextView) mTabView.findViewById(R.id.tvCommon);
         mIconfontTextView = (IconfontTextView) mTabView.findViewById(R.id.iconfontTv);
 
-        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.TabView, defStyleAttr, 0);
-        mViewColor = typedArray.getColor(R.styleable.TabView_viewColor, Color.BLACK);
-        mViewSize = typedArray.getDimension(R.styleable.TabView_viewSize, TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 4, context.getResources().getDisplayMetrics()));
-        mCommonTextViewText = typedArray.getString(R.styleable.TabView_commonTextViewText);
-        mIconfontTextViewText = typedArray.getString(R.styleable.TabView_iconfontTextViewText);
+        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.TabButton, defStyleAttr, 0);
+        mViewColor = typedArray.getColor(R.styleable.TabButton_viewColor, Color.BLACK);
+        mViewSize = typedArray.getDimension(R.styleable.TabButton_viewSize, TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 4, context.getResources().getDisplayMetrics()));
+        mCommonTextViewText = typedArray.getString(R.styleable.TabButton_commonTextViewText);
+        mIconfontTextViewText = typedArray.getString(R.styleable.TabButton_iconfontTextViewText);
 
         setViewText(mIconfontTextViewText, mCommonTextViewText);
         setViewSize(mViewSize);
