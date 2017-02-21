@@ -176,7 +176,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     @Override
-    protected void intializeToolbar() {
+    protected void intializeToolbar(ToolbarViewHolder toolbarViewHolder) {
         initializePopupWindow();
 
         toolbarViewHolder.tvToolbarCenter.setText("yourLoginName");

@@ -40,7 +40,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
 
     //       subclasses can override this method for customing the toolbar
-    protected abstract void intializeToolbar();
+    protected abstract void intializeToolbar(ToolbarViewHolder toolbarViewHolder);
 
     //    subClasses need return their LayoutResId
     protected abstract int getContentViewId();
@@ -85,7 +85,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     private void initial() {
         RelativeLayout toolbar = (RelativeLayout) findViewById(R.id.rlCusotmToolbarRoot);
         toolbarViewHolder = new ToolbarViewHolder(toolbar);
-        intializeToolbar();
+        intializeToolbar(toolbarViewHolder);
     }
 
     protected void startRotationAnimation(View view, float angle, int duration) {

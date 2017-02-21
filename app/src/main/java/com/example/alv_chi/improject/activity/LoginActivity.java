@@ -142,7 +142,7 @@ public class LoginActivity extends BaseActivity implements OnThreadTaskFinishedL
 
 
     @Override
-    protected void intializeToolbar() {
+    protected void intializeToolbar(ToolbarViewHolder toolbarViewHolder) {
         toolbarViewHolder.toolbar.setVisibility(View.GONE);
     }
 
