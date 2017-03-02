@@ -9,10 +9,20 @@ import com.example.alv_chi.improject.exception.LoginNameOrPasswordException;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.chat.Chat;
+import org.jivesoftware.smack.chat.ChatManager;
+import org.jivesoftware.smack.chat.ChatManagerListener;
+import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.roster.Roster;
+import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
+import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.Set;
 
 
 /**
@@ -27,10 +37,6 @@ public class XmppHelper implements XMPP {
     private XMPPTCPConnection xmppTcpConnectionInstance;
     private XMPPTCPConnectionConfiguration xmppConfigBuilder;
 
-    private XmppHelper() {
-        initial();
-    }
-
 
     public static XmppHelper getXmppHelperInStance() {
         if (xmppHelperInstance == null) {
@@ -40,12 +46,17 @@ public class XmppHelper implements XMPP {
         return xmppHelperInstance;
     }
 
+    private XmppHelper() {
+        initial();
+    }
+
     //          initialize XMPP
     private void initial() {
+
         xmppConfigBuilder = XMPPTCPConnectionConfiguration.builder()
+                .setHost(Constants.AppConfigConstants.OPEN_FIRE_SERVER_IP)
                 .setConnectTimeout(2000)
                 .setDebuggerEnabled(true)
-                .setHost(Constants.AppConfigConstants.OPEN_FIRE_SERVER_IP)
                 .setSecurityMode(ConnectionConfiguration.SecurityMode.disabled)
                 .setPort(Constants.AppConfigConstants.OPEN_FIRE_SERVER_LOGIN_PORT)
                 .setSendPresence(true)
@@ -73,7 +84,7 @@ public class XmppHelper implements XMPP {
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(TAG, "connectServer: Exception=" + e.getMessage());
-            xmppTcpConnectionInstance=null;
+            xmppTcpConnectionInstance = null;
             throw new ConnectException();
         }
 
@@ -88,6 +99,9 @@ public class XmppHelper implements XMPP {
         try {
             xmppConnectionInstance.login(userName, password);
             Log.e(TAG, "login: login success!");
+            Presence presence = new Presence(Presence.Type.available);
+            presence.setStatus("I m Online");
+            xmppConnectionInstance.sendStanza(presence);
         } catch (XMPPException e) {
             e.printStackTrace();
             Log.e(TAG, "login: Exception=" + e.getMessage());
@@ -102,13 +116,36 @@ public class XmppHelper implements XMPP {
     }
 
     @Override
-    public void logOut(String userName, String password) {
-
+    public void logOut(String userName, String password) throws ConnectException, SmackException.NotConnectedException {
+        getXMPPConnectionInstance().disconnect(new Presence(Presence.Type.unavailable));
     }
 
     @Override
-    public void sendMessage(String Message) {
+    public void sendMessage(String toWhoseJID, String msg, ChatManagerListener listener) throws ConnectException, XmppStringprepException, SmackException.NotConnectedException, InterruptedException {
+        ChatManager chatManager = ChatManager.getInstanceFor(getXMPPConnectionInstance());
+        chatManager.addChatListener(listener);
+        Chat chat = chatManager.createChat(toWhoseJID);
+        Message message = new Message();
+        message.setBody(msg);
+        message.setFrom(Constants.AppConfigConstants.CLIENT_EMAIL);
+        message.setTo(toWhoseJID);
 
+        chat.sendMessage(message);
+    }
+
+    private int temp = 0;
+
+    @Override
+    public Set<RosterEntry> getContacts() throws ConnectException {
+        Set<RosterEntry> entries = getRoster().getEntries();
+        Iterator<RosterEntry> iterator = entries.iterator();
+        return entries;
+    }
+
+
+    protected Roster getRoster() throws ConnectException {
+
+        return Roster.getInstanceFor(getXMPPConnectionInstance());
     }
 
 

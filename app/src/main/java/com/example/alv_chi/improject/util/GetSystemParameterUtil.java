@@ -6,6 +6,9 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Created by Alv_chi on 2017/1/15.
  */
@@ -15,7 +18,7 @@ public class GetSystemParameterUtil {
     /**
      * 获取actionbar的像素高度，默认使用android官方兼容包做actionbar兼容
      *
-     * @return
+     * @return height
      */
     public static int getActionBarHeight(AppCompatActivity activity) {
 
@@ -69,5 +72,9 @@ public class GetSystemParameterUtil {
     public static int getScreenHeight(Context context) {
         if (context == null) return -1;
         return context.getResources().getDisplayMetrics().heightPixels;
+    }
+
+    public static String getCurrentSystemTime() {
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(System.currentTimeMillis()));
     }
 }

@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.example.alv_chi.improject.R;
+import com.example.alv_chi.improject.activity.BaseActivity;
+import com.example.alv_chi.improject.activity.MainActivity;
 
 /**
  * Created by Alv_chi on 2017/1/14.
@@ -11,7 +13,7 @@ import com.example.alv_chi.improject.R;
 
 public class GroupsFragment extends BaseFragment {
 
-    private View mContentView;
+    private MainActivity mHoldingActivity;
 
     @Override
     public int getLayoutId() {
@@ -23,12 +25,8 @@ public class GroupsFragment extends BaseFragment {
 
     }
 
-//    @Override
-//    public View onCreateView(LayoutInflater inflater,  ViewGroup container,Bundle savedInstanceState) {
-//        if (mContentView ==null)
-//        {
-//            mContentView = inflater.inflate(R.layout.fragment_group_chat, container, false);
-//        }
-//        return mContentView;
-//    }
+    @Override
+    protected void castActivity(BaseActivity baseActivity) {
+        mHoldingActivity = (MainActivity) baseActivity;
+    }
 }

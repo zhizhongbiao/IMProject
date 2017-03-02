@@ -26,4 +26,11 @@
     <string name="logout">&#xe6dc;</string>
     <string name="title_activity_basic">BasicActivity</string>
 
+
+    <!--chatting room fragment-->
+    <string name="more">&#xe60e;</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

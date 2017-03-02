@@ -45,7 +45,7 @@
             android:layout_weight="8"
             android:gravity="center"
             style="@style/MiddleBlackTextStyle"
-            android:singleLine="true"
+            android:maxLines="1"
             />
 
     </LinearLayout>
@@ -81,7 +81,7 @@
             android:layout_weight="8"
             android:gravity="center"
             style="@style/MiddleBlackTextStyle"
-            android:singleLine="true"
+            android:maxLines="1"
             />
 
     </LinearLayout>

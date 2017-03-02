@@ -1,41 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
+
 
     <LinearLayout
         android:id="@+id/llOtherTextMessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:orientation="horizontal"
-        android:visibility="gone"
-        >
+        android:orientation="vertical">
 
-        <com.example.alv_chi.improject.custom.CircleImageView
-            android:id="@+id/civOtherAvatar"
-            android:layout_width="@dimen/big_margin_IIII"
-            android:layout_height="@dimen/big_margin_IIII"
-            android:layout_marginLeft="@dimen/small_margin_II"
-            android:layout_marginRight="@dimen/small_margin_II"
-            android:scaleType="centerCrop"
-            android:src="@mipmap/meinv4" />
-
-        <TextView
-            android:id="@+id/tvOtherChattingMessage"
-            style="@style/BigBlackTextStyle"
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
 
-            android:background="@mipmap/message_frome_other"
-            android:padding="@dimen/middle_padding"
-            android:text="MessagFromOther" />
+            >
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
+            <TextView
+                android:id="@+id/tvOtherCurrentTime"
+                style="@style/SmallGrayTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:gravity="center"
+                android:text="yyyy年MM月dd日 HH:mm:ss" />
+
+            <TextView
+                android:id="@+id/tvOtherUserName"
+                style="@style/SmallGrayTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="@dimen/small_margin_II"
+                android:gravity="center"
+                android:text="yourUserName" />
+        </RelativeLayout>
+
+        <LinearLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:orientation="horizontal">
+
+            <com.example.alv_chi.improject.custom.CircleImageView
+                android:id="@+id/civOtherAvatar"
+                android:layout_width="@dimen/big_margin_IIII"
+                android:layout_height="@dimen/big_margin_IIII"
+                android:layout_marginLeft="@dimen/small_margin_II"
+                android:layout_marginRight="@dimen/small_margin_II"
+                android:scaleType="centerCrop"
+                android:src="@mipmap/meinv4" />
+
+            <TextView
+                android:id="@+id/tvOtherChattingMessage"
+                style="@style/BigBlackTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:background="@mipmap/message_frome_other"
+                android:padding="@dimen/middle_padding"
+                android:text="MessagFromOther" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+        </LinearLayout>
+
     </LinearLayout>
 
 
@@ -43,44 +76,69 @@
         android:id="@+id/llYourTextMessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:visibility="gone">
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tvYourCurrentTime"
+                style="@style/SmallGrayTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:gravity="center"
+                android:text="yyyy年MM月dd日 HH:mm:ss" />
+
+            <TextView
+                android:id="@+id/tvYourUserName"
+                style="@style/SmallGrayTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="@dimen/small_margin_II"
+                android:gravity="center"
+                android:text="yourUserName" />
+        </RelativeLayout>
 
 
+        <LinearLayout
 
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
-
-        <TextView
-            android:id="@+id/tvYourChattingMessage"
-            style="@style/BigBlackTextStyle"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@mipmap/messag_from_yourself"
-            android:padding="@dimen/middle_padding"
-            android:text="MessagFromYourself"
-            android:gravity="end"
-            />
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:orientation="horizontal">
 
-        <com.example.alv_chi.improject.custom.CircleImageView
-            android:id="@+id/civYourAvatar"
-            android:layout_width="@dimen/big_margin_IIII"
-            android:layout_height="@dimen/big_margin_IIII"
-            android:layout_marginLeft="@dimen/small_margin_II"
-            android:layout_marginRight="@dimen/small_margin_II"
-            android:scaleType="centerCrop"
-            android:src="@mipmap/meinv4" />
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/tvYourChattingMessage"
+                style="@style/BigBlackTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/big_margin_IIIII"
+                android:background="@mipmap/messag_from_yourself"
+                android:gravity="end"
+                android:padding="@dimen/middle_padding"
+                android:text="MessagFromYourself" />
+
+            <com.example.alv_chi.improject.custom.CircleImageView
+                android:id="@+id/civYourAvatar"
+                android:layout_width="@dimen/big_margin_IIII"
+                android:layout_height="@dimen/big_margin_IIII"
+                android:layout_marginLeft="@dimen/small_margin_II"
+                android:layout_marginRight="@dimen/small_margin_II"
+                android:scaleType="centerCrop"
+                android:src="@mipmap/meinv4" />
+        </LinearLayout>
+
     </LinearLayout>
 
 
-
-
-
-</RelativeLayout>
+</FrameLayout>

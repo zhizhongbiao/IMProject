@@ -29,6 +29,11 @@ public class LetterNavigationView extends View {
     private final float defautTextSize = 40;
     private Rect rect;
 
+    public void setChosenLetter(String chosenLetter) {
+        this.chosenLetter = chosenLetter;
+        invalidate();
+    }
+
     public LetterNavigationView(Context context) {
         this(context, null);
     }
@@ -82,7 +87,7 @@ public class LetterNavigationView extends View {
         }
 
         perLetterAreaHeight = mHeight / 27.0;
-        String letter = "Empty";
+        String letter ;
 
         for (int i = 0; i < 27; i++) {
 
@@ -113,7 +118,6 @@ public class LetterNavigationView extends View {
             case MotionEvent.ACTION_DOWN:
 
                 setBackgroundColor(getResources().getColor(com.example.alv_chi.improject.R.color.blackTransparentII));
-
                 chosenLetter = getChosenLetter(y);
                 invalidate();
                 if (onLetterChooseListenerCallback != null) {
@@ -130,13 +134,17 @@ public class LetterNavigationView extends View {
                 break;
             case MotionEvent.ACTION_UP:
 
-                setBackgroundColor(Color.TRANSPARENT);
-                if (onLetterChooseListenerCallback != null) {
-                    onLetterChooseListenerCallback.isTouching(false);
-                }
+                recoverToNormal();
                 break;
         }
         return true;
+    }
+
+    private void recoverToNormal() {
+        setBackgroundColor(Color.TRANSPARENT);
+        if (onLetterChooseListenerCallback != null) {
+            onLetterChooseListenerCallback.isTouching(false);
+        }
     }
 
     private String getChosenLetter(float y) {

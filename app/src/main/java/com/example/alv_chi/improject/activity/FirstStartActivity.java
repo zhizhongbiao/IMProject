@@ -7,7 +7,6 @@ import android.widget.FrameLayout;
 import com.example.alv_chi.improject.R;
 import com.example.alv_chi.improject.fragment.BaseFragment;
 import com.example.alv_chi.improject.fragment.LoginFragment;
-import com.example.alv_chi.improject.handler.ActivityHandler;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -19,14 +18,12 @@ public class FirstStartActivity extends BaseActivity {
     @BindView(R.id.flFragmentContainer)
     FrameLayout flFragmentContainer;
 
-    private ActivityHandler mHandler;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_first_start);
         ButterKnife.bind(this);
-        mHandler = getActivityHandler();
+
     }
 
 

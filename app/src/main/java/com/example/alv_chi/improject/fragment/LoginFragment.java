@@ -13,12 +13,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.alv_chi.improject.R;
+import com.example.alv_chi.improject.activity.BaseActivity;
 import com.example.alv_chi.improject.activity.FirstStartActivity;
 import com.example.alv_chi.improject.activity.MainActivity;
 import com.example.alv_chi.improject.constant.Constants;
 import com.example.alv_chi.improject.exception.ConnectException;
 import com.example.alv_chi.improject.exception.LoginNameOrPasswordException;
-import com.example.alv_chi.improject.handler.ActivityHandler;
 import com.example.alv_chi.improject.handler.HandlerHelper;
 import com.example.alv_chi.improject.handler.OnThreadTaskFinishedListener;
 import com.example.alv_chi.improject.util.ThreadUtil;
@@ -50,9 +50,8 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
     View view;
     @BindView(R.id.activity_login)
     LinearLayout activityLogin;
-    private FirstStartActivity mHoldingActivity;
-    private ActivityHandler mHandler;
 
+    private FirstStartActivity mHoldingActivity;
 
     public static LoginFragment newInstance() {
         return new LoginFragment();
@@ -66,14 +65,17 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
     @Override
     protected void initializeView(View view, Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
-        mHoldingActivity = (FirstStartActivity) getHoldingActivity();
-        mHandler = mHoldingActivity.getActivityHandler();
         initialContentView();
         addThisOnThreadTaskFinishedListenerToActivityHandler();//add this listener to handler;
     }
 
     private void initialContentView() {
         btnLoginButton.setOnClickListener(this);
+    }
+
+    @Override
+    protected void castActivity(BaseActivity baseActivity) {
+        mHoldingActivity = (FirstStartActivity) baseActivity;
     }
 
     @Override

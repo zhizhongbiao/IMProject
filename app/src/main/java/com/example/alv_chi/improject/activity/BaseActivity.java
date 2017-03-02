@@ -21,10 +21,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.alv_chi.improject.R;
-import com.example.alv_chi.improject.fragment.BaseFragment;
-import com.example.alv_chi.improject.handler.ActivityHandler;
 import com.example.alv_chi.improject.custom.CircleImageView;
 import com.example.alv_chi.improject.custom.IconfontTextView;
+import com.example.alv_chi.improject.fragment.BaseFragment;
+import com.example.alv_chi.improject.handler.ActivityHandler;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
@@ -38,6 +38,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     private View lastContentView;
     private static ActivityHandler activityHandler;
     private BaseFragment mCurrentFragment;
+    protected ActivityHandler mHandler;
 
 
     //       subclasses can override this method for customing the toolbar
@@ -69,6 +70,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         super.setContentView(R.layout.activity_base);
+        mHandler = getActivityHandler();
         initial();
 
         if (getIntent() != null) {
@@ -112,6 +114,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         } else {
             popupWindow.setWidth(width);
         }
+
 
         popupWindow.setOutsideTouchable(true);
         popupWindow.setContentView(customCotentView);
@@ -202,7 +205,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
-    public void setmCurrentFragment(BaseFragment mCurrentFragment) {
+    public void setCurrentFragment(BaseFragment mCurrentFragment) {
         this.mCurrentFragment = mCurrentFragment;
     }
 

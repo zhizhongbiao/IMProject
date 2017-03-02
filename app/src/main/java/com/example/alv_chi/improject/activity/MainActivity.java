@@ -14,23 +14,23 @@ import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.alv_chi.improject.R;
 import com.example.alv_chi.improject.adapter.VpFragmentAdapter;
-import com.example.alv_chi.improject.fragment.BaseFragment;
-import com.example.alv_chi.improject.fragment.ChattingFragment;
-import com.example.alv_chi.improject.fragment.ContactsFragment;
-import com.example.alv_chi.improject.fragment.GroupsFragment;
-import com.example.alv_chi.improject.fragment.ShareFragment;
 import com.example.alv_chi.improject.custom.CircleImageView;
 import com.example.alv_chi.improject.custom.DepthPageTransformer;
 import com.example.alv_chi.improject.custom.IconfontTextView;
 import com.example.alv_chi.improject.custom.TabButton;
+import com.example.alv_chi.improject.fragment.BaseFragment;
+import com.example.alv_chi.improject.fragment.ChatFragment;
+import com.example.alv_chi.improject.fragment.ContactsFragment;
+import com.example.alv_chi.improject.fragment.GroupsFragment;
+import com.example.alv_chi.improject.fragment.ShareFragment;
 import com.example.alv_chi.improject.util.GetSystemParameterUtil;
 
 import java.util.ArrayList;
@@ -63,10 +63,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     LinearLayout llFeedback;
     @BindView(R.id.llHelp)
     LinearLayout llHelp;
-    @BindView(R.id.rlLeftDrawer)
-    RelativeLayout rlLeftDrawer;
+
     @BindView(R.id.dlDrawerRoot)
     DrawerLayout dlDrawerRoot;
+    @BindView(R.id.flLeftDrawer)
+    FrameLayout flLeftDrawer;
 
 
     private FragmentManager mSupportFragmentManager;
@@ -75,7 +76,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private int[] mIconfontIds = {R.string.chatting, R.string.friend_chat, R.string.group_chat, R.string.share};
     private VpFragmentAdapter mVpFragmentAdapter;
     private ArrayList<Fragment> fragments;
-    private ChattingFragment mChattingFragment;
+    private ChatFragment mChatFragment;
     private ContactsFragment mContactsFragment;
     private GroupsFragment mGroupsFragment;
     private ShareFragment mShareFragment;
@@ -167,8 +168,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private void initialFragment() {
         mSupportFragmentManager = getSupportFragmentManager();
         fragments = new ArrayList<>();
-        mChattingFragment = new ChattingFragment();
-        fragments.add(mChattingFragment);
+        mChatFragment = new ChatFragment();
+        fragments.add(mChatFragment);
         mContactsFragment = new ContactsFragment();
         fragments.add(mContactsFragment);
         mGroupsFragment = new GroupsFragment();
@@ -247,6 +248,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     protected int getFragmentContainerId() {
         return NO_FRAGMENT;
     }
+
     @Override
     protected BaseFragment getFirstFragment() {
         return null;

@@ -34,16 +34,14 @@
     </LinearLayout>
 
     <!--left drawer-->
-    <RelativeLayout
-        android:id="@+id/rlLeftDrawer"
+    <FrameLayout
+        android:id="@+id/flLeftDrawer"
         android:layout_width="@dimen/drawer_menu_width"
         android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:background="@color/cyan">
+        android:layout_gravity="start">
 
         <include layout="@layout/view_left_drawer_menu" />
-
-    </RelativeLayout>
+    </FrameLayout>
 
 
 </android.support.v4.widget.DrawerLayout>
