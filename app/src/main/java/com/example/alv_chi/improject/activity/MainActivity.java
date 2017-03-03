@@ -2,6 +2,7 @@ package com.example.alv_chi.improject.activity;
 
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -22,6 +23,7 @@ import android.widget.Toast;
 
 import com.example.alv_chi.improject.R;
 import com.example.alv_chi.improject.adapter.VpFragmentAdapter;
+import com.example.alv_chi.improject.constant.Constants;
 import com.example.alv_chi.improject.custom.CircleImageView;
 import com.example.alv_chi.improject.custom.DepthPageTransformer;
 import com.example.alv_chi.improject.custom.IconfontTextView;
@@ -31,7 +33,7 @@ import com.example.alv_chi.improject.fragment.ChatFragment;
 import com.example.alv_chi.improject.fragment.ContactsFragment;
 import com.example.alv_chi.improject.fragment.GroupsFragment;
 import com.example.alv_chi.improject.fragment.ShareFragment;
-import com.example.alv_chi.improject.util.GetSystemParameterUtil;
+import com.example.alv_chi.improject.util.SystemUtil;
 
 import java.util.ArrayList;
 
@@ -98,6 +100,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     }
 
+    @Override
+    protected void handleIntent(Intent intent) {
+        boolean isFromPendingIntent = intent.getBooleanExtra(Constants.KeyConstants.IS_THIS_INTEN_FROM_PENDING_INTENT, false);
+        if (isFromPendingIntent)
+        {
+            sfdsfdsjkfdsjlfkdsjfdkfldsfjldsfkjdlfkjdsfkdslf
+        }
+    }
 
     private void initializeDrawerLayout() {
         dlDrawerRoot.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
@@ -220,7 +230,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 final IconfontTextView iconfontTextView = (IconfontTextView) v;
 
                 mWindow = createThePopupWindow(pupopWindowContentView
-                        , GetSystemParameterUtil.getScreenWidth(MainActivity.this) / 2, PUPOP_WINDOW_WRAP_CONTEN
+                        , SystemUtil.getScreenWidth(MainActivity.this) / 2, PUPOP_WINDOW_WRAP_CONTEN
                         , new PopupWindow.OnDismissListener() {
                             @Override
                             public void onDismiss() {

@@ -18,13 +18,8 @@ import com.example.alv_chi.improject.bean.ContactItem;
 import com.example.alv_chi.improject.bean.TextMessageItem;
 import com.example.alv_chi.improject.constant.Constants;
 import com.example.alv_chi.improject.custom.IconfontTextView;
-import com.example.alv_chi.improject.util.GetSystemParameterUtil;
+import com.example.alv_chi.improject.util.SystemUtil;
 import com.example.alv_chi.improject.xmpp.XmppHelper;
-
-import org.jivesoftware.smack.chat.Chat;
-import org.jivesoftware.smack.chat.ChatManagerListener;
-import org.jivesoftware.smack.chat.ChatMessageListener;
-import org.jivesoftware.smack.packet.Message;
 
 import java.util.ArrayList;
 
@@ -35,7 +30,7 @@ import butterknife.ButterKnife;
  * Created by Alv_chi on 2017/1/14.
  */
 
-public class ChattingRoomFragment extends BaseFragment implements View.OnClickListener, ChatManagerListener, ChatMessageListener {
+public class ChattingRoomFragment extends BaseFragment implements View.OnClickListener, View.OnFocusChangeListener {
 
     private static final String TAG = "ChattingRoomFragment";
 
@@ -65,7 +60,7 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
 
     @Override
     protected void handleBundleFromOutside(Bundle bundle) {
-        contactItem = (ContactItem) bundle.getParcelable(Constants.KeyConstants.PARCELABLE_CONTACTIEM_KEY);
+        contactItem = bundle.getParcelable(Constants.KeyConstants.PARCELABLE_CONTACT_ITEM_KEY);
 
     }
 
@@ -78,16 +73,30 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
     protected void initializeView(View view, Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
         btnSend.setOnClickListener(this);
-        initMessageRecyclerView();
+        initViews();
 
     }
 
-    private void initMessageRecyclerView() {
+    private void initViews() {
         linearLayoutManager = new LinearLayoutManager(mHoldingActivity, LinearLayoutManager.VERTICAL, false);
         rvMessageContainer.setLayoutManager(linearLayoutManager);
         textMessageItems = new ArrayList<>();
         messageRvAdapter = new MessageRvAdapter(mHoldingActivity, textMessageItems);
         rvMessageContainer.setAdapter(messageRvAdapter);
+
+        etPenddingMessage.setOnFocusChangeListener(this);
+    }
+
+    @Override
+    public void onFocusChange(View v, boolean hasFocus) {
+        if (hasFocus) {
+            SystemUtil.showSoftInput(mHoldingActivity, v);
+//            linearLayoutManager.scrollToPosition(textMessageItems.size()-1);
+        } else {
+            SystemUtil.hideSoftInput(mHoldingActivity, v);
+//            linearLayoutManager.scrollToPosition(textMessageItems.size()-1);
+        }
+
     }
 
     @Override
@@ -106,11 +115,11 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
                     return;
                 }
                 try {
-                    XmppHelper.getXmppHelperInStance().sendMessage(contactItem.getUserJID(), message, this);
+                    XmppHelper.getXmppHelperInStance().sendMessage(contactItem.getUserJID(), message, mHoldingActivity.getInComingMessageListenerService());
                     Log.e(TAG, "sendMessage: contactItem.getUserJID()=" + contactItem.getUserJID());
                     Log.e(TAG, "onClick: 发送成功");
                     TextMessageItem textMessageItem = new TextMessageItem(Constants.AppConfigConstants.CLIENT_USER_NAME
-                            , GetSystemParameterUtil.getCurrentSystemTime()
+                            , SystemUtil.getCurrentSystemTime()
                             , message, null, MessageRvAdapter.TEXT_MESSAGE_VIEW_TYPE, false);
                     refreshMessageContainer(textMessageItem);
                 } catch (Exception e) {
@@ -130,26 +139,8 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
     }
 
 
-    @Override
-    public void chatCreated(Chat chat, boolean createdLocally) {
-        chat.addMessageListener(this);
-        Log.e(TAG, "chatCreated: createdLocally=" + createdLocally);
-    }
 
-    @Override
-    public void processMessage(Chat chat, Message message) {
-        String receivedMsg = message.getBody();
-        if (receivedMsg != null) {
-            TextMessageItem textMessageItem = new TextMessageItem(contactItem.getUserName()
-                    , GetSystemParameterUtil.getCurrentSystemTime()
-                    , receivedMsg, null, MessageRvAdapter.TEXT_MESSAGE_VIEW_TYPE, true);
-
-            refreshMessageContainer(textMessageItem);
-        }
-        Log.e(TAG, "processMessage: message=" + message);
-    }
-
-    private void refreshMessageContainer(final TextMessageItem textMessageItem) {
+    public void refreshMessageContainer(final TextMessageItem textMessageItem) {
         getHoldingActivity().getActivityHandler().post(new Runnable() {
             @Override
             public void run() {
@@ -162,10 +153,6 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
     }
 
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
 
-    }
 
 }

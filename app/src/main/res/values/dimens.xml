@@ -5,6 +5,7 @@
 
     <!--Margin and Padding Size-->
     <dimen name="drawer_menu_width">250dp</dimen>
+    <dimen name="message_width">240dp</dimen>
 
     <dimen name="small_padding">1dp</dimen>
     <dimen name="small_padding_II">2dp</dimen>
@@ -12,7 +13,8 @@
     <dimen name="big_padding">8dp</dimen>
 
     <dimen name="small_margin">6dp</dimen>
-    <dimen name="small_margin_II">13dp</dimen>
+    <dimen name="small_margin_II">10dp</dimen>
+    <dimen name="small_margin_III">14dp</dimen>
     <dimen name="middle_margin">15dp</dimen>
     <dimen name="big_margin">22dp</dimen>
     <dimen name="big_margin_II">29dp</dimen>

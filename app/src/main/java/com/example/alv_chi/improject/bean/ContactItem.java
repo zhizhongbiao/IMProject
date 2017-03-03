@@ -17,12 +17,14 @@ public class ContactItem implements Comparable<ContactItem> ,Parcelable{
     private String userName;
     private Bitmap avatar;
 
+    private TextMessageItem textMessageItem;
 
-    public ContactItem(String userJID, String navigationLetter, String userName, Bitmap avatar) {
+    public ContactItem(String userJID, String navigationLetter, String userName, Bitmap avatar, TextMessageItem textMessageItem) {
         this.userJID = userJID;
         this.navigationLetter = navigationLetter;
         this.userName = userName;
         this.avatar = avatar;
+        this.textMessageItem = textMessageItem;
     }
 
     protected ContactItem(Parcel in) {
@@ -43,10 +45,6 @@ public class ContactItem implements Comparable<ContactItem> ,Parcelable{
             return new ContactItem[size];
         }
     };
-
-    public static String getTAG() {
-        return TAG;
-    }
 
     public String getUserJID() {
         return userJID;
@@ -80,6 +78,28 @@ public class ContactItem implements Comparable<ContactItem> ,Parcelable{
         this.avatar = avatar;
     }
 
+    public TextMessageItem getTextMessageItem() {
+        return textMessageItem;
+    }
+
+    public void setTextMessageItem(TextMessageItem textMessageItem) {
+        this.textMessageItem = textMessageItem;
+    }
+
+    @Override
+    public int compareTo(ContactItem item) {
+
+        if(getNavigationLetter().equals("#")){
+
+            return 1;
+        }
+        if (item.getNavigationLetter().matches("[A-Z]"))
+        {
+            return getNavigationLetter().compareTo(item.getNavigationLetter());
+        }
+
+        return -1;
+    }
 
     @Override
     public int describeContents() {
@@ -95,20 +115,71 @@ public class ContactItem implements Comparable<ContactItem> ,Parcelable{
     }
 
 
+    class TextMessageItem {
 
+        private String userName;
+        private String currentTimeStamp;
+        private String mesage;
+        private Bitmap userAvatar;
+        private int typeView;
+        private boolean isReceivedMessage;
 
-    @Override
-    public int compareTo(ContactItem item) {
-
-        if(getNavigationLetter().equals("#")){
-
-            return 1;
+        public TextMessageItem(String userName, String currentTimeStamp, String mesage, Bitmap userAvatar, int typeView, boolean isReceivedMessage) {
+            this.userName = userName;
+            this.currentTimeStamp = currentTimeStamp;
+            this.mesage = mesage;
+            this.userAvatar = userAvatar;
+            this.typeView = typeView;
+            this.isReceivedMessage = isReceivedMessage;
         }
-        if (item.getNavigationLetter().matches("[A-Z]"))
-        {
-            return getNavigationLetter().compareTo(item.getNavigationLetter());
+
+
+        public String getUserName() {
+            return userName;
         }
 
-        return -1;
+        public void setUserName(String userName) {
+            this.userName = userName;
+        }
+
+        public String getCurrentTimeStamp() {
+            return currentTimeStamp;
+        }
+
+        public void setCurrentTimeStamp(String currentTimeStamp) {
+            this.currentTimeStamp = currentTimeStamp;
+        }
+
+        public String getMesage() {
+            return mesage;
+        }
+
+        public void setMesage(String mesage) {
+            this.mesage = mesage;
+        }
+
+        public Bitmap getUserAvatar() {
+            return userAvatar;
+        }
+
+        public void setUserAvatar(Bitmap userAvatar) {
+            this.userAvatar = userAvatar;
+        }
+
+        public int getTypeView() {
+            return typeView;
+        }
+
+        public void setTypeView(int typeView) {
+            this.typeView = typeView;
+        }
+
+        public boolean isReceivedMessage() {
+            return isReceivedMessage;
+        }
+
+        public void setReceivedMessage(boolean receivedMessage) {
+            isReceivedMessage = receivedMessage;
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.example.alv_chi.improject.xmpp;
 
 import android.util.Log;
 
+import com.example.alv_chi.improject.bean.ContactItem;
 import com.example.alv_chi.improject.constant.Constants;
 import com.example.alv_chi.improject.exception.ConnectException;
 import com.example.alv_chi.improject.exception.LoginNameOrPasswordException;
@@ -18,10 +19,11 @@ import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
+import org.jivesoftware.smackx.offline.OfflineMessageManager;
 import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.io.IOException;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 
@@ -36,6 +38,7 @@ public class XmppHelper implements XMPP {
     private static XmppHelper xmppHelperInstance;
     private XMPPTCPConnection xmppTcpConnectionInstance;
     private XMPPTCPConnectionConfiguration xmppConfigBuilder;
+    private Chat chat;
 
 
     public static XmppHelper getXmppHelperInStance() {
@@ -99,9 +102,7 @@ public class XmppHelper implements XMPP {
         try {
             xmppConnectionInstance.login(userName, password);
             Log.e(TAG, "login: login success!");
-            Presence presence = new Presence(Presence.Type.available);
-            presence.setStatus("I m Online");
-            xmppConnectionInstance.sendStanza(presence);
+            setStatu(xmppConnectionInstance,Presence.Type.available,"I m Online");
         } catch (XMPPException e) {
             e.printStackTrace();
             Log.e(TAG, "login: Exception=" + e.getMessage());
@@ -116,36 +117,58 @@ public class XmppHelper implements XMPP {
     }
 
     @Override
+    public void setStatu(XMPPTCPConnection xmppConnectionInstance, Presence.Type type, String statuString) throws SmackException.NotConnectedException {
+        Presence presence = new Presence(type);
+        presence.setStatus(statuString);
+        xmppConnectionInstance.sendStanza(presence);
+    }
+
+    @Override
     public void logOut(String userName, String password) throws ConnectException, SmackException.NotConnectedException {
         getXMPPConnectionInstance().disconnect(new Presence(Presence.Type.unavailable));
     }
 
     @Override
-    public void sendMessage(String toWhoseJID, String msg, ChatManagerListener listener) throws ConnectException, XmppStringprepException, SmackException.NotConnectedException, InterruptedException {
+    public void sendMessage(ContactItem contactItem, String msg, ChatManagerListener listener) throws ConnectException, XmppStringprepException, SmackException.NotConnectedException, InterruptedException {
         ChatManager chatManager = ChatManager.getInstanceFor(getXMPPConnectionInstance());
-        chatManager.addChatListener(listener);
-        Chat chat = chatManager.createChat(toWhoseJID);
+        if (chatManager.getChatListeners().size()==0)
+        {
+            chatManager.addChatListener(listener);
+            chat = chatManager.createChat(contactItem.getUserJID());
+        }
+
+
         Message message = new Message();
+        message.setSubject(contactItem.getUserName());
         message.setBody(msg);
         message.setFrom(Constants.AppConfigConstants.CLIENT_EMAIL);
-        message.setTo(toWhoseJID);
+        message.setTo(contactItem.getUserJID());
 
         chat.sendMessage(message);
     }
 
-    private int temp = 0;
 
     @Override
     public Set<RosterEntry> getContacts() throws ConnectException {
-        Set<RosterEntry> entries = getRoster().getEntries();
-        Iterator<RosterEntry> iterator = entries.iterator();
-        return entries;
+
+
+        return getRoster().getEntries();
     }
 
 
     protected Roster getRoster() throws ConnectException {
 
         return Roster.getInstanceFor(getXMPPConnectionInstance());
+    }
+
+
+    public void getOffLineMessage() throws ConnectException, SmackException.NotConnectedException, XMPPException.XMPPErrorException, SmackException.NoResponseException {
+        OfflineMessageManager offlineMessageManager = new OfflineMessageManager(getXMPPConnectionInstance());
+        List<Message> offlineMessages = offlineMessageManager.getMessages();
+        for (Message offlineMessage : offlineMessages) {
+//            offlineMessage.get
+//            offlineMessage.getBody()
+        }
     }
 
 

@@ -99,8 +99,7 @@ public class ContactsFragment extends BaseFragment implements LetterNavigationVi
 
         tvCenterNavigationLetter.setText(letter);
         Integer position = reUsableAdapter.getNavigationPositions().get(letter.toUpperCase());
-        linearLayoutManager.scrollToPosition(position);
-//        Log.e(TAG, "getChosenLetter: position/letter="+position+"/"+letter );
+        linearLayoutManager.scrollToPositionWithOffset(position,0);
 
     }
 

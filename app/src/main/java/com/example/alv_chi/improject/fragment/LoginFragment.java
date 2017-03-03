@@ -14,7 +14,7 @@ import android.widget.Toast;
 
 import com.example.alv_chi.improject.R;
 import com.example.alv_chi.improject.activity.BaseActivity;
-import com.example.alv_chi.improject.activity.FirstStartActivity;
+import com.example.alv_chi.improject.activity.LogInAndSignUpActivity;
 import com.example.alv_chi.improject.activity.MainActivity;
 import com.example.alv_chi.improject.constant.Constants;
 import com.example.alv_chi.improject.exception.ConnectException;
@@ -51,7 +51,7 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
     @BindView(R.id.activity_login)
     LinearLayout activityLogin;
 
-    private FirstStartActivity mHoldingActivity;
+    private LogInAndSignUpActivity mHoldingActivity;
 
     public static LoginFragment newInstance() {
         return new LoginFragment();
@@ -75,7 +75,7 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
 
     @Override
     protected void castActivity(BaseActivity baseActivity) {
-        mHoldingActivity = (FirstStartActivity) baseActivity;
+        mHoldingActivity = (LogInAndSignUpActivity) baseActivity;
     }
 
     @Override
@@ -100,7 +100,7 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
         Intent intent = new Intent(mHoldingActivity, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
-        mHoldingActivity.finish();//kill this FirstStartActivity
+        mHoldingActivity.finish();//kill this LogInAndSignUpActivity
     }
 
     @Override
@@ -119,6 +119,7 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
             @Override
             public void run() {
                 try {
+
                     XmppHelper.getXmppHelperInStance().login(Constants.AppConfigConstants.CLIENT_USER_NAME, Constants.AppConfigConstants.CLIENT_PASSWORD);
                     HandlerHelper.sendMessageByHandler(mHandler, TAG, Constants.HandlerMessageType.LOGIN_SUCCESS);
 

@@ -13,13 +13,16 @@ import com.example.alv_chi.improject.fragment.ChattingRoomFragment;
 
 public class ChatRoomActivity extends BaseActivity {
 
+    private ContactItem contactItem;
+
     @Override
     protected void handleIntent(Intent intent) {
-        ContactItem contactItem = (ContactItem) intent.getParcelableExtra(Constants.KeyConstants.PARCELABLE_CONTACTIEM_KEY);
+
+        contactItem = intent.getParcelableExtra(Constants.KeyConstants.PARCELABLE_CONTACT_ITEM_KEY);
         String userJID = contactItem.getUserJID();
         Bitmap avatar = contactItem.getAvatar();
         String userName = contactItem.getUserName();
-        CurrentChattingDataHolder.setCurrentChattingData(contactItem,userJID, userName, avatar);
+
     }
 
     @Override
@@ -31,7 +34,8 @@ public class ChatRoomActivity extends BaseActivity {
                 removeTheTopFragmentFromBackStack();
             }
         });
-        toolbarViewHolder.tvToolbarCenter.setText(CurrentChattingDataHolder.getUserName());
+
+        toolbarViewHolder.tvToolbarCenter.setText(contactItem.getUserName());
     }
 
     @Override
@@ -54,38 +58,9 @@ public class ChatRoomActivity extends BaseActivity {
     @Override
     protected BaseFragment getFirstFragment() {
         Bundle bundle = new Bundle();
-        bundle.putParcelable(Constants.KeyConstants.PARCELABLE_CONTACTIEM_KEY,CurrentChattingDataHolder.getContactItem());
+        bundle.putParcelable(Constants.KeyConstants.PARCELABLE_CONTACT_ITEM_KEY,contactItem);
         return ChattingRoomFragment.newInstance(bundle);
     }
 
 
-    static class CurrentChattingDataHolder {
-        private static String userJID;
-        private static String userName;
-        private static Bitmap userAvatar;
-        private static ContactItem contactItem;
-
-        public static void setCurrentChattingData(ContactItem item,String JID, String name, Bitmap avatar) {
-            userJID = JID;
-            userName = name;
-            userAvatar = avatar;
-            contactItem=item;
-        }
-
-        public static String getUserJID() {
-            return userJID;
-        }
-
-        public static String getUserName() {
-            return userName;
-        }
-
-        public static Bitmap getUserAvatar() {
-            return userAvatar;
-        }
-
-        public static ContactItem getContactItem() {
-            return contactItem;
-        }
-    }
 }

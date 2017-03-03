@@ -2,18 +2,25 @@ package com.example.alv_chi.improject.activity;
 
 
 import android.animation.ObjectAnimator;
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.LayoutRes;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.transition.Transition;
+import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -25,6 +32,7 @@ import com.example.alv_chi.improject.custom.CircleImageView;
 import com.example.alv_chi.improject.custom.IconfontTextView;
 import com.example.alv_chi.improject.fragment.BaseFragment;
 import com.example.alv_chi.improject.handler.ActivityHandler;
+import com.example.alv_chi.improject.service.InComingMessageListenerService;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
@@ -39,6 +47,10 @@ public abstract class BaseActivity extends AppCompatActivity {
     private static ActivityHandler activityHandler;
     private BaseFragment mCurrentFragment;
     protected ActivityHandler mHandler;
+
+    private InComingMessageListenerService inComingMessageListenerService;
+    private ServiceConnection serviceConnection;
+    private Intent serviceIntent;
 
 
     //       subclasses can override this method for customing the toolbar
@@ -69,17 +81,50 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);//to tell window that activity need transition animation;
         super.setContentView(R.layout.activity_base);
-        mHandler = getActivityHandler();
-        initial();
+        initservice();
 
+        mHandler = getActivityHandler();
         if (getIntent() != null) {
             handleIntent(getIntent());
         } else {
             Log.e(TAG, "onCreate: intent=null");
         }
+        initial();
 
     }
+
+    private void initservice() {
+        serviceIntent = new Intent(this, InComingMessageListenerService.class);
+        startInComingMessageListenerService(serviceIntent);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        bindInComingMessageListenerService(serviceIntent);
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+//        make the service let go the activity referrence
+        getInComingMessageListenerService().setCurrentActivity(null);
+        unbindInComingMessageListenerService(serviceConnection);
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (activityHandler != null) {
+//            kill all tasks in the queue when BacicActivity is destroy:
+            activityHandler.removeCallbacksAndMessages(null);
+        }
+    }
+
 
     //        initial View
     private void initial() {
@@ -172,6 +217,15 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     }
 
+    public void startAnotherActivity(BaseActivity activity, Intent intent) {
+        Transition explode = TransitionInflater.from(activity).inflateTransition(R.transition.explode);
+        getWindow().setEnterTransition(explode);
+        getWindow().setReenterTransition(explode);
+        getWindow().setExitTransition(explode);
+        startActivity(intent, ActivityOptionsCompat.makeSceneTransitionAnimation(activity).toBundle());
+
+    }
+
 
     protected void replaceFragmentAndAddToBackStack(BaseFragment fragment) {
         showFragment(fragment, true);
@@ -207,6 +261,10 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public void setCurrentFragment(BaseFragment mCurrentFragment) {
         this.mCurrentFragment = mCurrentFragment;
+    }
+
+    public BaseFragment getmCurrentFragment() {
+        return this.mCurrentFragment;
     }
 
 
@@ -249,14 +307,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (activityHandler != null) {
-//            kill all tasks in the queue when BacicActivity is destroy:
-            activityHandler.removeCallbacksAndMessages(null);
-        }
-    }
 
     //    this method is for making sure Activity be dead when the last fragment is dead;
     @Override
@@ -270,7 +320,49 @@ public abstract class BaseActivity extends AppCompatActivity {
         return super.onKeyDown(keyCode, event);
     }
 
-//    this method is for activity initialize its firstFragment if it has one,
+    //    this method is for activity initialize its firstFragment if it has one,
 //    if it has not firstFragment ,it must return null;
     protected abstract BaseFragment getFirstFragment();
+
+    public void startInComingMessageListenerService(Intent serviceIntent) {
+        startService(serviceIntent);
+    }
+
+
+    public void bindInComingMessageListenerService(Intent serviceIntent) {
+
+        serviceConnection = new ServiceConnection() {
+
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder iBinder) {
+                inComingMessageListenerService = ((InComingMessageListenerService.MyBinder) iBinder).getInComingMessageListenerService();
+
+                getInComingMessageListenerService().setCurrentActivity(BaseActivity.this);
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                Log.e(TAG, "onServiceDisconnected: ComponentName=" + name.toString());
+            }
+        };
+
+        boolean isBindServiceSuccess = bindService(serviceIntent, serviceConnection, BIND_AUTO_CREATE);
+
+
+        Log.e(TAG, "runService: isBindServiceSuccess=" + isBindServiceSuccess);
+
+    }
+
+    public void unbindInComingMessageListenerService(ServiceConnection serviceConn) {
+
+        unbindService(serviceConn);
+
+    }
+
+
+    public InComingMessageListenerService getInComingMessageListenerService() {
+        return inComingMessageListenerService;
+    }
+
+
 }

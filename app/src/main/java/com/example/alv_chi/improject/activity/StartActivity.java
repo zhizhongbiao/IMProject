@@ -1,31 +1,37 @@
 package com.example.alv_chi.improject.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.FrameLayout;
 
 import com.example.alv_chi.improject.R;
 import com.example.alv_chi.improject.fragment.BaseFragment;
-import com.example.alv_chi.improject.fragment.LoginFragment;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+public class StartActivity extends BaseActivity {
 
-public class FirstStartActivity extends BaseActivity {
-
-    private static final String TAG = "FirstStartActivity";
-
-    @BindView(R.id.flFragmentContainer)
-    FrameLayout flFragmentContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_first_start);
-        ButterKnife.bind(this);
-
+        setContentView(R.layout.activity_start);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getActivityHandler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(StartActivity.this, LogInAndSignUpActivity.class);
+                startAnotherActivity(StartActivity.this, intent);
+            }
+        }, 2000);
+    }
+
+    @Override
+    protected BaseFragment getFirstFragment() {
+        return null;
+    }
 
     @Override
     protected void intializeToolbar(ToolbarViewHolder toolbarViewHolder) {
@@ -34,17 +40,12 @@ public class FirstStartActivity extends BaseActivity {
 
     @Override
     protected int getContentViewId() {
-        return R.layout.activity_first_start;
+        return R.layout.activity_start;
     }
 
     @Override
     protected int getFragmentContainerId() {
         return R.id.flFragmentContainer;
-    }
-
-    @Override
-    protected BaseFragment getFirstFragment() {
-        return LoginFragment.newInstance();
     }
 
 

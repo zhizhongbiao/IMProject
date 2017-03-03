@@ -13,16 +13,24 @@
         android:theme="@style/AppTheme">
 
         <!-- activities -->
-        <activity android:name=".activity.FirstStartActivity">
+        <activity android:name=".activity.StartActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activity.LogInAndSignUpActivity" />
         <!-- <activity android:name=".activity.BaseActivity"/> -->
         <activity android:name=".activity.MainActivity" />
-        <activity android:name=".activity.ChatRoomActivity"/>
+        <activity android:name=".activity.ChatRoomActivity" />
+
+        <!--service-->
+        <service
+            android:name=".service.InComingMessageListenerService"
+            android:enabled="true"
+            android:exported="true"
+            />
     </application>
 
 </manifest>

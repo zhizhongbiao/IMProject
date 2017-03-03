@@ -5,6 +5,8 @@ import android.os.Build;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -13,7 +15,7 @@ import java.util.Date;
  * Created by Alv_chi on 2017/1/15.
  */
 
-public class GetSystemParameterUtil {
+public class SystemUtil {
 
     /**
      * 获取actionbar的像素高度，默认使用android官方兼容包做actionbar兼容
@@ -76,5 +78,24 @@ public class GetSystemParameterUtil {
 
     public static String getCurrentSystemTime() {
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(System.currentTimeMillis()));
+    }
+
+
+    public static void showSoftInput(Context context,View view)
+    {
+        InputMethodManager inputMethodManager = (InputMethodManager) context.getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.showSoftInput(view,InputMethodManager.SHOW_FORCED);
+    }
+
+    public static void hideSoftInput(Context context,View view)
+    {
+        InputMethodManager inputMethodManager = (InputMethodManager) context.getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.showSoftInput(view,InputMethodManager.HIDE_NOT_ALWAYS);
+    }
+
+    public static boolean isSoftInputOpened(Context context,View view)
+    {
+        InputMethodManager inputMethodManager = (InputMethodManager) context.getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        return inputMethodManager.isActive();
     }
 }
