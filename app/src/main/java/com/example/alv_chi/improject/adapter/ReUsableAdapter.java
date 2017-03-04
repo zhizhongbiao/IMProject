@@ -128,7 +128,7 @@ public class ReUsableAdapter extends RecyclerView.Adapter {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, ChatRoomActivity.class);
-                intent.putExtra(Constants.KeyConstants.PARCELABLE_CONTACT_ITEM_KEY, contactItems.get(position));
+                intent.putExtra(Constants.KeyConstants.PARCELABLE_BASE_ITEM_KEY, contactItems.get(position));
                 context.startActivity(intent);
 
             }
@@ -161,7 +161,7 @@ public class ReUsableAdapter extends RecyclerView.Adapter {
 //                Intent intent = new Intent(context, ChatRoomActivity.class);
 ////                Bundle bundle = new Bundle();
 ////                bundle.putParcelable("ContactItem",contactItems.get(currentPosition));
-//                intent.putExtra(Constants.KeyConstants.PARCELABLE_CONTACT_ITEM_KEY,contactItems.get(currentPosition));
+//                intent.putExtra(Constants.KeyConstants.PARCELABLE_BASE_ITEM_KEY,contactItems.get(currentPosition));
 //                context.startActivity(intent);
 //                break;
 //        }

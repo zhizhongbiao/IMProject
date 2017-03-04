@@ -2,12 +2,9 @@ package com.example.alv_chi.improject.activity;
 
 
 import android.animation.ObjectAnimator;
-import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.annotation.LayoutRes;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.FragmentTransaction;
@@ -32,7 +29,6 @@ import com.example.alv_chi.improject.custom.CircleImageView;
 import com.example.alv_chi.improject.custom.IconfontTextView;
 import com.example.alv_chi.improject.fragment.BaseFragment;
 import com.example.alv_chi.improject.handler.ActivityHandler;
-import com.example.alv_chi.improject.service.InComingMessageListenerService;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
@@ -48,9 +44,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     private BaseFragment mCurrentFragment;
     protected ActivityHandler mHandler;
 
-    private InComingMessageListenerService inComingMessageListenerService;
-    private ServiceConnection serviceConnection;
-    private Intent serviceIntent;
+
 
 
     //       subclasses can override this method for customing the toolbar
@@ -59,8 +53,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     //    subClasses need return their LayoutResId
     protected abstract int getContentViewId();
 
-    //    subClasses can override this method to their intent if have
-    protected void handleIntent(Intent intent) {
+    //    subClasses can override this method to their intentFromLastContext if have
+    protected void handleIntent(Intent intentFromLastContext) {
     }
 
     ;
@@ -83,7 +77,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);//to tell window that activity need transition animation;
         super.setContentView(R.layout.activity_base);
-        initservice();
 
         mHandler = getActivityHandler();
         if (getIntent() != null) {
@@ -95,26 +88,9 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     }
 
-    private void initservice() {
-        serviceIntent = new Intent(this, InComingMessageListenerService.class);
-        startInComingMessageListenerService(serviceIntent);
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        bindInComingMessageListenerService(serviceIntent);
 
-    }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-//        make the service let go the activity referrence
-        getInComingMessageListenerService().setCurrentActivity(null);
-        unbindInComingMessageListenerService(serviceConnection);
-
-    }
 
     @Override
     protected void onDestroy() {
@@ -324,45 +300,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 //    if it has not firstFragment ,it must return null;
     protected abstract BaseFragment getFirstFragment();
 
-    public void startInComingMessageListenerService(Intent serviceIntent) {
-        startService(serviceIntent);
-    }
-
-
-    public void bindInComingMessageListenerService(Intent serviceIntent) {
-
-        serviceConnection = new ServiceConnection() {
-
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder iBinder) {
-                inComingMessageListenerService = ((InComingMessageListenerService.MyBinder) iBinder).getInComingMessageListenerService();
-
-                getInComingMessageListenerService().setCurrentActivity(BaseActivity.this);
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName name) {
-                Log.e(TAG, "onServiceDisconnected: ComponentName=" + name.toString());
-            }
-        };
-
-        boolean isBindServiceSuccess = bindService(serviceIntent, serviceConnection, BIND_AUTO_CREATE);
-
-
-        Log.e(TAG, "runService: isBindServiceSuccess=" + isBindServiceSuccess);
-
-    }
-
-    public void unbindInComingMessageListenerService(ServiceConnection serviceConn) {
-
-        unbindService(serviceConn);
-
-    }
-
-
-    public InComingMessageListenerService getInComingMessageListenerService() {
-        return inComingMessageListenerService;
-    }
 
 
 }

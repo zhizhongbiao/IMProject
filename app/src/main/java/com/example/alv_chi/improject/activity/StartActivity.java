@@ -24,6 +24,7 @@ public class StartActivity extends BaseActivity {
             public void run() {
                 Intent intent = new Intent(StartActivity.this, LogInAndSignUpActivity.class);
                 startAnotherActivity(StartActivity.this, intent);
+                StartActivity.this.finish();
             }
         }, 2000);
     }

@@ -14,10 +14,12 @@ import com.example.alv_chi.improject.R;
 import com.example.alv_chi.improject.activity.BaseActivity;
 import com.example.alv_chi.improject.activity.ChatRoomActivity;
 import com.example.alv_chi.improject.adapter.MessageRvAdapter;
-import com.example.alv_chi.improject.bean.ContactItem;
+import com.example.alv_chi.improject.bean.BaseItem;
 import com.example.alv_chi.improject.bean.TextMessageItem;
 import com.example.alv_chi.improject.constant.Constants;
 import com.example.alv_chi.improject.custom.IconfontTextView;
+import com.example.alv_chi.improject.eventbus.DatasHaveArrivedChattingFragmentEvent;
+import com.example.alv_chi.improject.eventbus.EventBusHelper;
 import com.example.alv_chi.improject.util.SystemUtil;
 import com.example.alv_chi.improject.xmpp.XmppHelper;
 
@@ -45,12 +47,15 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
 
 
     private ChatRoomActivity mHoldingActivity;
-    private ContactItem contactItem;
+
     private String readyToBeSentMessage;
 
     private LinearLayoutManager linearLayoutManager;
     private MessageRvAdapter messageRvAdapter;
     private ArrayList<TextMessageItem> textMessageItems;
+    private BaseItem baseItem;
+    private ArrayList<BaseItem> messages;
+    private boolean isFromPendingIntent;
 
     public static ChattingRoomFragment newInstance(Bundle bundle) {
         ChattingRoomFragment chattingRoomFragment = new ChattingRoomFragment();
@@ -60,7 +65,27 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
 
     @Override
     protected void handleBundleFromOutside(Bundle bundle) {
-        contactItem = bundle.getParcelable(Constants.KeyConstants.PARCELABLE_CONTACT_ITEM_KEY);
+
+        isFromPendingIntent = bundle.getBoolean(Constants.KeyConstants.IS_THIS_INTEN_FROM_PENDING_INTENT, false);
+
+        if (isFromPendingIntent) {
+            ArrayList<BaseItem> messages = bundle.getParcelableArrayList(Constants.KeyConstants.PARCELABLE_A_SERISE_MESSAGE_ITEM_KEY);
+            if (messages != null) {
+
+                for (BaseItem message : messages) {
+                    refreshMessageContainer((TextMessageItem) message);
+                }
+                baseItem = messages.get(0);
+                EventBusHelper.getEventBusHelperInstance().getEventBusInstance().postSticky(new DatasHaveArrivedChattingFragmentEvent(baseItem.getUserJID()));
+
+
+
+            }
+
+        } else {
+            baseItem = bundle.getParcelable(Constants.KeyConstants.PARCELABLE_BASE_ITEM_KEY);
+        }
+
 
     }
 
@@ -85,6 +110,12 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
         rvMessageContainer.setAdapter(messageRvAdapter);
 
         etPenddingMessage.setOnFocusChangeListener(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        XmppHelper.getXmppHelperInStance().setCurrentChattingUserJID(baseItem.getUserJID());
     }
 
     @Override
@@ -115,12 +146,13 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
                     return;
                 }
                 try {
-                    XmppHelper.getXmppHelperInStance().sendMessage(contactItem.getUserJID(), message, mHoldingActivity.getInComingMessageListenerService());
-                    Log.e(TAG, "sendMessage: contactItem.getUserJID()=" + contactItem.getUserJID());
-                    Log.e(TAG, "onClick: 发送成功");
                     TextMessageItem textMessageItem = new TextMessageItem(Constants.AppConfigConstants.CLIENT_USER_NAME
                             , SystemUtil.getCurrentSystemTime()
-                            , message, null, MessageRvAdapter.TEXT_MESSAGE_VIEW_TYPE, false);
+                            , message, null, baseItem.getUserJID(), MessageRvAdapter.TEXT_MESSAGE_VIEW_TYPE, false);
+                    XmppHelper.getXmppHelperInStance().sendMessage(textMessageItem);
+                    Log.e(TAG, "sendMessage: contactItem.getUserJID()=" + baseItem.getUserJID());
+                    Log.e(TAG, "onClick: 发送成功");
+
                     refreshMessageContainer(textMessageItem);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -139,8 +171,7 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
     }
 
 
-
-    public void refreshMessageContainer(final TextMessageItem textMessageItem) {
+    public synchronized void refreshMessageContainer(final TextMessageItem textMessageItem) {
         getHoldingActivity().getActivityHandler().post(new Runnable() {
             @Override
             public void run() {
@@ -151,8 +182,6 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
         });
 
     }
-
-
 
 
 }

@@ -2,7 +2,7 @@ package com.example.alv_chi.improject.xmpp;
 
 import android.util.Log;
 
-import com.example.alv_chi.improject.bean.ContactItem;
+import com.example.alv_chi.improject.bean.BaseItem;
 import com.example.alv_chi.improject.constant.Constants;
 import com.example.alv_chi.improject.exception.ConnectException;
 import com.example.alv_chi.improject.exception.LoginNameOrPasswordException;
@@ -12,7 +12,6 @@ import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.chat.Chat;
 import org.jivesoftware.smack.chat.ChatManager;
-import org.jivesoftware.smack.chat.ChatManagerListener;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.roster.Roster;
@@ -39,6 +38,7 @@ public class XmppHelper implements XMPP {
     private XMPPTCPConnection xmppTcpConnectionInstance;
     private XMPPTCPConnectionConfiguration xmppConfigBuilder;
     private Chat chat;
+    private String currentChattingUserJID;
 
 
     public static XmppHelper getXmppHelperInStance() {
@@ -102,7 +102,7 @@ public class XmppHelper implements XMPP {
         try {
             xmppConnectionInstance.login(userName, password);
             Log.e(TAG, "login: login success!");
-            setStatu(xmppConnectionInstance,Presence.Type.available,"I m Online");
+            setStatu(xmppConnectionInstance, Presence.Type.available, "I m Online");
         } catch (XMPPException e) {
             e.printStackTrace();
             Log.e(TAG, "login: Exception=" + e.getMessage());
@@ -124,25 +124,20 @@ public class XmppHelper implements XMPP {
     }
 
     @Override
-    public void logOut(String userName, String password) throws ConnectException, SmackException.NotConnectedException {
+    public void logOut() throws ConnectException, SmackException.NotConnectedException {
         getXMPPConnectionInstance().disconnect(new Presence(Presence.Type.unavailable));
     }
 
     @Override
-    public void sendMessage(ContactItem contactItem, String msg, ChatManagerListener listener) throws ConnectException, XmppStringprepException, SmackException.NotConnectedException, InterruptedException {
-        ChatManager chatManager = ChatManager.getInstanceFor(getXMPPConnectionInstance());
-        if (chatManager.getChatListeners().size()==0)
-        {
-            chatManager.addChatListener(listener);
-            chat = chatManager.createChat(contactItem.getUserJID());
-        }
+    public void sendMessage(BaseItem baseItem) throws ConnectException, XmppStringprepException, SmackException.NotConnectedException, InterruptedException {
 
+        chat = getChatManager().createChat(baseItem.getUserJID());
 
         Message message = new Message();
-        message.setSubject(contactItem.getUserName());
-        message.setBody(msg);
+        message.setSubject(baseItem.getUserName());
+        message.setBody(baseItem.getMesage());
         message.setFrom(Constants.AppConfigConstants.CLIENT_EMAIL);
-        message.setTo(contactItem.getUserJID());
+        message.setTo(baseItem.getUserJID());
 
         chat.sendMessage(message);
     }
@@ -153,6 +148,11 @@ public class XmppHelper implements XMPP {
 
 
         return getRoster().getEntries();
+    }
+
+    @Override
+    public ChatManager getChatManager() throws ConnectException {
+        return ChatManager.getInstanceFor(getXMPPConnectionInstance());
     }
 
 
@@ -169,6 +169,15 @@ public class XmppHelper implements XMPP {
 //            offlineMessage.get
 //            offlineMessage.getBody()
         }
+    }
+
+    public void setCurrentChattingUserJID(String currentChattingUserJID) {
+        this.currentChattingUserJID = currentChattingUserJID;
+    }
+
+    public String getCurrentChattingUserJID()
+    {
+        return currentChattingUserJID;
     }
 
 

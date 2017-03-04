@@ -21,6 +21,7 @@ import com.example.alv_chi.improject.exception.ConnectException;
 import com.example.alv_chi.improject.exception.LoginNameOrPasswordException;
 import com.example.alv_chi.improject.handler.HandlerHelper;
 import com.example.alv_chi.improject.handler.OnThreadTaskFinishedListener;
+import com.example.alv_chi.improject.service.InComingMessageListenerService;
 import com.example.alv_chi.improject.util.ThreadUtil;
 import com.example.alv_chi.improject.xmpp.XmppHelper;
 
@@ -52,6 +53,7 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
     LinearLayout activityLogin;
 
     private LogInAndSignUpActivity mHoldingActivity;
+    private Intent serviceIntent;
 
     public static LoginFragment newInstance() {
         return new LoginFragment();
@@ -96,12 +98,26 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
 
     @Override
     public void loginSuccess() {
+        initService();
         Log.e(TAG, "loginSuccess: startActivity");
         Intent intent = new Intent(mHoldingActivity, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         mHoldingActivity.finish();//kill this LogInAndSignUpActivity
     }
+
+
+    private void initService() {
+        serviceIntent = new Intent(mHoldingActivity, InComingMessageListenerService.class);
+        startInComingMessageListenerService(serviceIntent);
+
+    }
+
+    public void startInComingMessageListenerService(Intent serviceIntent) {
+        mHoldingActivity.startService(serviceIntent);
+    }
+
+
 
     @Override
     public void onClick(View v) {

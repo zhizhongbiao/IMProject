@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.example.alv_chi.improject.R;
 import com.example.alv_chi.improject.adapter.VpFragmentAdapter;
+import com.example.alv_chi.improject.bean.BaseItem;
 import com.example.alv_chi.improject.constant.Constants;
 import com.example.alv_chi.improject.custom.CircleImageView;
 import com.example.alv_chi.improject.custom.DepthPageTransformer;
@@ -101,11 +102,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     @Override
-    protected void handleIntent(Intent intent) {
-        boolean isFromPendingIntent = intent.getBooleanExtra(Constants.KeyConstants.IS_THIS_INTEN_FROM_PENDING_INTENT, false);
-        if (isFromPendingIntent)
-        {
-            sfdsfdsjkfdsjlfkdsjfdkfldsfjldsfkjdlfkjdsfkdslf
+    protected void handleIntent(Intent intentFromLastContext) {
+        boolean isFromPendingIntent = intentFromLastContext.getBooleanExtra(Constants.KeyConstants.IS_THIS_INTEN_FROM_PENDING_INTENT, false);
+        if (isFromPendingIntent) {
+
+            ArrayList<BaseItem> messages = intentFromLastContext.getParcelableArrayListExtra(Constants.KeyConstants.PARCELABLE_A_SERISE_MESSAGE_ITEM_KEY);
+            Intent intent = new Intent(this, ChatRoomActivity.class);
+
+            intent.putParcelableArrayListExtra(Constants.KeyConstants.PARCELABLE_A_SERISE_MESSAGE_ITEM_KEY, messages);
+            intent.putExtra(Constants.KeyConstants.IS_THIS_INTEN_FROM_PENDING_INTENT, true);
+            startActivity(intent);
         }
     }
 
