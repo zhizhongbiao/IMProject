@@ -38,7 +38,12 @@ public class ActivityHandler extends Handler {
     @Override
     public void handleMessage(Message msg) {
 
-        if (appCompatActivitySoftReference.get() == null) return;
+        if (appCompatActivitySoftReference.get() == null)
+        {
+            Log.e(TAG, "handleMessage: the problem is caused by SoftReference " );
+            return;
+        }
+
         String listenerKey = (String) msg.obj;
         int messageType = msg.what;
         OnThreadTaskFinishedListener onThreadTaskFinishedListener = listeners.get(listenerKey);

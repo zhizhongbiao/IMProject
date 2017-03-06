@@ -106,10 +106,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         boolean isFromPendingIntent = intentFromLastContext.getBooleanExtra(Constants.KeyConstants.IS_THIS_INTEN_FROM_PENDING_INTENT, false);
         if (isFromPendingIntent) {
 
-            ArrayList<BaseItem> messages = intentFromLastContext.getParcelableArrayListExtra(Constants.KeyConstants.PARCELABLE_A_SERISE_MESSAGE_ITEM_KEY);
+            ArrayList<BaseItem> messages = intentFromLastContext.getParcelableArrayListExtra(Constants.KeyConstants.USER_MESSAGES_RECORD);
             Intent intent = new Intent(this, ChatRoomActivity.class);
 
-            intent.putParcelableArrayListExtra(Constants.KeyConstants.PARCELABLE_A_SERISE_MESSAGE_ITEM_KEY, messages);
+            intent.putParcelableArrayListExtra(Constants.KeyConstants.USER_MESSAGES_RECORD, messages);
             intent.putExtra(Constants.KeyConstants.IS_THIS_INTEN_FROM_PENDING_INTENT, true);
             startActivity(intent);
         }

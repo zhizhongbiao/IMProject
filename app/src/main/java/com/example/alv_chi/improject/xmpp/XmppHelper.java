@@ -2,7 +2,6 @@ package com.example.alv_chi.improject.xmpp;
 
 import android.util.Log;
 
-import com.example.alv_chi.improject.bean.BaseItem;
 import com.example.alv_chi.improject.constant.Constants;
 import com.example.alv_chi.improject.exception.ConnectException;
 import com.example.alv_chi.improject.exception.LoginNameOrPasswordException;
@@ -10,7 +9,6 @@ import com.example.alv_chi.improject.exception.LoginNameOrPasswordException;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.chat.Chat;
 import org.jivesoftware.smack.chat.ChatManager;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
@@ -19,7 +17,6 @@ import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smackx.offline.OfflineMessageManager;
-import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.io.IOException;
 import java.util.List;
@@ -37,7 +34,6 @@ public class XmppHelper implements XMPP {
     private static XmppHelper xmppHelperInstance;
     private XMPPTCPConnection xmppTcpConnectionInstance;
     private XMPPTCPConnectionConfiguration xmppConfigBuilder;
-    private Chat chat;
     private String currentChattingUserJID;
 
 
@@ -125,22 +121,12 @@ public class XmppHelper implements XMPP {
 
     @Override
     public void logOut() throws ConnectException, SmackException.NotConnectedException {
-        getXMPPConnectionInstance().disconnect(new Presence(Presence.Type.unavailable));
+        Presence unavailablePresence = new Presence(Presence.Type.unavailable);
+        unavailablePresence.setStatus("I m offline");
+        getXMPPConnectionInstance().disconnect(unavailablePresence);
     }
 
-    @Override
-    public void sendMessage(BaseItem baseItem) throws ConnectException, XmppStringprepException, SmackException.NotConnectedException, InterruptedException {
 
-        chat = getChatManager().createChat(baseItem.getUserJID());
-
-        Message message = new Message();
-        message.setSubject(baseItem.getUserName());
-        message.setBody(baseItem.getMesage());
-        message.setFrom(Constants.AppConfigConstants.CLIENT_EMAIL);
-        message.setTo(baseItem.getUserJID());
-
-        chat.sendMessage(message);
-    }
 
 
     @Override

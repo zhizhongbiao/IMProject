@@ -32,16 +32,18 @@ public class ChatRoomActivity extends BaseActivity {
 
     @Override
     protected void handleIntent(Intent intentFromLastContext) {
-        isFromPendingIntent = intentFromLastContext.getBooleanExtra(Constants.KeyConstants.IS_THIS_INTEN_FROM_PENDING_INTENT, false);
+//        isFromPendingIntent = intentFromLastContext.getBooleanExtra(Constants.KeyConstants.IS_THIS_INTEN_FROM_PENDING_INTENT, false);
 
-        if (isFromPendingIntent) {
-            messages = intentFromLastContext.getParcelableArrayListExtra(Constants.KeyConstants.PARCELABLE_A_SERISE_MESSAGE_ITEM_KEY);
-            baseItem = messages.get(0);
-        } else {
-            baseItem = intentFromLastContext.getParcelableExtra(Constants.KeyConstants.PARCELABLE_BASE_ITEM_KEY);
-        }
+//        if (isFromPendingIntent) {
+//            messages = intentFromLastContext.getParcelableArrayListExtra(Constants.KeyConstants.USER_MESSAGES_RECORD);
+//            baseItem = messages.get(0);
+//        } else {
+//            baseItem = intentFromLastContext.getParcelableExtra(Constants.KeyConstants.PARCELABLE_BASE_ITEM_KEY);
+//        }
 
 
+        messages = intentFromLastContext.getParcelableArrayListExtra(Constants.KeyConstants.USER_MESSAGES_RECORD);
+        baseItem = messages.get(0);
 
 
     }
@@ -57,7 +59,7 @@ public class ChatRoomActivity extends BaseActivity {
         });
 
 
-            toolbarViewHolder.tvToolbarCenter.setText(baseItem.getUserName());
+        toolbarViewHolder.tvToolbarCenter.setText(baseItem.getUserName());
 
 
     }
@@ -83,29 +85,29 @@ public class ChatRoomActivity extends BaseActivity {
     @Override
     protected BaseFragment getFirstFragment() {
         Bundle bundle = new Bundle();
-        bundle.putParcelable(Constants.KeyConstants.PARCELABLE_BASE_ITEM_KEY, baseItem);
-        if (isFromPendingIntent)
-        {
-            bundle.putParcelableArrayList(Constants.KeyConstants.PARCELABLE_A_SERISE_MESSAGE_ITEM_KEY, messages);
-            bundle.putBoolean(Constants.KeyConstants.IS_THIS_INTEN_FROM_PENDING_INTENT,true);
-        }
-
+        bundle.putParcelableArrayList(Constants.KeyConstants.USER_MESSAGES_RECORD, messages);
         return ChattingRoomFragment.newInstance(bundle);
     }
 
-
     @Override
-    protected void onPause() {
-        super.onPause();
-//        make the service let go the activity referrence
-        if (inComingMessageListenerService!=null)
-        {
-            inComingMessageListenerService.setCurrentActivity(null);
+    protected void onResume() {
+        super.onResume();
+        if (getInComingMessageListenerService() != null) {
+            getInComingMessageListenerService().setCurrentActivity(this);
 
         }
-        unbindInComingMessageListenerService(serviceConnection);
-
     }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+//        make the service let go the activity referrence
+        if (getInComingMessageListenerService() != null) {
+            getInComingMessageListenerService().setCurrentActivity(null);
+        }
+        unbindInComingMessageListenerService(serviceConnection);
+    }
+
 
     private void initService() {
         serviceIntent = new Intent(this, InComingMessageListenerService.class);
@@ -121,7 +123,6 @@ public class ChatRoomActivity extends BaseActivity {
                 inComingMessageListenerService = ((InComingMessageListenerService.MyBinder) iBinder).getInComingMessageListenerService();
                 inComingMessageListenerService.setCurrentActivity(ChatRoomActivity.this);
 
-
             }
 
             @Override
@@ -132,15 +133,16 @@ public class ChatRoomActivity extends BaseActivity {
 
         boolean isBindServiceSuccess = bindService(serviceIntent, serviceConnection, BIND_AUTO_CREATE);
 
-        Log.e(TAG, "runService: isBindServiceSuccess=" + isBindServiceSuccess);
 
     }
 
     public void unbindInComingMessageListenerService(ServiceConnection serviceConn) {
 
         unbindService(serviceConn);
-
     }
 
+    public InComingMessageListenerService getInComingMessageListenerService() {
+        return inComingMessageListenerService;
+    }
 
 }

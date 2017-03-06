@@ -14,6 +14,7 @@ import com.example.alv_chi.improject.R;
 import com.example.alv_chi.improject.activity.ChatRoomActivity;
 import com.example.alv_chi.improject.bean.ContactItem;
 import com.example.alv_chi.improject.constant.Constants;
+import com.example.alv_chi.improject.data.DataManager;
 import com.example.alv_chi.improject.util.ChineseToPinyinHelper;
 
 import org.jivesoftware.smack.roster.RosterEntry;
@@ -120,7 +121,7 @@ public class ReUsableAdapter extends RecyclerView.Adapter {
     }
 
     private void initContactItem(ContactsViewHolder holder, final int position) {
-        ContactItem contactItem = contactItems.get(position);
+        final ContactItem contactItem = contactItems.get(position);
         String navigationLetter = contactItem.getNavigationLetter();
         String name = contactItem.getUserName();
         ContactsViewHolder contactsViewHolder = holder;
@@ -128,7 +129,10 @@ public class ReUsableAdapter extends RecyclerView.Adapter {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, ChatRoomActivity.class);
-                intent.putExtra(Constants.KeyConstants.PARCELABLE_BASE_ITEM_KEY, contactItems.get(position));
+                DataManager.getDataManagerInstance().collectMessages(DataManager.getDataManagerInstance().getAllUsersMessageRecords()
+                ,contactItem);
+                intent.putExtra(Constants.KeyConstants.USER_MESSAGES_RECORD
+                        ,DataManager.getDataManagerInstance().getAllUsersMessageRecords().get(contactItem.getUserJID()) );
                 context.startActivity(intent);
 
             }

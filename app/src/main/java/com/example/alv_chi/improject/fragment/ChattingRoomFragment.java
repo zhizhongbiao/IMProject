@@ -65,27 +65,18 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
 
     @Override
     protected void handleBundleFromOutside(Bundle bundle) {
+        ArrayList<BaseItem> messages = bundle.getParcelableArrayList(Constants.KeyConstants.USER_MESSAGES_RECORD);
+        if (messages != null) {
 
-        isFromPendingIntent = bundle.getBoolean(Constants.KeyConstants.IS_THIS_INTEN_FROM_PENDING_INTENT, false);
-
-        if (isFromPendingIntent) {
-            ArrayList<BaseItem> messages = bundle.getParcelableArrayList(Constants.KeyConstants.PARCELABLE_A_SERISE_MESSAGE_ITEM_KEY);
-            if (messages != null) {
-
-                for (BaseItem message : messages) {
+            for (BaseItem message : messages) {
+                if (message instanceof TextMessageItem) {
                     refreshMessageContainer((TextMessageItem) message);
                 }
-                baseItem = messages.get(0);
-                EventBusHelper.getEventBusHelperInstance().getEventBusInstance().postSticky(new DatasHaveArrivedChattingFragmentEvent(baseItem.getUserJID()));
-
-
-
             }
+            baseItem = messages.get(0);
+            EventBusHelper.getEventBusHelperInstance().getEventBusInstance().postSticky(new DatasHaveArrivedChattingFragmentEvent(baseItem.getUserJID()));
 
-        } else {
-            baseItem = bundle.getParcelable(Constants.KeyConstants.PARCELABLE_BASE_ITEM_KEY);
         }
-
 
     }
 
@@ -112,10 +103,18 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
         etPenddingMessage.setOnFocusChangeListener(this);
     }
 
+
     @Override
     public void onResume() {
         super.onResume();
         XmppHelper.getXmppHelperInStance().setCurrentChattingUserJID(baseItem.getUserJID());
+    }
+
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        XmppHelper.getXmppHelperInStance().setCurrentChattingUserJID("");
     }
 
     @Override
@@ -149,14 +148,13 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
                     TextMessageItem textMessageItem = new TextMessageItem(Constants.AppConfigConstants.CLIENT_USER_NAME
                             , SystemUtil.getCurrentSystemTime()
                             , message, null, baseItem.getUserJID(), MessageRvAdapter.TEXT_MESSAGE_VIEW_TYPE, false);
-                    XmppHelper.getXmppHelperInStance().sendMessage(textMessageItem);
-                    Log.e(TAG, "sendMessage: contactItem.getUserJID()=" + baseItem.getUserJID());
-                    Log.e(TAG, "onClick: 发送成功");
+                    mHoldingActivity.getInComingMessageListenerService().sendMessage(textMessageItem);
+                    Log.e(TAG, "onClick: 发送成功 sendMessage: contactItem.getUserJID()=" + baseItem.getUserJID());
 
                     refreshMessageContainer(textMessageItem);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Log.e(TAG, "onClick: 发送shibai  ： " + e.getMessage());
+                    Log.e(TAG, "onClick: 发送失败！  ： " + e.getMessage());
                 }
                 break;
         }

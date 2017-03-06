@@ -16,6 +16,7 @@ import com.example.alv_chi.improject.adapter.MessageRvAdapter;
 import com.example.alv_chi.improject.bean.BaseItem;
 import com.example.alv_chi.improject.bean.TextMessageItem;
 import com.example.alv_chi.improject.constant.Constants;
+import com.example.alv_chi.improject.data.DataManager;
 import com.example.alv_chi.improject.eventbus.DatasHaveArrivedChattingFragmentEvent;
 import com.example.alv_chi.improject.eventbus.EventBusHelper;
 import com.example.alv_chi.improject.exception.ConnectException;
@@ -26,22 +27,18 @@ import com.example.alv_chi.improject.xmpp.XmppHelper;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.chat.Chat;
 import org.jivesoftware.smack.chat.ChatManagerListener;
 import org.jivesoftware.smack.chat.ChatMessageListener;
 import org.jivesoftware.smack.packet.Message;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
 public class InComingMessageListenerService extends Service implements ChatManagerListener, ChatMessageListener {
 
     private static final String TAG = "InComingMessageService";
     private BaseActivity currentActivity;
+    private DataManager dataManagerInstance;
     private int singleUserJIDMessageId;
-    private HashMap<String, Integer> messageIdsFromAllUserJID = new HashMap<>();
-    private HashMap<String, ArrayList<BaseItem>> messagesFromAllUserJID = new HashMap<>();
 
 
     @Override
@@ -50,8 +47,8 @@ public class InComingMessageListenerService extends Service implements ChatManag
 
         try {
             XmppHelper.getXmppHelperInStance().getChatManager().addChatListener(InComingMessageListenerService.this);
-            Log.e(TAG, "InComingMessageListenerService onCreate: 看看执行几次");
             Constants.AppConfigConstants.isNeedToLogin = false;
+            dataManagerInstance = DataManager.getDataManagerInstance();
         } catch (ConnectException e) {
             e.printStackTrace();
             Log.e(TAG, "InComingMessageListenerService onCreate: ConnectException=" + e.getMessage());
@@ -62,16 +59,21 @@ public class InComingMessageListenerService extends Service implements ChatManag
 
     @Override
     public IBinder onBind(Intent intent) {
+
         EventBusHelper.getEventBusHelperInstance().getEventBusInstance().register(this);
-        Log.e(TAG, "onBind: ");
         return new MyBinder();
+    }
+
+    @Override
+    public void onRebind(Intent intent) {
+        EventBusHelper.getEventBusHelperInstance().getEventBusInstance().register(this);
+
     }
 
     @Override
     public boolean onUnbind(Intent intent) {
         EventBusHelper.getEventBusHelperInstance().getEventBusInstance().unregister(this);
-        Log.e(TAG, "onUnbind: ");
-        return super.onUnbind(intent);
+        return true;
     }
 
     /**
@@ -91,42 +93,70 @@ public class InComingMessageListenerService extends Service implements ChatManag
 
     @Override
     public void chatCreated(Chat chat, boolean createdLocally) {
-        chat.addMessageListener(this);
         Log.e(TAG, "chatCreated: createdLocally=" + createdLocally);
+        chat.addMessageListener(this);
     }
+
+
+    public synchronized void sendMessage(BaseItem baseItem) throws ConnectException, SmackException.NotConnectedException {
+        Chat chat;
+        if (dataManagerInstance.getChats().containsKey(baseItem.getUserJID())) {
+            chat = dataManagerInstance.getChats().get(baseItem.getUserJID());
+        } else {
+            chat = XmppHelper.getXmppHelperInStance().getChatManager().createChat(baseItem.getUserJID());
+            dataManagerInstance.getChats().put(baseItem.getUserJID(), chat);
+        }
+
+        Message message = new Message();
+        message.setSubject(baseItem.getUserName());
+        message.setBody(baseItem.getMesage());
+        message.setFrom(Constants.AppConfigConstants.CLIENT_EMAIL);
+        message.setTo(baseItem.getUserJID());
+        chat.sendMessage(message);
+
+        dataManagerInstance.collectMessages(dataManagerInstance.getAllUsersMessageRecords(), baseItem);
+
+    }
+
 
     @Override
     public void processMessage(Chat chat, Message message) {
+        String JIDFromSingleUser = message.getFrom();
+        if (JIDFromSingleUser.contains("/")) {
+            JIDFromSingleUser = JIDFromSingleUser.split("/")[0];
+        }
+
+        dataManagerInstance.getChats().put(JIDFromSingleUser, chat);// Using a hashmap to manage the chats , which is very conenient to reuse;
+
         String receivedMsg = message.getBody();
-        String messageFromUserJID = message.getFrom();
         String userName = message.getSubject();
-        String stanzaId = message.getStanzaId();
+        String stanzaId = message.getStanzaId();///////////////////////////////////////////
 
 
         if (userName == null || userName.trim().equals("")) {
-            userName = messageFromUserJID.split("@")[0];
+            userName = JIDFromSingleUser.split("@")[0];
         }
         if (receivedMsg != null) {
             TextMessageItem messageItem = new TextMessageItem(userName
                     , SystemUtil.getCurrentSystemTime()
-                    , receivedMsg, null, messageFromUserJID, MessageRvAdapter.TEXT_MESSAGE_VIEW_TYPE, true);
+                    , receivedMsg, null, JIDFromSingleUser, MessageRvAdapter.TEXT_MESSAGE_VIEW_TYPE, true);
 
-
-            if (!messageIdsFromAllUserJID.containsKey(messageFromUserJID)) {
-                messageIdsFromAllUserJID.put(messageFromUserJID, ++singleUserJIDMessageId);
-                ArrayList<BaseItem> singleJIDMessages = new ArrayList<>();
-                singleJIDMessages.add(messageItem);
-                messagesFromAllUserJID.put(messageFromUserJID, singleJIDMessages);
-            } else {
-                for (Map.Entry<String, ArrayList<BaseItem>> userJIDEntrySet : messagesFromAllUserJID.entrySet()) {
-
-                    if (userJIDEntrySet.getKey().equals(messageFromUserJID)) {
-                        userJIDEntrySet.getValue().add(messageItem);
-                    }
-                }
+            if (!dataManagerInstance.getMessageNotificationIds().containsKey(JIDFromSingleUser))
+            {
+                dataManagerInstance.getMessageNotificationIds().put(JIDFromSingleUser, ++singleUserJIDMessageId);
             }
 
-            if (currentActivity != null && XmppHelper.getXmppHelperInStance().getCurrentChattingUserJID().equals(messageFromUserJID)) {
+            dataManagerInstance.collectMessages(dataManagerInstance.getAllUsersMessageRecords(),messageItem);
+//            if (!dataManagerInstance.getAllUsersMessageRecords().containsKey(JIDFromSingleUser)) {
+//
+//                ArrayList<BaseItem> singleJIDMessages = new ArrayList<>();
+//                dataManagerInstance.getAllUsersMessageRecords().put(JIDFromSingleUser, singleJIDMessages);
+//            }
+
+//            dataManagerInstance.getAllUsersMessageRecords().get(JIDFromSingleUser).add(messageItem);
+
+
+            if (currentActivity != null && JIDFromSingleUser.equals(XmppHelper.getXmppHelperInStance().getCurrentChattingUserJID())) {
                 BaseFragment currentFragment = currentActivity.getmCurrentFragment();
                 if (currentFragment instanceof ChattingRoomFragment) {
                     ((ChattingRoomFragment) currentFragment).refreshMessageContainer(messageItem);
@@ -136,9 +166,10 @@ public class InComingMessageListenerService extends Service implements ChatManag
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.putExtra(Constants.KeyConstants.IS_THIS_INTEN_FROM_PENDING_INTENT, true);
-                intent.putParcelableArrayListExtra(Constants.KeyConstants.PARCELABLE_A_SERISE_MESSAGE_ITEM_KEY, messagesFromAllUserJID.get(messageFromUserJID));
+                intent.putParcelableArrayListExtra(Constants.KeyConstants.USER_MESSAGES_RECORD
+                        , dataManagerInstance.getAllUsersMessageRecords().get(JIDFromSingleUser));
 
-                PendingIntent pendingIntent = PendingIntent.getActivity(this, messageIdsFromAllUserJID.get(messageFromUserJID), intent, PendingIntent.FLAG_CANCEL_CURRENT);
+                PendingIntent pendingIntent = PendingIntent.getActivity(this, dataManagerInstance.getMessageNotificationIds().get(JIDFromSingleUser), intent, PendingIntent.FLAG_CANCEL_CURRENT);
                 Notification notification = new Notification.Builder(this)
                         .setAutoCancel(true)
                         .setContentText(receivedMsg)
@@ -150,14 +181,16 @@ public class InComingMessageListenerService extends Service implements ChatManag
 
 
                 NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                notificationManager.notify(messageIdsFromAllUserJID.get(messageFromUserJID), notification);
+                notificationManager.notify(dataManagerInstance.getMessageNotificationIds().get(JIDFromSingleUser), notification);
 
             }
 
 
         }
-        Log.e(TAG, "processMessage: message=" + message);
     }
+
+
+
 
     public void setCurrentActivity(BaseActivity currentActivity) {
         this.currentActivity = currentActivity;
@@ -172,11 +205,12 @@ public class InComingMessageListenerService extends Service implements ChatManag
 
     @Subscribe(threadMode = ThreadMode.MAIN, priority = 10, sticky = true)
     public void onDatasHaveArrivedChattingFragmnet(DatasHaveArrivedChattingFragmentEvent event) {
-        messagesFromAllUserJID.get(event.getUserJIDOfDatas()).clear();
-        Log.e(TAG, "onDatasHaveArrivedChattingFragmnet:  messages.clear()");//这里不知道为什么只是执行第一次？？？？？？？？？？？？？？？？？？
+        dataManagerInstance.getMessageNotificationIds().remove(event.getUserJIDOfDatas());
+        if (dataManagerInstance.getAllUsersMessageRecords().get(event.getUserJIDOfDatas()).size()>100)
+        {
+//            此处将超出100的部分数据保存进数据库，并将将多出部分删除；
+        }
     }
-
-
 
 
     @Override
@@ -190,9 +224,9 @@ public class InComingMessageListenerService extends Service implements ChatManag
         } catch (Exception e) {
             e.printStackTrace();
         }
-        messageIdsFromAllUserJID = null;
-        messagesFromAllUserJID = null;
+
+        dataManagerInstance.clearDatas();
         Constants.AppConfigConstants.isNeedToLogin = true;
-        System.gc();
+
     }
 }
