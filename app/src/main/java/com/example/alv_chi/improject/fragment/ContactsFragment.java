@@ -47,8 +47,8 @@ public class ContactsFragment extends BaseFragment implements LetterNavigationVi
     }
 
     @Override
-    protected void initializeView(View view, Bundle savedInstanceState) {
-        ButterKnife.bind(this, view);
+    protected void initializeView(View rootView, Bundle savedInstanceState) {
+        ButterKnife.bind(this, rootView);
         lnvLetterNavigationView.setOnLetterChooseListener(this);
 
         intializeRvContacts();

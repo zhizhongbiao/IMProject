@@ -30,7 +30,7 @@ import com.example.alv_chi.improject.custom.DepthPageTransformer;
 import com.example.alv_chi.improject.custom.IconfontTextView;
 import com.example.alv_chi.improject.custom.TabButton;
 import com.example.alv_chi.improject.fragment.BaseFragment;
-import com.example.alv_chi.improject.fragment.ChatFragment;
+import com.example.alv_chi.improject.fragment.RecentChatFragment;
 import com.example.alv_chi.improject.fragment.ContactsFragment;
 import com.example.alv_chi.improject.fragment.GroupsFragment;
 import com.example.alv_chi.improject.fragment.ShareFragment;
@@ -79,7 +79,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private int[] mIconfontIds = {R.string.chatting, R.string.friend_chat, R.string.group_chat, R.string.share};
     private VpFragmentAdapter mVpFragmentAdapter;
     private ArrayList<Fragment> fragments;
-    private ChatFragment mChatFragment;
+    private RecentChatFragment mRecentChatFragment;
     private ContactsFragment mContactsFragment;
     private GroupsFragment mGroupsFragment;
     private ShareFragment mShareFragment;
@@ -184,8 +184,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private void initialFragment() {
         mSupportFragmentManager = getSupportFragmentManager();
         fragments = new ArrayList<>();
-        mChatFragment = new ChatFragment();
-        fragments.add(mChatFragment);
+        mRecentChatFragment = new RecentChatFragment();
+        fragments.add(mRecentChatFragment);
         mContactsFragment = new ContactsFragment();
         fragments.add(mContactsFragment);
         mGroupsFragment = new GroupsFragment();

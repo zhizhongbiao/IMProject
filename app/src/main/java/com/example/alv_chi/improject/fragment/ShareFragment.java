@@ -21,7 +21,7 @@ public class ShareFragment extends BaseFragment {
     }
 
     @Override
-    protected void initializeView(View view, Bundle savedInstanceState) {
+    protected void initializeView(View rootView, Bundle savedInstanceState) {
 
     }
 

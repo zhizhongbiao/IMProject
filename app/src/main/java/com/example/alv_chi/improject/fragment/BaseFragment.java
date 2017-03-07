@@ -27,7 +27,7 @@ public abstract class BaseFragment extends Fragment {
     public abstract int getLayoutId();
 
     //    this method is for the subClasses to handle their contentView:
-    protected abstract void initializeView(View view, Bundle savedInstanceState);
+    protected abstract void initializeView(View rootView, Bundle savedInstanceState);
 
 
     //    this method is for the subClasses to handle their contentView:

@@ -65,8 +65,8 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
     }
 
     @Override
-    protected void initializeView(View view, Bundle savedInstanceState) {
-        ButterKnife.bind(this, view);
+    protected void initializeView(View rootView, Bundle savedInstanceState) {
+        ButterKnife.bind(this, rootView);
         initialContentView();
         addThisOnThreadTaskFinishedListenerToActivityHandler();//add this listener to handler;
     }

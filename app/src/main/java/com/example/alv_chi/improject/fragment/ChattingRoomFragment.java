@@ -86,8 +86,8 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
     }
 
     @Override
-    protected void initializeView(View view, Bundle savedInstanceState) {
-        ButterKnife.bind(this, view);
+    protected void initializeView(View rootView, Bundle savedInstanceState) {
+        ButterKnife.bind(this, rootView);
         btnSend.setOnClickListener(this);
         initViews();
 
@@ -145,7 +145,7 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
                     return;
                 }
                 try {
-                    TextMessageItem textMessageItem = new TextMessageItem(Constants.AppConfigConstants.CLIENT_USER_NAME
+                    TextMessageItem textMessageItem = new TextMessageItem(baseItem.getUserName()
                             , SystemUtil.getCurrentSystemTime()
                             , message, null, baseItem.getUserJID(), MessageRvAdapter.TEXT_MESSAGE_VIEW_TYPE, false);
                     mHoldingActivity.getInComingMessageListenerService().sendMessage(textMessageItem);

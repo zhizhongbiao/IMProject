@@ -5,7 +5,11 @@
     android:layout_height="65dp"
     android:background="@color/blue"
     android:elevation="@dimen/big_margin_III"
-    app:cardCornerRadius="@dimen/middle_padding">
+    app:cardCornerRadius="@dimen/middle_padding"
+    android:layout_marginLeft="@dimen/middle_padding"
+    android:layout_marginRight="@dimen/middle_padding"
+    android:layout_marginTop="@dimen/middle_padding"
+    >
 
     <RelativeLayout
         android:layout_width="match_parent"

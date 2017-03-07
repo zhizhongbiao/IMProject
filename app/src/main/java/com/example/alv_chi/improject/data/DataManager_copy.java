@@ -7,25 +7,26 @@ import org.jivesoftware.smack.chat.Chat;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * Created by Alv_chi on 2017/3/6.
  */
 
-public class DataManager {
+public class DataManager_copy {
 
     private static final String TAG = "DataManager";
 
     private HashMap<String, Integer> messageNotificationIds = new HashMap<>();
     private HashMap<String, ArrayList<BaseItem>> allUsersMessageRecords = new HashMap<>();
     private HashMap<String, Chat> chats = new HashMap<>();
-    private ArrayList<RecentChatItem> recentChats = new ArrayList<>();
+    private HashSet<RecentChatItem> recentChats = new HashSet<>();
 
-    private static DataManager dataManagerInstance;
+    private static DataManager_copy dataManagerInstance;
 
-    public static DataManager getDataManagerInstance() {
+    public static DataManager_copy getDataManagerInstance() {
         if (dataManagerInstance == null) {
-            dataManagerInstance = new DataManager();
+            dataManagerInstance = new DataManager_copy();
         }
 
         return dataManagerInstance;
@@ -40,18 +41,18 @@ public class DataManager {
         return allUsersMessageRecords;
     }
 
-    public ArrayList<RecentChatItem> getRecentChats() {
+    public HashSet<RecentChatItem> getRecentChats() {
         return recentChats;
     }
 
-    public ArrayList<RecentChatItem> collectRecentChat(RecentChatItem recentChatItem) {
-        if (getRecentChats().contains(recentChatItem) ) {
-            getRecentChats().remove(recentChatItem);
-        }
-        getRecentChats().add(0, recentChatItem);
-
-        return getRecentChats();
-    }
+//    public HashSet<RecentChatItem> collectRecentChat(RecentChatItem recentChatItem) {
+//        if (getRecentChats().contains(recentChatItem) && getRecentChats().indexOf(recentChatItem) != 0) {/////////////////////
+//            getRecentChats().remove(recentChatItem);
+//        }
+//        getRecentChats().add( recentChatItem);
+//
+//        return getRecentChats();
+//    }
 
     public HashMap<String, Chat> getChats() {
         return chats;

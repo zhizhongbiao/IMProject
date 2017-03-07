@@ -14,11 +14,13 @@ import com.example.alv_chi.improject.activity.BaseActivity;
 import com.example.alv_chi.improject.activity.MainActivity;
 import com.example.alv_chi.improject.adapter.MessageRvAdapter;
 import com.example.alv_chi.improject.bean.BaseItem;
+import com.example.alv_chi.improject.bean.RecentChatItem;
 import com.example.alv_chi.improject.bean.TextMessageItem;
 import com.example.alv_chi.improject.constant.Constants;
 import com.example.alv_chi.improject.data.DataManager;
 import com.example.alv_chi.improject.eventbus.DatasHaveArrivedChattingFragmentEvent;
 import com.example.alv_chi.improject.eventbus.EventBusHelper;
+import com.example.alv_chi.improject.eventbus.MessageCreatedEvent;
 import com.example.alv_chi.improject.exception.ConnectException;
 import com.example.alv_chi.improject.fragment.BaseFragment;
 import com.example.alv_chi.improject.fragment.ChattingRoomFragment;
@@ -116,6 +118,7 @@ public class InComingMessageListenerService extends Service implements ChatManag
 
         dataManagerInstance.collectMessages(dataManagerInstance.getAllUsersMessageRecords(), baseItem);
 
+        createRecentChatRecord(baseItem);
     }
 
 
@@ -125,8 +128,8 @@ public class InComingMessageListenerService extends Service implements ChatManag
         if (JIDFromSingleUser.contains("/")) {
             JIDFromSingleUser = JIDFromSingleUser.split("/")[0];
         }
-
-        dataManagerInstance.getChats().put(JIDFromSingleUser, chat);// Using a hashmap to manage the chats , which is very conenient to reuse;
+// Using a hashmap to manage the chats , which is very conenient to reuse;
+        dataManagerInstance.getChats().put(JIDFromSingleUser, chat);
 
         String receivedMsg = message.getBody();
         String userName = message.getSubject();
@@ -141,20 +144,13 @@ public class InComingMessageListenerService extends Service implements ChatManag
                     , SystemUtil.getCurrentSystemTime()
                     , receivedMsg, null, JIDFromSingleUser, MessageRvAdapter.TEXT_MESSAGE_VIEW_TYPE, true);
 
-            if (!dataManagerInstance.getMessageNotificationIds().containsKey(JIDFromSingleUser))
-            {
+            if (!dataManagerInstance.getMessageNotificationIds().containsKey(JIDFromSingleUser)) {
                 dataManagerInstance.getMessageNotificationIds().put(JIDFromSingleUser, ++singleUserJIDMessageId);
             }
 
-            dataManagerInstance.collectMessages(dataManagerInstance.getAllUsersMessageRecords(),messageItem);
-//            if (!dataManagerInstance.getAllUsersMessageRecords().containsKey(JIDFromSingleUser)) {
-//
-//                ArrayList<BaseItem> singleJIDMessages = new ArrayList<>();
-//                dataManagerInstance.getAllUsersMessageRecords().put(JIDFromSingleUser, singleJIDMessages);
-//            }
+            dataManagerInstance.collectMessages(dataManagerInstance.getAllUsersMessageRecords(), messageItem);
 
-//            dataManagerInstance.getAllUsersMessageRecords().get(JIDFromSingleUser).add(messageItem);
-
+            createRecentChatRecord(messageItem);
 
             if (currentActivity != null && JIDFromSingleUser.equals(XmppHelper.getXmppHelperInStance().getCurrentChattingUserJID())) {
                 BaseFragment currentFragment = currentActivity.getmCurrentFragment();
@@ -189,7 +185,11 @@ public class InComingMessageListenerService extends Service implements ChatManag
         }
     }
 
-
+    // notify the RecentChatFragment create recentChatItem;
+    private void createRecentChatRecord(BaseItem baseItem) {
+        RecentChatItem recentChatItem = new RecentChatItem(baseItem.getUserName(), baseItem.getCurrentTimeStamp(), baseItem.getMesage(), baseItem.getUserAvatar(), baseItem.getUserJID());
+        EventBusHelper.getEventBusHelperInstance().getEventBusInstance().postSticky(new MessageCreatedEvent(recentChatItem));
+    }
 
 
     public void setCurrentActivity(BaseActivity currentActivity) {
@@ -206,8 +206,7 @@ public class InComingMessageListenerService extends Service implements ChatManag
     @Subscribe(threadMode = ThreadMode.MAIN, priority = 10, sticky = true)
     public void onDatasHaveArrivedChattingFragmnet(DatasHaveArrivedChattingFragmentEvent event) {
         dataManagerInstance.getMessageNotificationIds().remove(event.getUserJIDOfDatas());
-        if (dataManagerInstance.getAllUsersMessageRecords().get(event.getUserJIDOfDatas()).size()>100)
-        {
+        if (dataManagerInstance.getAllUsersMessageRecords().get(event.getUserJIDOfDatas()).size() > 100) {
 //            此处将超出100的部分数据保存进数据库，并将将多出部分删除；
         }
     }

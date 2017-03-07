@@ -44,7 +44,7 @@ public class ReUsableAdapter extends RecyclerView.Adapter {
     private List<ContactItem> contactItems = new ArrayList<>();
     private HashMap<String, Integer> navigationPositions = new HashMap();
     private LayoutInflater layoutInflater;
-    private int currentPosition = -1;
+
 
 
     public List<ContactItem> getContactItems() {
@@ -112,7 +112,7 @@ public class ReUsableAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
-        currentPosition = position;
+
         switch (getItemViewType(position)) {
             case CONTACTS_ITEM_VIEW_TYPE:
                 initContactItem((ContactsViewHolder) holder, position);
