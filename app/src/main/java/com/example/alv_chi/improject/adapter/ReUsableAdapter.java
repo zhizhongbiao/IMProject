@@ -1,7 +1,6 @@
 package com.example.alv_chi.improject.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,10 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.alv_chi.improject.R;
-import com.example.alv_chi.improject.activity.ChatRoomActivity;
 import com.example.alv_chi.improject.bean.ContactItem;
-import com.example.alv_chi.improject.constant.Constants;
-import com.example.alv_chi.improject.data.DataManager;
 import com.example.alv_chi.improject.util.ChineseToPinyinHelper;
 
 import org.jivesoftware.smack.roster.RosterEntry;
@@ -44,7 +40,6 @@ public class ReUsableAdapter extends RecyclerView.Adapter {
     private List<ContactItem> contactItems = new ArrayList<>();
     private HashMap<String, Integer> navigationPositions = new HashMap();
     private LayoutInflater layoutInflater;
-
 
 
     public List<ContactItem> getContactItems() {
@@ -84,7 +79,7 @@ public class ReUsableAdapter extends RecyclerView.Adapter {
                 navigationLetter = "#";
             }
 
-            contactItems.add(new ContactItem(userJID, navigationLetter, name,null));//temporary set null
+            contactItems.add(new ContactItem(userJID, navigationLetter, name, null));//temporary set null
         }
 
         Collections.sort(contactItems);//sort the ContactItems
@@ -125,18 +120,7 @@ public class ReUsableAdapter extends RecyclerView.Adapter {
         String navigationLetter = contactItem.getNavigationLetter();
         String name = contactItem.getUserName();
         ContactsViewHolder contactsViewHolder = holder;
-        contactsViewHolder.llContactItemRoot.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, ChatRoomActivity.class);
-                DataManager.getDataManagerInstance().collectMessages(DataManager.getDataManagerInstance().getAllUsersMessageRecords()
-                ,contactItem);
-                intent.putExtra(Constants.KeyConstants.USER_MESSAGES_RECORD
-                        ,DataManager.getDataManagerInstance().getAllUsersMessageRecords().get(contactItem.getUserJID()) );
-                context.startActivity(intent);
-
-            }
-        });
+        contactsViewHolder.llContactItemRoot.setOnClickListener(new OnRvRecentChatAndRvContactsAdapterItemClickListener(context, contactItem));
         contactsViewHolder.tvContactName.setText(name);
         if (navigationPositions.get(navigationLetter) == position) {
             contactsViewHolder.tvLetterNavigation.setVisibility(View.VISIBLE);

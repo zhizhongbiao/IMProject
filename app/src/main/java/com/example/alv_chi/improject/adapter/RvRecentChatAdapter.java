@@ -1,6 +1,7 @@
 package com.example.alv_chi.improject.adapter;
 
 import android.content.Context;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,11 +46,13 @@ public class RvRecentChatAdapter extends RecyclerView.Adapter<RvRecentChatAdapte
     }
 
     @Override
-    public void onBindViewHolder(RecentChatItemViewHolder holder,  int position) {
+    public void onBindViewHolder(RecentChatItemViewHolder holder, int position) {
         RecentChatItem recentChatItem = recentChats.get(position);
         holder.tvTheLatestMessageTimeStamp.setText(recentChatItem.getLastMessageTimeStamp());
         holder.tvContactName.setText(recentChatItem.getUserName());
         holder.tvTheLatestMassage.setText(recentChatItem.getLastMessage());
+
+        holder.cvRecentChatItemRootViewView.setOnClickListener(new OnRvRecentChatAndRvContactsAdapterItemClickListener(context, recentChatItem));
 
     }
 
@@ -60,7 +63,7 @@ public class RvRecentChatAdapter extends RecyclerView.Adapter<RvRecentChatAdapte
     }
 
 
-    class RecentChatItemViewHolder extends RecyclerView.ViewHolder{
+    class RecentChatItemViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.civChatMateAvatar)
         CircleImageView civChatMateAvatar;
         @BindView(R.id.tvContactName)
@@ -69,6 +72,8 @@ public class RvRecentChatAdapter extends RecyclerView.Adapter<RvRecentChatAdapte
         TextView tvTheLatestMassage;
         @BindView(R.id.tvTheLatestMessageTimeStamp)
         TextView tvTheLatestMessageTimeStamp;
+        @BindView(R.id.cvRecentChatItemRootViewView)
+        CardView cvRecentChatItemRootViewView;
 
         RecentChatItemViewHolder(View view) {
             super(view);

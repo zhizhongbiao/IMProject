@@ -9,6 +9,7 @@
     android:layout_marginLeft="@dimen/middle_padding"
     android:layout_marginRight="@dimen/middle_padding"
     android:layout_marginTop="@dimen/middle_padding"
+    android:id="@+id/cvRecentChatItemRootViewView"
     >
 
     <RelativeLayout
