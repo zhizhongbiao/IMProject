@@ -26,14 +26,14 @@ import com.example.alv_chi.improject.adapter.VpFragmentAdapter;
 import com.example.alv_chi.improject.bean.BaseItem;
 import com.example.alv_chi.improject.constant.Constants;
 import com.example.alv_chi.improject.custom.CircleImageView;
-import com.example.alv_chi.improject.custom.DepthPageTransformer;
 import com.example.alv_chi.improject.custom.IconfontTextView;
 import com.example.alv_chi.improject.custom.TabButton;
 import com.example.alv_chi.improject.fragment.BaseFragment;
-import com.example.alv_chi.improject.fragment.RecentChatFragment;
 import com.example.alv_chi.improject.fragment.ContactsFragment;
 import com.example.alv_chi.improject.fragment.GroupsFragment;
+import com.example.alv_chi.improject.fragment.RecentChatFragment;
 import com.example.alv_chi.improject.fragment.ShareFragment;
+import com.example.alv_chi.improject.service.InComingMessageListenerService;
 import com.example.alv_chi.improject.util.SystemUtil;
 
 import java.util.ArrayList;
@@ -95,6 +95,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+
+
         initialFragment();
         initialVpAndTabLayout();
         initializeDrawerLayout();
@@ -138,7 +140,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         tlBottom.setupWithViewPager(vpContent);
         mVpFragmentAdapter = new VpFragmentAdapter(mSupportFragmentManager, fragments);
         vpContent.setAdapter(mVpFragmentAdapter);
-        vpContent.setPageTransformer(false, new DepthPageTransformer());
+//        vpContent.setPageTransformer(false, new DepthPageTransformer());
 
         int tabCount = tlBottom.getTabCount();
         for (int i = 0; i < tabCount; i++) {
@@ -246,7 +248,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                         }
                 );
 
-                iconfontTextView.setTextColor(Color.CYAN);
+                iconfontTextView.setTextColor(Color.RED);
                 startRotationAnimation(iconfontTextView, 45, 300);
                 mWindow.showAsDropDown(v, -450, 10, Gravity.CENTER);
 
@@ -289,6 +291,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
 //            the Menu Item :
             case R.id.llLogOut:
+                stopService(new Intent(this, InComingMessageListenerService.class));
+                Intent intent = new Intent(this,LogInAndSignUpActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startAnotherActivity(this, intent);
+                this.finish();
                 break;
             case R.id.llSetting:
                 break;
@@ -320,4 +327,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 break;
         }
     }
+
+
 }

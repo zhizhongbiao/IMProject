@@ -74,6 +74,7 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
                 }
             }
             baseItem = messages.get(0);
+//            this to InComingMessageListenerService
             EventBusHelper.getEventBusHelperInstance().getEventBusInstance().postSticky(new DatasHaveArrivedChattingFragmentEvent(baseItem.getUserJID()));
 
         }

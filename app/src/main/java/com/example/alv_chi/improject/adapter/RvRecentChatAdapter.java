@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.example.alv_chi.improject.R;
 import com.example.alv_chi.improject.bean.RecentChatItem;
 import com.example.alv_chi.improject.custom.CircleImageView;
+import com.example.alv_chi.improject.data.DataManager;
 
 import java.util.ArrayList;
 
@@ -32,9 +33,9 @@ public class RvRecentChatAdapter extends RecyclerView.Adapter<RvRecentChatAdapte
     private LayoutInflater layoutInflater;
 
 
-    public RvRecentChatAdapter(Context context, ArrayList<RecentChatItem> recentChats) {
+    public RvRecentChatAdapter(Context context) {
         this.context = context;
-        this.recentChats = recentChats;
+        this.recentChats = DataManager.getDataManagerInstance().getRecentChats();
         layoutInflater = LayoutInflater.from(this.context);
     }
 

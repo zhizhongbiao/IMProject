@@ -2,12 +2,11 @@ package com.example.alv_chi.improject.handler;
 
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import com.example.alv_chi.improject.activity.BaseActivity;
 import com.example.alv_chi.improject.constant.Constants;
 
-import java.lang.ref.SoftReference;
 import java.util.HashMap;
 
 
@@ -17,7 +16,8 @@ import java.util.HashMap;
 
 public class ActivityHandler extends Handler {
     private static final String TAG = "ActivityHandler";
-    private SoftReference<AppCompatActivity> appCompatActivitySoftReference;
+    private BaseActivity mActivity;
+    //    private SoftReference<BaseActivity> appBaseActivitySoftReference;
     private HashMap<String, OnThreadTaskFinishedListener> listeners = new HashMap();
 
 
@@ -30,19 +30,26 @@ public class ActivityHandler extends Handler {
     }
 
 
-    public ActivityHandler(AppCompatActivity activity) {
-        appCompatActivitySoftReference = new SoftReference<>(activity);
+    public ActivityHandler(BaseActivity activity) {
+//        appBaseActivitySoftReference = new SoftReference<>(activity);
+        this.mActivity = activity;
 
     }
 
     @Override
     public void handleMessage(Message msg) {
 
-        if (appCompatActivitySoftReference.get() == null)
-        {
-            Log.e(TAG, "handleMessage: the problem is caused by SoftReference " );
+        if (HandlerHelper.isActivityDestroyed()) {
+            Log.e(TAG, "handleMessage: HandlerHelper.isActivityDestroyed()="+HandlerHelper.isActivityDestroyed() );
+            Log.e(TAG, "handleMessage: the problem is caused by SoftReference ");
             return;
         }
+
+//        if (appBaseActivitySoftReference.get() == null)
+//        {
+//            Log.e(TAG, "handleMessage: the problem is caused by SoftReference " );
+//            return;
+//        }
 
         String listenerKey = (String) msg.obj;
         int messageType = msg.what;
@@ -53,7 +60,7 @@ public class ActivityHandler extends Handler {
         }
         switch (messageType) {
             case Constants.HandlerMessageType.LOGIN_SUCCESS:
-                onThreadTaskFinishedListener.loginSuccess();
+                onThreadTaskFinishedListener.onThreadTaskFinished();
                 break;
         }
 

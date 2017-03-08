@@ -97,8 +97,8 @@ public class XmppHelper implements XMPP {
 
         try {
             xmppConnectionInstance.login(userName, password);
-            Log.e(TAG, "login: login success!");
             setStatu(xmppConnectionInstance, Presence.Type.available, "I m Online");
+            Log.e(TAG, "login: login success!");
         } catch (XMPPException e) {
             e.printStackTrace();
             Log.e(TAG, "login: Exception=" + e.getMessage());
@@ -125,8 +125,6 @@ public class XmppHelper implements XMPP {
         unavailablePresence.setStatus("I m offline");
         getXMPPConnectionInstance().disconnect(unavailablePresence);
     }
-
-
 
 
     @Override
@@ -161,9 +159,15 @@ public class XmppHelper implements XMPP {
         this.currentChattingUserJID = currentChattingUserJID;
     }
 
-    public String getCurrentChattingUserJID()
-    {
+    public String getCurrentChattingUserJID() {
         return currentChattingUserJID;
+    }
+
+//   you must clear your XmppSetup when you logout ,or you can not send and receive message when login again ;
+    public void clearXmppSetup() {
+        xmppTcpConnectionInstance = null;
+        xmppConfigBuilder = null;
+        currentChattingUserJID = "";
     }
 
 

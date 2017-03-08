@@ -9,6 +9,17 @@ import android.os.Message;
  */
 
 public class HandlerHelper {
+
+    private static boolean isActivityDestroyed;
+
+    public static boolean isActivityDestroyed() {
+        return isActivityDestroyed;
+    }
+
+    public static void setIsActivityDestroyed(boolean isActivityDestroyed) {
+        HandlerHelper.isActivityDestroyed = isActivityDestroyed;
+    }
+
     public static void sendMessageByHandler(Handler handler, Bundle moreDataPutInBundle, String listenerKeyByObj, int messageTypeByParamWhat, int Arg1, int Agr2) {
         Message message = handler.obtainMessage();
         message.what = messageTypeByParamWhat;

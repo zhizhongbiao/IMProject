@@ -46,7 +46,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
 
 
-
     //       subclasses can override this method for customing the toolbar
     protected abstract void intializeToolbar(ToolbarViewHolder toolbarViewHolder);
 
@@ -79,6 +78,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.setContentView(R.layout.activity_base);
 
         mHandler = getActivityHandler();
+
         if (getIntent() != null) {
             handleIntent(getIntent());
         } else {
@@ -87,9 +87,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         initial();
 
     }
-
-
-
 
 
     @Override
@@ -299,7 +296,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     //    this method is for activity initialize its firstFragment if it has one,
 //    if it has not firstFragment ,it must return null;
     protected abstract BaseFragment getFirstFragment();
-
 
 
 }

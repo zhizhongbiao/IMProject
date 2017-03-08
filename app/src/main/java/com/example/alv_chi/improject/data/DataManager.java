@@ -68,11 +68,9 @@ public class DataManager {
 
     public void clearDatas() {
         allUsersMessageRecords.clear();
-        allUsersMessageRecords = null;
         messageNotificationIds.clear();
-        messageNotificationIds = null;
+        recentChats.clear();
         chats.clear();
-        chats = null;
         System.gc();
     }
 }

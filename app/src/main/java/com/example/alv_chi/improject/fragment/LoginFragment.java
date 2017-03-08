@@ -97,9 +97,9 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
     }
 
     @Override
-    public void loginSuccess() {
+    public void onThreadTaskFinished() {
         initService();
-        Log.e(TAG, "loginSuccess: startActivity");
+        Log.e(TAG, "onThreadTaskFinished: startActivity");
         Intent intent = new Intent(mHoldingActivity, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);

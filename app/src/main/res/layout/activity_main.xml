@@ -5,7 +5,9 @@
     android:id="@+id/dlDrawerRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.alv_chi.improject.activity.MainActivity">
+    tools:context="com.example.alv_chi.improject.activity.MainActivity"
+    android:background="@color/gray"
+    >
 
 
     <LinearLayout
@@ -26,7 +28,7 @@
             android:layout_height="0dp"
             android:layout_gravity="center"
             android:layout_weight="1"
-            android:background="@color/gray"
+            android:background="@color/white"
             app:tabGravity="fill"
             app:tabIndicatorHeight="0dp"
             app:tabMode="fixed" />

@@ -92,22 +92,29 @@ public class ChatRoomActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (getInComingMessageListenerService() != null) {
-            getInComingMessageListenerService().setCurrentActivity(this);
-
-        }
+        setCurrentActivityToListenerService(this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
 //        make the service let go the activity referrence
-        if (getInComingMessageListenerService() != null) {
-            getInComingMessageListenerService().setCurrentActivity(null);
-        }
-        unbindInComingMessageListenerService(serviceConnection);
+        setCurrentActivityToListenerService(null);
     }
 
+    private void setCurrentActivityToListenerService(ChatRoomActivity currentActivity) {
+        if (getInComingMessageListenerService() != null) {
+            getInComingMessageListenerService().setCurrentActivity(currentActivity);
+
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+//        unbind service release resource;
+        unbindInComingMessageListenerService(serviceConnection);
+    }
 
     private void initService() {
         serviceIntent = new Intent(this, InComingMessageListenerService.class);
@@ -121,7 +128,7 @@ public class ChatRoomActivity extends BaseActivity {
             @Override
             public void onServiceConnected(ComponentName name, IBinder iBinder) {
                 inComingMessageListenerService = ((InComingMessageListenerService.MyBinder) iBinder).getInComingMessageListenerService();
-                inComingMessageListenerService.setCurrentActivity(ChatRoomActivity.this);
+                setCurrentActivityToListenerService(ChatRoomActivity.this);
 
             }
 

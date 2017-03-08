@@ -47,19 +47,19 @@ public class RecentChatFragment extends BaseFragment {
         ButterKnife.bind(this, rootView);
         linearLayoutManager = new LinearLayoutManager(mHoldingActivity, LinearLayoutManager.VERTICAL, false);
         rvRecentChat.setLayoutManager(linearLayoutManager);
-        rvRecentChatAdapter = new RvRecentChatAdapter(mHoldingActivity, DataManager.getDataManagerInstance().getRecentChats());
+        rvRecentChatAdapter = new RvRecentChatAdapter(mHoldingActivity);
         rvRecentChat.setAdapter(rvRecentChatAdapter);
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onCreate( Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         EventBusHelper.getEventBusHelperInstance().getEventBusInstance().register(this);
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
+    public void onDestroy() {
+        super.onDestroy();
         EventBusHelper.getEventBusHelperInstance().getEventBusInstance().unregister(this);
     }
 

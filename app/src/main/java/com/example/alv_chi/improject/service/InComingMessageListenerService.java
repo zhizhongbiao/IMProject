@@ -35,28 +35,36 @@ import org.jivesoftware.smack.chat.ChatManagerListener;
 import org.jivesoftware.smack.chat.ChatMessageListener;
 import org.jivesoftware.smack.packet.Message;
 
+import java.util.Map;
+import java.util.Set;
+
 public class InComingMessageListenerService extends Service implements ChatManagerListener, ChatMessageListener {
 
     private static final String TAG = "InComingMessageService";
     private BaseActivity currentActivity;
     private DataManager dataManagerInstance;
     private int singleUserJIDMessageId;
+    private NotificationManager notificationManager;
 
 
     @Override
     public void onCreate() {
         super.onCreate();
-
         try {
             XmppHelper.getXmppHelperInStance().getChatManager().addChatListener(InComingMessageListenerService.this);
-            Constants.AppConfigConstants.isNeedToLogin = false;
-            dataManagerInstance = DataManager.getDataManagerInstance();
+            Log.e(TAG, "onCreate: 服务活了" );
+            initialize();
         } catch (ConnectException e) {
             e.printStackTrace();
             Log.e(TAG, "InComingMessageListenerService onCreate: ConnectException=" + e.getMessage());
         }
 
 
+    }
+
+    private void initialize() {
+        Constants.AppConfigConstants.isNeedToLogin = false;
+        dataManagerInstance = DataManager.getDataManagerInstance();
     }
 
     @Override
@@ -75,6 +83,7 @@ public class InComingMessageListenerService extends Service implements ChatManag
     @Override
     public boolean onUnbind(Intent intent) {
         EventBusHelper.getEventBusHelperInstance().getEventBusInstance().unregister(this);
+//        this return true for calling rebind() method when next time activity bind this service ;
         return true;
     }
 
@@ -123,7 +132,10 @@ public class InComingMessageListenerService extends Service implements ChatManag
 
 
     @Override
-    public void processMessage(Chat chat, Message message) {
+    public void processMessage(Chat chat, Message message)
+
+
+    {
         String JIDFromSingleUser = message.getFrom();
         if (JIDFromSingleUser.contains("/")) {
             JIDFromSingleUser = JIDFromSingleUser.split("/")[0];
@@ -175,8 +187,7 @@ public class InComingMessageListenerService extends Service implements ChatManag
                         .setContentIntent(pendingIntent)
                         .build();
 
-
-                NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                 notificationManager.notify(dataManagerInstance.getMessageNotificationIds().get(JIDFromSingleUser), notification);
 
             }
@@ -188,6 +199,7 @@ public class InComingMessageListenerService extends Service implements ChatManag
     // notify the RecentChatFragment create recentChatItem;
     private void createRecentChatRecord(BaseItem baseItem) {
         RecentChatItem recentChatItem = new RecentChatItem(baseItem.getUserName(), baseItem.getCurrentTimeStamp(), baseItem.getMesage(), baseItem.getUserAvatar(), baseItem.getUserJID());
+//        this is to RecentChatFragment
         EventBusHelper.getEventBusHelperInstance().getEventBusInstance().postSticky(new MessageCreatedEvent(recentChatItem));
     }
 
@@ -205,6 +217,9 @@ public class InComingMessageListenerService extends Service implements ChatManag
 
     @Subscribe(threadMode = ThreadMode.MAIN, priority = 10, sticky = true)
     public void onDatasHaveArrivedChattingFragmnet(DatasHaveArrivedChattingFragmentEvent event) {
+        if (notificationManager != null && dataManagerInstance.getMessageNotificationIds().containsKey(event.getUserJIDOfDatas())) {
+            notificationManager.cancel(dataManagerInstance.getMessageNotificationIds().get(event.getUserJIDOfDatas()));
+        }
         dataManagerInstance.getMessageNotificationIds().remove(event.getUserJIDOfDatas());
         if (dataManagerInstance.getAllUsersMessageRecords().get(event.getUserJIDOfDatas()).size() > 100) {
 //            此处将超出100的部分数据保存进数据库，并将将多出部分删除；
@@ -220,12 +235,22 @@ public class InComingMessageListenerService extends Service implements ChatManag
         try {
             XmppHelper.getXmppHelperInStance().logOut();
             XmppHelper.getXmppHelperInStance().getChatManager().removeChatListener(this);
+            XmppHelper.getXmppHelperInStance().clearXmppSetup();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+//       clear all notifications if there is any;
+        if (notificationManager != null && !dataManagerInstance.getMessageNotificationIds().isEmpty()) {
+            Set<Map.Entry<String, Integer>> entries = dataManagerInstance.getMessageNotificationIds().entrySet();
+            for (Map.Entry<String, Integer> entry : entries) {
+                notificationManager.cancel(entry.getValue());
+            }
         }
 
         dataManagerInstance.clearDatas();
         Constants.AppConfigConstants.isNeedToLogin = true;
+
+        Log.e(TAG, "onDestroy: 服务死了");
 
     }
 }

@@ -43,7 +43,7 @@ public class ContactsFragment extends BaseFragment implements LetterNavigationVi
 
     @Override
     public int getLayoutId() {
-        return R.layout.fragment_friend_chat;
+        return R.layout.fragment_contacts;
     }
 
     @Override
