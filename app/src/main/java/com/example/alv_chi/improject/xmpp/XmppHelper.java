@@ -34,7 +34,6 @@ public class XmppHelper implements XMPP {
     private static XmppHelper xmppHelperInstance;
     private XMPPTCPConnection xmppTcpConnectionInstance;
     private XMPPTCPConnectionConfiguration xmppConfigBuilder;
-    private String currentChattingUserJID;
 
 
     public static XmppHelper getXmppHelperInStance() {
@@ -129,8 +128,6 @@ public class XmppHelper implements XMPP {
 
     @Override
     public Set<RosterEntry> getContacts() throws ConnectException {
-
-
         return getRoster().getEntries();
     }
 
@@ -141,7 +138,6 @@ public class XmppHelper implements XMPP {
 
 
     protected Roster getRoster() throws ConnectException {
-
         return Roster.getInstanceFor(getXMPPConnectionInstance());
     }
 
@@ -155,20 +151,13 @@ public class XmppHelper implements XMPP {
         }
     }
 
-    public void setCurrentChattingUserJID(String currentChattingUserJID) {
-        this.currentChattingUserJID = currentChattingUserJID;
-    }
-
-    public String getCurrentChattingUserJID() {
-        return currentChattingUserJID;
-    }
 
 //   you must clear your XmppSetup when you logout ,or you can not send and receive message when login again ;
     public void clearXmppSetup() {
         xmppTcpConnectionInstance = null;
         xmppConfigBuilder = null;
-        currentChattingUserJID = "";
     }
+
 
 
 }

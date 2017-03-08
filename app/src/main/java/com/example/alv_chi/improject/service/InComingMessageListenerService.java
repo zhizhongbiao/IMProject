@@ -34,7 +34,9 @@ import org.jivesoftware.smack.chat.Chat;
 import org.jivesoftware.smack.chat.ChatManagerListener;
 import org.jivesoftware.smack.chat.ChatMessageListener;
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.roster.RosterEntry;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -65,6 +67,21 @@ public class InComingMessageListenerService extends Service implements ChatManag
     private void initialize() {
         Constants.AppConfigConstants.isNeedToLogin = false;
         dataManagerInstance = DataManager.getDataManagerInstance();
+//        addIsOnLineListenerForAllContacts();
+    }
+
+    private void addIsOnLineListenerForAllContacts()
+    {
+        try {
+            Set<RosterEntry> contacts = XmppHelper.getXmppHelperInStance().getContacts();
+            Iterator<RosterEntry> iterator = contacts.iterator();
+            while (iterator.hasNext())
+            {
+//                iterator.next()实时监听在线状态；
+            }
+        } catch (ConnectException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -104,6 +121,7 @@ public class InComingMessageListenerService extends Service implements ChatManag
 
     @Override
     public void chatCreated(Chat chat, boolean createdLocally) {
+        Log.e(TAG, "chatCreated: chat.getParticipant()="+chat.getParticipant() );
         Log.e(TAG, "chatCreated: createdLocally=" + createdLocally);
         chat.addMessageListener(this);
     }
@@ -165,7 +183,7 @@ public class InComingMessageListenerService extends Service implements ChatManag
 
             createRecentChatRecord(messageItem);
 
-            if (currentActivity != null && JIDFromSingleUser.equals(XmppHelper.getXmppHelperInStance().getCurrentChattingUserJID())) {
+            if (currentActivity != null && JIDFromSingleUser.equals(DataManager.getDataManagerInstance().getCurrentChattingUserJID())) {
                 BaseFragment currentFragment = currentActivity.getmCurrentFragment();
                 if (currentFragment instanceof ChattingRoomFragment) {
                     ((ChattingRoomFragment) currentFragment).refreshMessageContainer(messageItem);
@@ -205,16 +223,12 @@ public class InComingMessageListenerService extends Service implements ChatManag
     }
 
 
+
+
     public void setCurrentActivity(BaseActivity currentActivity) {
         this.currentActivity = currentActivity;
     }
 
-
-    public class MyBinder extends Binder {
-        public InComingMessageListenerService getInComingMessageListenerService() {
-            return InComingMessageListenerService.this;
-        }
-    }
 
     @Subscribe(threadMode = ThreadMode.MAIN, priority = 10, sticky = true)
     public void onDatasHaveArrivedChattingFragmnet(DatasHaveArrivedChattingFragmentEvent event) {
@@ -241,17 +255,27 @@ public class InComingMessageListenerService extends Service implements ChatManag
             e.printStackTrace();
         }
 //       clear all notifications if there is any;
-        if (notificationManager != null && !dataManagerInstance.getMessageNotificationIds().isEmpty()) {
-            Set<Map.Entry<String, Integer>> entries = dataManagerInstance.getMessageNotificationIds().entrySet();
-            for (Map.Entry<String, Integer> entry : entries) {
-                notificationManager.cancel(entry.getValue());
-            }
-        }
+        clearNotification();
 
         dataManagerInstance.clearDatas();
         Constants.AppConfigConstants.isNeedToLogin = true;
 
         Log.e(TAG, "onDestroy: 服务死了");
 
+    }
+
+    private void clearNotification() {
+        if (notificationManager != null && !dataManagerInstance.getMessageNotificationIds().isEmpty()) {
+            Set<Map.Entry<String, Integer>> entries = dataManagerInstance.getMessageNotificationIds().entrySet();
+            for (Map.Entry<String, Integer> entry : entries) {
+                notificationManager.cancel(entry.getValue());
+            }
+        }
+    }
+
+    public class MyBinder extends Binder {
+        public InComingMessageListenerService getInComingMessageListenerService() {
+            return InComingMessageListenerService.this;
+        }
     }
 }

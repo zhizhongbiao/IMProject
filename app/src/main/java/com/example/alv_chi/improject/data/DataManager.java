@@ -22,6 +22,10 @@ public class DataManager {
     private ArrayList<RecentChatItem> recentChats = new ArrayList<>();
 
     private static DataManager dataManagerInstance;
+    private String currentChattingUserJID;
+    private String currentMasterUserName;
+    private String currentMasterPassword;
+
 
     public static DataManager getDataManagerInstance() {
         if (dataManagerInstance == null) {
@@ -31,6 +35,29 @@ public class DataManager {
         return dataManagerInstance;
     }
 
+    public void setCurrentChattingUserJID(String currentChattingUserJID) {
+        this.currentChattingUserJID = currentChattingUserJID;
+    }
+
+    public String getCurrentChattingUserJID() {
+        return currentChattingUserJID;
+    }
+
+    public String getCurrentMasterPassword() {
+        return currentMasterPassword;
+    }
+
+    public void setCurrentMasterPassword(String currentMasterPassword) {
+        this.currentMasterPassword = currentMasterPassword;
+    }
+
+    public String getCurrentMasterUserName() {
+        return currentMasterUserName;
+    }
+
+    public void setCurrentMasterUserName(String currentMasterUserName) {
+        this.currentMasterUserName = currentMasterUserName;
+    }
 
     public HashMap<String, Integer> getMessageNotificationIds() {
         return messageNotificationIds;
@@ -71,6 +98,7 @@ public class DataManager {
         messageNotificationIds.clear();
         recentChats.clear();
         chats.clear();
+        currentChattingUserJID = "";
         System.gc();
     }
 }

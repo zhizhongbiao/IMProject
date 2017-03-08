@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/llContactItemRoot"
     android:layout_width="match_parent"
-    android:layout_height="75dp"
+    android:layout_height="wrap_content"
     android:orientation="vertical">
 
     <TextView
@@ -16,14 +16,13 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="53dp"
         android:background="@color/white">
 
         <ImageView
             android:id="@+id/civChatMateAvatar"
             android:layout_width="45dp"
-            android:layout_height="48dp"
+            android:layout_height="45dp"
             android:layout_centerVertical="true"
             android:layout_margin="@dimen/big_padding"
             android:scaleType="centerCrop"
@@ -48,7 +47,7 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="@dimen/small_padding"
+        android:layout_height="@dimen/small_padding_II"
         android:background="@color/gray" />
 
 </LinearLayout>

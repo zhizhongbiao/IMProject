@@ -18,10 +18,10 @@ import com.example.alv_chi.improject.bean.BaseItem;
 import com.example.alv_chi.improject.bean.TextMessageItem;
 import com.example.alv_chi.improject.constant.Constants;
 import com.example.alv_chi.improject.custom.IconfontTextView;
+import com.example.alv_chi.improject.data.DataManager;
 import com.example.alv_chi.improject.eventbus.DatasHaveArrivedChattingFragmentEvent;
 import com.example.alv_chi.improject.eventbus.EventBusHelper;
 import com.example.alv_chi.improject.util.SystemUtil;
-import com.example.alv_chi.improject.xmpp.XmppHelper;
 
 import java.util.ArrayList;
 
@@ -108,14 +108,14 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
     @Override
     public void onResume() {
         super.onResume();
-        XmppHelper.getXmppHelperInStance().setCurrentChattingUserJID(baseItem.getUserJID());
+        DataManager.getDataManagerInstance().setCurrentChattingUserJID(baseItem.getUserJID());
     }
 
 
     @Override
     public void onStop() {
         super.onStop();
-        XmppHelper.getXmppHelperInStance().setCurrentChattingUserJID("");
+        DataManager.getDataManagerInstance().setCurrentChattingUserJID("");
     }
 
     @Override

@@ -28,6 +28,7 @@ import com.example.alv_chi.improject.constant.Constants;
 import com.example.alv_chi.improject.custom.CircleImageView;
 import com.example.alv_chi.improject.custom.IconfontTextView;
 import com.example.alv_chi.improject.custom.TabButton;
+import com.example.alv_chi.improject.data.DataManager;
 import com.example.alv_chi.improject.fragment.BaseFragment;
 import com.example.alv_chi.improject.fragment.ContactsFragment;
 import com.example.alv_chi.improject.fragment.GroupsFragment;
@@ -200,7 +201,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     protected void intializeToolbar(ToolbarViewHolder toolbarViewHolder) {
         initializePopupWindow();
 
-        toolbarViewHolder.tvToolbarCenter.setText("yourLoginName");
+        toolbarViewHolder.tvToolbarCenter.setText(DataManager.getDataManagerInstance().getCurrentMasterUserName());
         toolbarViewHolder.itvToolbarLeft.setText(R.string.menu);
         toolbarViewHolder.itvToolbarRight.setText(R.string.plus);
 
@@ -319,11 +320,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
 //            the popupWindow Item :
             case R.id.llAddNewFirend:
-
                 Toast.makeText(this, "llAddNewFirend", Toast.LENGTH_SHORT).show();
+                mWindow.dismiss();
                 break;
             case R.id.llScanQCode:
                 Toast.makeText(this, "llScanQCode", Toast.LENGTH_SHORT).show();
+                mWindow.dismiss();
                 break;
         }
     }

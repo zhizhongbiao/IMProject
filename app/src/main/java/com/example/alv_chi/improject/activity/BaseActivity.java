@@ -40,10 +40,9 @@ public abstract class BaseActivity extends AppCompatActivity {
     private LinearLayout rootLayout;
     protected ToolbarViewHolder toolbarViewHolder;
     private View lastContentView;
-    private static ActivityHandler activityHandler;
+    private ActivityHandler activityHandler;
     private BaseFragment mCurrentFragment;
     protected ActivityHandler mHandler;
-
 
 
     //       subclasses can override this method for customing the toolbar
@@ -65,7 +64,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public ActivityHandler getActivityHandler() {
         if (activityHandler == null) {
-            activityHandler = new ActivityHandler(this);
+            activityHandler = new ActivityHandler();
         }
         return activityHandler;
     }

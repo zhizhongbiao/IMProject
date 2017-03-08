@@ -4,7 +4,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import com.example.alv_chi.improject.activity.BaseActivity;
 import com.example.alv_chi.improject.constant.Constants;
 
 import java.util.HashMap;
@@ -15,9 +14,8 @@ import java.util.HashMap;
  */
 
 public class ActivityHandler extends Handler {
+
     private static final String TAG = "ActivityHandler";
-    private BaseActivity mActivity;
-    //    private SoftReference<BaseActivity> appBaseActivitySoftReference;
     private HashMap<String, OnThreadTaskFinishedListener> listeners = new HashMap();
 
 
@@ -30,26 +28,8 @@ public class ActivityHandler extends Handler {
     }
 
 
-    public ActivityHandler(BaseActivity activity) {
-//        appBaseActivitySoftReference = new SoftReference<>(activity);
-        this.mActivity = activity;
-
-    }
-
     @Override
     public void handleMessage(Message msg) {
-
-        if (HandlerHelper.isActivityDestroyed()) {
-            Log.e(TAG, "handleMessage: HandlerHelper.isActivityDestroyed()="+HandlerHelper.isActivityDestroyed() );
-            Log.e(TAG, "handleMessage: the problem is caused by SoftReference ");
-            return;
-        }
-
-//        if (appBaseActivitySoftReference.get() == null)
-//        {
-//            Log.e(TAG, "handleMessage: the problem is caused by SoftReference " );
-//            return;
-//        }
 
         String listenerKey = (String) msg.obj;
         int messageType = msg.what;
