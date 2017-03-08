@@ -119,7 +119,8 @@ public class InComingMessageListenerService extends Service implements ChatManag
         }
 
         Message message = new Message();
-        message.setSubject(baseItem.getUserName());
+//       this is the name of which send this message;
+        message.setSubject(Constants.AppConfigConstants.CLIENT_USER_NAME);
         message.setBody(baseItem.getMesage());
         message.setFrom(Constants.AppConfigConstants.CLIENT_EMAIL);
         message.setTo(baseItem.getUserJID());
@@ -144,15 +145,15 @@ public class InComingMessageListenerService extends Service implements ChatManag
         dataManagerInstance.getChats().put(JIDFromSingleUser, chat);
 
         String receivedMsg = message.getBody();
-        String userName = message.getSubject();
+        String userNameFrom = message.getSubject();
         String stanzaId = message.getStanzaId();///////////////////////////////////////////
 
 
-        if (userName == null || userName.trim().equals("")) {
-            userName = JIDFromSingleUser.split("@")[0];
+        if (userNameFrom == null || userNameFrom.trim().equals("")) {
+            userNameFrom = JIDFromSingleUser.split("@")[0];
         }
         if (receivedMsg != null) {
-            TextMessageItem messageItem = new TextMessageItem(userName
+            TextMessageItem messageItem = new TextMessageItem(userNameFrom
                     , SystemUtil.getCurrentSystemTime()
                     , receivedMsg, null, JIDFromSingleUser, MessageRvAdapter.TEXT_MESSAGE_VIEW_TYPE, true);
 
@@ -181,7 +182,7 @@ public class InComingMessageListenerService extends Service implements ChatManag
                 Notification notification = new Notification.Builder(this)
                         .setAutoCancel(true)
                         .setContentText(receivedMsg)
-                        .setContentTitle(userName)
+                        .setContentTitle(userNameFrom)
                         .setDefaults(Notification.DEFAULT_ALL)
                         .setSmallIcon(R.mipmap.ic_launcher)//UserAvatar
                         .setContentIntent(pendingIntent)
