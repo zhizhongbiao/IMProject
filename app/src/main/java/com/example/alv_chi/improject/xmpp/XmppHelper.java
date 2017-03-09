@@ -96,7 +96,7 @@ public class XmppHelper implements XMPP {
 
         try {
             xmppConnectionInstance.login(userName, password);
-            setStatu(xmppConnectionInstance, Presence.Type.available, "I m Online");
+            setStatu(xmppConnectionInstance, Presence.Type.available, Constants.KeyConstants.IS_ONLINE);
             Log.e(TAG, "login: login success!");
         } catch (XMPPException e) {
             e.printStackTrace();
@@ -137,7 +137,7 @@ public class XmppHelper implements XMPP {
     }
 
 
-    protected Roster getRoster() throws ConnectException {
+    public Roster getRoster() throws ConnectException {
         return Roster.getInstanceFor(getXMPPConnectionInstance());
     }
 

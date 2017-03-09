@@ -34,9 +34,7 @@ import org.jivesoftware.smack.chat.Chat;
 import org.jivesoftware.smack.chat.ChatManagerListener;
 import org.jivesoftware.smack.chat.ChatMessageListener;
 import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.roster.RosterEntry;
 
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -54,7 +52,7 @@ public class InComingMessageListenerService extends Service implements ChatManag
         super.onCreate();
         try {
             XmppHelper.getXmppHelperInStance().getChatManager().addChatListener(InComingMessageListenerService.this);
-            Log.e(TAG, "onCreate: 服务活了" );
+            Log.e(TAG, "onCreate: 服务活了");
             initialize();
         } catch (ConnectException e) {
             e.printStackTrace();
@@ -67,21 +65,6 @@ public class InComingMessageListenerService extends Service implements ChatManag
     private void initialize() {
         Constants.AppConfigConstants.isNeedToLogin = false;
         dataManagerInstance = DataManager.getDataManagerInstance();
-//        addIsOnLineListenerForAllContacts();
-    }
-
-    private void addIsOnLineListenerForAllContacts()
-    {
-        try {
-            Set<RosterEntry> contacts = XmppHelper.getXmppHelperInStance().getContacts();
-            Iterator<RosterEntry> iterator = contacts.iterator();
-            while (iterator.hasNext())
-            {
-//                iterator.next()实时监听在线状态；
-            }
-        } catch (ConnectException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -121,7 +104,6 @@ public class InComingMessageListenerService extends Service implements ChatManag
 
     @Override
     public void chatCreated(Chat chat, boolean createdLocally) {
-        Log.e(TAG, "chatCreated: chat.getParticipant()="+chat.getParticipant() );
         Log.e(TAG, "chatCreated: createdLocally=" + createdLocally);
         chat.addMessageListener(this);
     }
@@ -151,39 +133,40 @@ public class InComingMessageListenerService extends Service implements ChatManag
 
 
     @Override
-    public void processMessage(Chat chat, Message message)
-
-
-    {
-        String JIDFromSingleUser = message.getFrom();
-        if (JIDFromSingleUser.contains("/")) {
-            JIDFromSingleUser = JIDFromSingleUser.split("/")[0];
+    public void processMessage(Chat chat, Message message) {
+        String JIDFromUserSendMsg = message.getFrom();
+        if (JIDFromUserSendMsg.contains("/")) {
+            JIDFromUserSendMsg = JIDFromUserSendMsg.split("/")[0];
         }
 // Using a hashmap to manage the chats , which is very conenient to reuse;
-        dataManagerInstance.getChats().put(JIDFromSingleUser, chat);
+        dataManagerInstance.getChats().put(JIDFromUserSendMsg, chat);
 
         String receivedMsg = message.getBody();
         String userNameFrom = message.getSubject();
-        String stanzaId = message.getStanzaId();///////////////////////////////////////////
-
+        String stanzaId = message.getStanzaId();
+        Boolean isOnline = dataManagerInstance.getIsOnline().get(JIDFromUserSendMsg);
+        if (isOnline==null)
+        {
+            isOnline=false;
+        }
 
         if (userNameFrom == null || userNameFrom.trim().equals("")) {
-            userNameFrom = JIDFromSingleUser.split("@")[0];
+            userNameFrom = JIDFromUserSendMsg.split("@")[0];
         }
         if (receivedMsg != null) {
             TextMessageItem messageItem = new TextMessageItem(userNameFrom
                     , SystemUtil.getCurrentSystemTime()
-                    , receivedMsg, null, JIDFromSingleUser, MessageRvAdapter.TEXT_MESSAGE_VIEW_TYPE, true);
+                    , receivedMsg, null, JIDFromUserSendMsg, MessageRvAdapter.TEXT_MESSAGE_VIEW_TYPE, true, isOnline);
 
-            if (!dataManagerInstance.getMessageNotificationIds().containsKey(JIDFromSingleUser)) {
-                dataManagerInstance.getMessageNotificationIds().put(JIDFromSingleUser, ++singleUserJIDMessageId);
+            if (!dataManagerInstance.getMessageNotificationIds().containsKey(JIDFromUserSendMsg)) {
+                dataManagerInstance.getMessageNotificationIds().put(JIDFromUserSendMsg, ++singleUserJIDMessageId);
             }
 
             dataManagerInstance.collectMessages(dataManagerInstance.getAllUsersMessageRecords(), messageItem);
 
             createRecentChatRecord(messageItem);
 
-            if (currentActivity != null && JIDFromSingleUser.equals(DataManager.getDataManagerInstance().getCurrentChattingUserJID())) {
+            if (currentActivity != null && JIDFromUserSendMsg.equals(DataManager.getDataManagerInstance().getCurrentChattingUserJID())) {
                 BaseFragment currentFragment = currentActivity.getmCurrentFragment();
                 if (currentFragment instanceof ChattingRoomFragment) {
                     ((ChattingRoomFragment) currentFragment).refreshMessageContainer(messageItem);
@@ -194,9 +177,9 @@ public class InComingMessageListenerService extends Service implements ChatManag
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.putExtra(Constants.KeyConstants.IS_THIS_INTEN_FROM_PENDING_INTENT, true);
                 intent.putParcelableArrayListExtra(Constants.KeyConstants.USER_MESSAGES_RECORD
-                        , dataManagerInstance.getAllUsersMessageRecords().get(JIDFromSingleUser));
+                        , dataManagerInstance.getAllUsersMessageRecords().get(JIDFromUserSendMsg));
 
-                PendingIntent pendingIntent = PendingIntent.getActivity(this, dataManagerInstance.getMessageNotificationIds().get(JIDFromSingleUser), intent, PendingIntent.FLAG_CANCEL_CURRENT);
+                PendingIntent pendingIntent = PendingIntent.getActivity(this, dataManagerInstance.getMessageNotificationIds().get(JIDFromUserSendMsg), intent, PendingIntent.FLAG_CANCEL_CURRENT);
                 Notification notification = new Notification.Builder(this)
                         .setAutoCancel(true)
                         .setContentText(receivedMsg)
@@ -207,7 +190,7 @@ public class InComingMessageListenerService extends Service implements ChatManag
                         .build();
 
                 notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                notificationManager.notify(dataManagerInstance.getMessageNotificationIds().get(JIDFromSingleUser), notification);
+                notificationManager.notify(dataManagerInstance.getMessageNotificationIds().get(JIDFromUserSendMsg), notification);
 
             }
 
@@ -217,19 +200,22 @@ public class InComingMessageListenerService extends Service implements ChatManag
 
     // notify the RecentChatFragment create recentChatItem;
     private void createRecentChatRecord(BaseItem baseItem) {
-        RecentChatItem recentChatItem = new RecentChatItem(baseItem.getUserName(), baseItem.getCurrentTimeStamp(), baseItem.getMesage(), baseItem.getUserAvatar(), baseItem.getUserJID());
+        RecentChatItem recentChatItem = new RecentChatItem(baseItem.getUserName()
+                , baseItem.getCurrentTimeStamp()
+                , baseItem.getMesage()
+                , baseItem.getUserAvatar()
+                , baseItem.getUserJID()
+                , baseItem.isOnline());
 //        this is to RecentChatFragment
         EventBusHelper.getEventBusHelperInstance().getEventBusInstance().postSticky(new MessageCreatedEvent(recentChatItem));
     }
-
-
 
 
     public void setCurrentActivity(BaseActivity currentActivity) {
         this.currentActivity = currentActivity;
     }
 
-
+//      this event is posted by ChattingRoomFragment  ;
     @Subscribe(threadMode = ThreadMode.MAIN, priority = 10, sticky = true)
     public void onDatasHaveArrivedChattingFragmnet(DatasHaveArrivedChattingFragmentEvent event) {
         if (notificationManager != null && dataManagerInstance.getMessageNotificationIds().containsKey(event.getUserJIDOfDatas())) {

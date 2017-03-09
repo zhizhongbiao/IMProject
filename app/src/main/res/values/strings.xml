@@ -29,6 +29,7 @@
 
     <!--chatting room fragment-->
     <string name="more">&#xe60e;</string>
+    <string name="is_user_online">&#xe662;</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

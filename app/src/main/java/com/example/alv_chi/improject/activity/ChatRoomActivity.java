@@ -3,6 +3,7 @@ package com.example.alv_chi.improject.activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -11,9 +12,16 @@ import android.view.View;
 import com.example.alv_chi.improject.R;
 import com.example.alv_chi.improject.bean.BaseItem;
 import com.example.alv_chi.improject.constant.Constants;
+import com.example.alv_chi.improject.custom.IconfontTextView;
+import com.example.alv_chi.improject.eventbus.EventBusHelper;
+import com.example.alv_chi.improject.eventbus.OnUserChattingToStatusEvent;
 import com.example.alv_chi.improject.fragment.BaseFragment;
 import com.example.alv_chi.improject.fragment.ChattingRoomFragment;
 import com.example.alv_chi.improject.service.InComingMessageListenerService;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+import org.jivesoftware.smack.packet.Presence;
 
 import java.util.ArrayList;
 
@@ -28,19 +36,11 @@ public class ChatRoomActivity extends BaseActivity {
 
     private BaseItem baseItem;
     private ArrayList<BaseItem> messages;
-    private boolean isFromPendingIntent;
+    private IconfontTextView itvToolbarRight;
+
 
     @Override
     protected void handleIntent(Intent intentFromLastContext) {
-//        isFromPendingIntent = intentFromLastContext.getBooleanExtra(Constants.KeyConstants.IS_THIS_INTEN_FROM_PENDING_INTENT, false);
-
-//        if (isFromPendingIntent) {
-//            messages = intentFromLastContext.getParcelableArrayListExtra(Constants.KeyConstants.USER_MESSAGES_RECORD);
-//            baseItem = messages.get(0);
-//        } else {
-//            baseItem = intentFromLastContext.getParcelableExtra(Constants.KeyConstants.PARCELABLE_BASE_ITEM_KEY);
-//        }
-
 
         messages = intentFromLastContext.getParcelableArrayListExtra(Constants.KeyConstants.USER_MESSAGES_RECORD);
         baseItem = messages.get(0);
@@ -60,8 +60,36 @@ public class ChatRoomActivity extends BaseActivity {
 
 
         toolbarViewHolder.tvToolbarCenter.setText(baseItem.getUserName());
+        itvToolbarRight = toolbarViewHolder.itvToolbarRight;
+
+        itvToolbarRight.setText(R.string.is_user_online);
+
+        boolean isOnline = baseItem.isOnline();
+
+        setUserChattingToIsOnline(isOnline);
 
 
+    }
+
+    private void setUserChattingToIsOnline(boolean isOnline) {
+        int color = -1;
+        if (isOnline) {
+            color = Color.GREEN;
+        } else {
+            color = Color.RED;
+        }
+
+        itvToolbarRight.setTextColor(color);
+    }
+
+
+    //    this event is posted by ContactsFragment  ;
+    @Subscribe(threadMode = ThreadMode.MAIN, priority = 10, sticky = false)
+    public void onUserChattingToChangeStatus(OnUserChattingToStatusEvent event) {
+        Presence presence = event.getPresence();
+        if (baseItem.getUserJID().equals(presence.getFrom())) {
+            setUserChattingToIsOnline(presence.isAvailable());
+        }
     }
 
     @Override
@@ -80,6 +108,7 @@ public class ChatRoomActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_room);
         initService();
+        EventBusHelper.getEventBusHelperInstance().getEventBusInstance().register(this);
     }
 
     @Override
@@ -102,18 +131,12 @@ public class ChatRoomActivity extends BaseActivity {
         setCurrentActivityToListenerService(null);
     }
 
-    private void setCurrentActivityToListenerService(ChatRoomActivity currentActivity) {
-        if (getInComingMessageListenerService() != null) {
-            getInComingMessageListenerService().setCurrentActivity(currentActivity);
-
-        }
-    }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
 //        unbind service release resource;
         unbindInComingMessageListenerService(serviceConnection);
+        EventBusHelper.getEventBusHelperInstance().getEventBusInstance().unregister(this);
     }
 
     private void initService() {
@@ -121,6 +144,11 @@ public class ChatRoomActivity extends BaseActivity {
         bindInComingMessageListenerService(serviceIntent);
     }
 
+    private void setCurrentActivityToListenerService(ChatRoomActivity currentActivity) {
+        if (getInComingMessageListenerService() != null) {
+            getInComingMessageListenerService().setCurrentActivity(currentActivity);
+        }
+    }
 
     public void bindInComingMessageListenerService(Intent serviceIntent) {
 

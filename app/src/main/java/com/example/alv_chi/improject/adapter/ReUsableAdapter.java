@@ -2,6 +2,7 @@ package com.example.alv_chi.improject.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,16 +12,9 @@ import android.widget.TextView;
 
 import com.example.alv_chi.improject.R;
 import com.example.alv_chi.improject.bean.ContactItem;
-import com.example.alv_chi.improject.util.ChineseToPinyinHelper;
 
-import org.jivesoftware.smack.roster.RosterEntry;
-
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -37,7 +31,7 @@ public class ReUsableAdapter extends RecyclerView.Adapter {
 
     private int viewType = -1;
     private Context context;
-    private List<ContactItem> contactItems = new ArrayList<>();
+    private List<ContactItem> contactItems;
     private HashMap<String, Integer> navigationPositions = new HashMap();
     private LayoutInflater layoutInflater;
 
@@ -50,40 +44,22 @@ public class ReUsableAdapter extends RecyclerView.Adapter {
         return navigationPositions;
     }
 
-    public ReUsableAdapter(Context context, Set<RosterEntry> dataTemp, int viewType) {
+    public ReUsableAdapter(Context context, List<ContactItem> contactItems, int viewType) {
         this.context = context;
+        this.contactItems=contactItems;
         this.viewType = viewType;
         layoutInflater = LayoutInflater.from(this.context);
-        initializeContactsData(dataTemp);
 
+        if (contactItems==null)
+        {
+            Log.e(TAG, "ReUsableAdapter: contactItems="+contactItems );
+            return;
+        }
+        pickTheNavigationLetterOfFirstContactItem(contactItems);
 
     }
 
-    private void initializeContactsData(Set<RosterEntry> temp) {
-        Iterator<RosterEntry> iterator = temp.iterator();
-        while (iterator.hasNext()) {
-            RosterEntry rosterEntry = iterator.next();
-            if (rosterEntry == null) continue;
-            String name = rosterEntry.getName();
-            String userJID = rosterEntry.getUser();
-            String navigationLetter = null;
-
-            if (name != null) {
-                String pingYin = ChineseToPinyinHelper.getInstance().getPinyin(name).toUpperCase();
-                navigationLetter = pingYin.charAt(0) + "";
-                if (!navigationLetter.matches("[A-Z]")) {
-                    navigationLetter = "#";
-                }
-            } else {
-                name = "Unknown";
-                navigationLetter = "#";
-            }
-
-            contactItems.add(new ContactItem(userJID, navigationLetter, name, null));//temporary set null
-        }
-
-        Collections.sort(contactItems);//sort the ContactItems
-
+    private void pickTheNavigationLetterOfFirstContactItem(List<ContactItem> contactItems) {
         for (int i = 0; i < contactItems.size(); i++) {
             String navigationLetter = contactItems.get(i).getNavigationLetter();
             if (!navigationPositions.containsKey(navigationLetter)) {
@@ -91,6 +67,8 @@ public class ReUsableAdapter extends RecyclerView.Adapter {
             }
         }
     }
+
+
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {

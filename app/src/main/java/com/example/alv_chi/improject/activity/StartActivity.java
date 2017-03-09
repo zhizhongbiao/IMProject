@@ -26,7 +26,7 @@ public class StartActivity extends BaseActivity {
                 startAnotherActivity(StartActivity.this, intent);
                 StartActivity.this.finish();
             }
-        }, 2000);
+        }, 1000);
     }
 
     @Override

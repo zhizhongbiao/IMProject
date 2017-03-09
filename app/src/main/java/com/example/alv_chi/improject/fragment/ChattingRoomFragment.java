@@ -54,8 +54,7 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
     private MessageRvAdapter messageRvAdapter;
     private ArrayList<TextMessageItem> textMessageItems;
     private BaseItem baseItem;
-    private ArrayList<BaseItem> messages;
-    private boolean isFromPendingIntent;
+
 
     public static ChattingRoomFragment newInstance(Bundle bundle) {
         ChattingRoomFragment chattingRoomFragment = new ChattingRoomFragment();
@@ -74,7 +73,7 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
                 }
             }
             baseItem = messages.get(0);
-//            this to InComingMessageListenerService
+//            this is posted to InComingMessageListenerService
             EventBusHelper.getEventBusHelperInstance().getEventBusInstance().postSticky(new DatasHaveArrivedChattingFragmentEvent(baseItem.getUserJID()));
 
         }
@@ -148,7 +147,7 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
                 try {
                     TextMessageItem textMessageItem = new TextMessageItem(baseItem.getUserName()
                             , SystemUtil.getCurrentSystemTime()
-                            , message, null, baseItem.getUserJID(), MessageRvAdapter.TEXT_MESSAGE_VIEW_TYPE, false);
+                            , message, null, baseItem.getUserJID(), MessageRvAdapter.TEXT_MESSAGE_VIEW_TYPE, false,baseItem.isOnline());
                     mHoldingActivity.getInComingMessageListenerService().sendMessage(textMessageItem);
                     Log.e(TAG, "onClick: 发送成功 sendMessage: contactItem.getUserJID()=" + baseItem.getUserJID());
 

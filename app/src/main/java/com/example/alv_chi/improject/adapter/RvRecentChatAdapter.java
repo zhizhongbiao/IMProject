@@ -49,9 +49,9 @@ public class RvRecentChatAdapter extends RecyclerView.Adapter<RvRecentChatAdapte
     @Override
     public void onBindViewHolder(RecentChatItemViewHolder holder, int position) {
         RecentChatItem recentChatItem = recentChats.get(position);
-        holder.tvTheLatestMessageTimeStamp.setText(recentChatItem.getLastMessageTimeStamp());
+        holder.tvTheLatestMessageTimeStamp.setText(recentChatItem.getLatestMessageTimeStamp());
         holder.tvContactName.setText(recentChatItem.getUserName());
-        holder.tvTheLatestMassage.setText(recentChatItem.getLastMessage());
+        holder.tvTheLatestMassage.setText(recentChatItem.getLatestMessage());
 
         holder.cvRecentChatItemRootViewView.setOnClickListener(new OnRvRecentChatAndRvContactsAdapterItemClickListener(context, recentChatItem));
 

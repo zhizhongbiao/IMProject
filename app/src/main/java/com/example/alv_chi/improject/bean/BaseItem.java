@@ -38,4 +38,7 @@ public interface BaseItem extends Parcelable{
     public boolean isReceivedMessage();
 
     public void setReceivedMessage(boolean receivedMessage);
+
+    public boolean isOnline();
+    public void setOnline(boolean online);
 }

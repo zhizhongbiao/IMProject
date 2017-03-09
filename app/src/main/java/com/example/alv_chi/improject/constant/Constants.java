@@ -20,14 +20,17 @@ public class Constants {
         //        public static final String PARCELABLE_MESSAGE_ITEM_KEY ="MessageItem";
         public static final String IS_THIS_INTEN_FROM_PENDING_INTENT = "isThisIntenFromPendingIntent";
 
-//        login password and userName
+        //        login password and userName
         public static final String MASTER_USER_LOGIN_NAME = "UserName";
         public static final String MASTER_USER_LOGIN_PASSWORD = "Password";
+
+        //        key for is the user you are chatting to onLine
+        public static final String IS_ONLINE = "I m Online";
     }
 
     public static class AppConfigConstants {
-//        public static final String OPEN_FIRE_SERVER_IP = "10.0.0.10";
-        public static final String OPEN_FIRE_SERVER_IP="192.168.1.100";
+        public static final String OPEN_FIRE_SERVER_IP = "10.0.0.10";
+//        public static final String OPEN_FIRE_SERVER_IP="192.168.1.100";
 
         public static final String OPEN_FIRE_SERVER_HOST_NAME = "windows10.microdone.cn";
         public static final String OPEN_FIRE_SERVER_DOMAIN_NAME = "windows10.microdone.cn";
@@ -41,7 +44,7 @@ public class Constants {
         public static final String CLIENT_PASSWORD = "zhizhongbiao";
         public static final String CLIENT_EMAIL = "B@test.com";
 
-//        public static final String OTHER_EMAIL = "Test@test.com";
+        //        public static final String OTHER_EMAIL = "Test@test.com";
         public static boolean isNeedToLogin = false;
     }
 

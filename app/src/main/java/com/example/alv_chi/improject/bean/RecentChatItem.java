@@ -13,8 +13,8 @@ public class RecentChatItem implements BaseItem, Parcelable {
     private static final String TAG="RecentChatItem";
 
     private String userName;
-    private String lastMessageTimeStamp;
-    private String lastMessage;
+    private String latestMessageTimeStamp;
+    private String latestMessage;
 
     private String currentTimeStamp;
     private String mesage;
@@ -22,25 +22,47 @@ public class RecentChatItem implements BaseItem, Parcelable {
     private String userJID;
     private int typeView;
     private boolean isReceivedMessage;
+    private boolean isOnline;
 
-    public RecentChatItem(String userName, String lastMessageTimeStamp, String lastMessage, Bitmap userAvatar, String userJID) {
+    public RecentChatItem(String userName, String latestMessageTimeStamp, String latestMessage, Bitmap userAvatar, String userJID, boolean isOnline) {
         this.userName = userName;
-        this.lastMessageTimeStamp = lastMessageTimeStamp;
-        this.lastMessage = lastMessage;
+        this.latestMessageTimeStamp = latestMessageTimeStamp;
+        this.latestMessage = latestMessage;
         this.userAvatar = userAvatar;
         this.userJID = userJID;
+        this.isOnline = isOnline;
     }
 
     protected RecentChatItem(Parcel in) {
         userName = in.readString();
-        lastMessageTimeStamp = in.readString();
-        lastMessage = in.readString();
+        latestMessageTimeStamp = in.readString();
+        latestMessage = in.readString();
         currentTimeStamp = in.readString();
         mesage = in.readString();
         userAvatar = in.readParcelable(Bitmap.class.getClassLoader());
         userJID = in.readString();
         typeView = in.readInt();
         isReceivedMessage = in.readByte() != 0;
+        isOnline = in.readByte() != 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(userName);
+        dest.writeString(latestMessageTimeStamp);
+        dest.writeString(latestMessage);
+        dest.writeString(currentTimeStamp);
+        dest.writeString(mesage);
+        dest.writeParcelable(userAvatar, flags);
+        dest.writeString(userJID);
+        dest.writeInt(typeView);
+        dest.writeByte((byte) (isReceivedMessage ? 1 : 0));
+        dest.writeByte((byte) (isOnline ? 1 : 0));
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<RecentChatItem> CREATOR = new Creator<RecentChatItem>() {
@@ -85,20 +107,20 @@ public class RecentChatItem implements BaseItem, Parcelable {
 
     }
 
-    public String getLastMessageTimeStamp() {
-        return lastMessageTimeStamp;
+    public String getLatestMessageTimeStamp() {
+        return latestMessageTimeStamp;
     }
 
-    public void setLastMessageTimeStamp(String lastMessageTimeStamp) {
-        this.lastMessageTimeStamp = lastMessageTimeStamp;
+    public void setLatestMessageTimeStamp(String latestMessageTimeStamp) {
+        this.latestMessageTimeStamp = latestMessageTimeStamp;
     }
 
-    public String getLastMessage() {
-        return lastMessage;
+    public String getLatestMessage() {
+        return latestMessage;
     }
 
-    public void setLastMessage(String lastMessage) {
-        this.lastMessage = lastMessage;
+    public void setLatestMessage(String latestMessage) {
+        this.latestMessage = latestMessage;
     }
 
     @Override
@@ -142,24 +164,16 @@ public class RecentChatItem implements BaseItem, Parcelable {
     }
 
     @Override
-    public int describeContents() {
-        return 0;
+    public boolean isOnline() {
+        return isOnline;
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(userName);
-        dest.writeString(lastMessageTimeStamp);
-        dest.writeString(lastMessage);
-        dest.writeString(currentTimeStamp);
-        dest.writeString(mesage);
-        dest.writeParcelable(userAvatar, flags);
-        dest.writeString(userJID);
-        dest.writeInt(typeView);
-        dest.writeByte((byte) (isReceivedMessage ? 1 : 0));
+    public void setOnline(boolean online) {
+        isOnline = online;
     }
 
-
+    //    override this method to differ the different message
     @Override
     public boolean equals(Object obj) {
 

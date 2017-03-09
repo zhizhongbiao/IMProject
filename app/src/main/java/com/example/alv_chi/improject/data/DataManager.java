@@ -1,12 +1,14 @@
 package com.example.alv_chi.improject.data;
 
 import com.example.alv_chi.improject.bean.BaseItem;
+import com.example.alv_chi.improject.bean.ContactItem;
 import com.example.alv_chi.improject.bean.RecentChatItem;
 
 import org.jivesoftware.smack.chat.Chat;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by Alv_chi on 2017/3/6.
@@ -19,7 +21,9 @@ public class DataManager {
     private HashMap<String, Integer> messageNotificationIds = new HashMap<>();
     private HashMap<String, ArrayList<BaseItem>> allUsersMessageRecords = new HashMap<>();
     private HashMap<String, Chat> chats = new HashMap<>();
+    private HashMap<String, Boolean> isOnline = new HashMap<>();
     private ArrayList<RecentChatItem> recentChats = new ArrayList<>();
+    private List<ContactItem> contactItems = new ArrayList<>();
 
     private static DataManager dataManagerInstance;
     private String currentChattingUserJID;
@@ -59,6 +63,14 @@ public class DataManager {
         this.currentMasterUserName = currentMasterUserName;
     }
 
+    public List<ContactItem> getContactItems() {
+        return contactItems;
+    }
+
+    public HashMap<String, Boolean> getIsOnline() {
+        return isOnline;
+    }
+
     public HashMap<String, Integer> getMessageNotificationIds() {
         return messageNotificationIds;
     }
@@ -72,7 +84,7 @@ public class DataManager {
     }
 
     public ArrayList<RecentChatItem> collectRecentChat(RecentChatItem recentChatItem) {
-        if (getRecentChats().contains(recentChatItem) ) {
+        if (getRecentChats().contains(recentChatItem)) {
             getRecentChats().remove(recentChatItem);
         }
         getRecentChats().add(0, recentChatItem);
@@ -98,7 +110,15 @@ public class DataManager {
         messageNotificationIds.clear();
         recentChats.clear();
         chats.clear();
+        clearContactsData();
         currentChattingUserJID = "";
         System.gc();
+    }
+
+    public void clearContactsData()
+    {
+        contactItems.clear();
+        isOnline.clear();
+
     }
 }

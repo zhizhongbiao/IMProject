@@ -16,13 +16,14 @@ public class ContactItem implements Comparable<ContactItem>, Parcelable, BaseIte
     private String navigationLetter;
     private String userName;
     private Bitmap userAvatar;
+    private boolean isOnline;
 
-
-    public ContactItem(String userJID, String navigationLetter, String userName, Bitmap userAvatar) {
+    public ContactItem(String userJID, String navigationLetter, String userName, Bitmap userAvatar, boolean isOnline) {
         this.userJID = userJID;
         this.navigationLetter = navigationLetter;
         this.userName = userName;
         this.userAvatar = userAvatar;
+        this.isOnline = isOnline;
     }
 
     protected ContactItem(Parcel in) {
@@ -30,6 +31,7 @@ public class ContactItem implements Comparable<ContactItem>, Parcelable, BaseIte
         navigationLetter = in.readString();
         userName = in.readString();
         userAvatar = in.readParcelable(Bitmap.class.getClassLoader());
+        isOnline = in.readByte() != 0;
     }
 
     public static final Creator<ContactItem> CREATOR = new Creator<ContactItem>() {
@@ -44,11 +46,12 @@ public class ContactItem implements Comparable<ContactItem>, Parcelable, BaseIte
         }
     };
 
-
+    @Override
     public String getUserJID() {
         return userJID;
     }
 
+    @Override
     public void setUserJID(String userJID) {
         this.userJID = userJID;
     }
@@ -81,10 +84,12 @@ public class ContactItem implements Comparable<ContactItem>, Parcelable, BaseIte
         this.navigationLetter = navigationLetter;
     }
 
+    @Override
     public String getUserName() {
         return userName;
     }
 
+    @Override
     public void setUserName(String userName) {
         this.userName = userName;
     }
@@ -109,7 +114,6 @@ public class ContactItem implements Comparable<ContactItem>, Parcelable, BaseIte
 
     }
 
-
     @Override
     public Bitmap getUserAvatar() {
         return userAvatar;
@@ -120,20 +124,16 @@ public class ContactItem implements Comparable<ContactItem>, Parcelable, BaseIte
         this.userAvatar = userAvatar;
     }
 
-
-    @Override
-    public int describeContents() {
-        return 0;
+    public boolean isOnline() {
+        return isOnline;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(userJID);
-        dest.writeString(navigationLetter);
-        dest.writeString(userName);
-        dest.writeParcelable(userAvatar, flags);
+    public void setOnline(boolean online) {
+        isOnline = online;
     }
 
+
+    //    Override this method for sorting this item;
 
     @Override
     public int compareTo(ContactItem item) {
@@ -147,5 +147,19 @@ public class ContactItem implements Comparable<ContactItem>, Parcelable, BaseIte
         }
 
         return -1;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(userJID);
+        dest.writeString(navigationLetter);
+        dest.writeString(userName);
+        dest.writeParcelable(userAvatar, flags);
+        dest.writeByte((byte) (isOnline ? 1 : 0));
     }
 }

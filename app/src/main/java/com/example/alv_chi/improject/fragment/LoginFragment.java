@@ -131,7 +131,7 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
     public void onThreadTaskFinished() {
         initService();
         saveLoginInfoToSp(masterLoginName, masterLoginPassWord);
-        Log.e(TAG, "onThreadTaskFinished: startActivity");
+        Log.e(TAG, "onThreadTaskFinished: LoginFragment");
         Intent intent = new Intent(mHoldingActivity, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
