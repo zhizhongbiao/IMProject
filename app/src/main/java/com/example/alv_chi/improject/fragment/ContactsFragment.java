@@ -56,12 +56,11 @@ public class ContactsFragment extends BaseFragment implements LetterNavigationVi
     protected void initializeView(View rootView, Bundle savedInstanceState) {
         ButterKnife.bind(this, rootView);
         lnvLetterNavigationView.setOnLetterChooseListener(this);
-        intializeRvContacts();
+        initializeRvContacts();
 
     }
 
-    private void intializeRvContacts() {
-
+    private void initializeRvContacts() {
         List<ContactItem> contactItems = DataManager.getDataManagerInstance().getContactItems();
 
         linearLayoutManager = new LinearLayoutManager(mHoldingActivity);
