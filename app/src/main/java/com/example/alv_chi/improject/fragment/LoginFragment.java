@@ -24,7 +24,6 @@ import com.example.alv_chi.improject.exception.ConnectException;
 import com.example.alv_chi.improject.exception.LoginNameOrPasswordException;
 import com.example.alv_chi.improject.handler.HandlerHelper;
 import com.example.alv_chi.improject.handler.OnThreadTaskFinishedListener;
-import com.example.alv_chi.improject.service.InComingMessageListenerService;
 import com.example.alv_chi.improject.util.ThreadUtil;
 import com.example.alv_chi.improject.xmpp.XmppHelper;
 
@@ -58,7 +57,6 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
     LinearLayout activityLogin;
 
     private LogInAndSignUpActivity mHoldingActivity;
-    private Intent serviceIntent;
     private String masterLoginName;
     private String masterLoginPassWord;
     private SharedPreferences sharedPreferences;
@@ -129,7 +127,8 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
 
     @Override
     public void onThreadTaskFinished() {
-        initService();
+        mHoldingActivity.startInComingMessageListenerService();
+//        DataManager.getDataManagerInstance().setCurrentMasterInfo();
         saveLoginInfoToSp(masterLoginName, masterLoginPassWord);
         Log.e(TAG, "onThreadTaskFinished: LoginFragment");
         Intent intent = new Intent(mHoldingActivity, MainActivity.class);
@@ -137,17 +136,6 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
         startActivity(intent);
         //kill this LogInAndSignUpActivity
         mHoldingActivity.finish();
-    }
-
-
-    private void initService() {
-        serviceIntent = new Intent(mHoldingActivity, InComingMessageListenerService.class);
-        startInComingMessageListenerService(serviceIntent);
-
-    }
-
-    public void startInComingMessageListenerService(Intent serviceIntent) {
-        mHoldingActivity.startService(serviceIntent);
     }
 
 

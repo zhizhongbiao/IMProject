@@ -28,7 +28,7 @@
 
         <!--service-->
         <service
-            android:name=".service.InComingMessageListenerService"
+            android:name=".service.XmppListenerService"
             android:enabled="true"
             android:exported="true"
             />

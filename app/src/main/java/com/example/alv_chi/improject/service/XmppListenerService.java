@@ -14,6 +14,7 @@ import com.example.alv_chi.improject.activity.BaseActivity;
 import com.example.alv_chi.improject.activity.MainActivity;
 import com.example.alv_chi.improject.adapter.MessageRvAdapter;
 import com.example.alv_chi.improject.bean.BaseItem;
+import com.example.alv_chi.improject.bean.ContactItem;
 import com.example.alv_chi.improject.bean.RecentChatItem;
 import com.example.alv_chi.improject.bean.TextMessageItem;
 import com.example.alv_chi.improject.constant.Constants;
@@ -21,9 +22,11 @@ import com.example.alv_chi.improject.data.DataManager;
 import com.example.alv_chi.improject.eventbus.DatasHaveArrivedChattingFragmentEvent;
 import com.example.alv_chi.improject.eventbus.EventBusHelper;
 import com.example.alv_chi.improject.eventbus.MessageCreatedEvent;
+import com.example.alv_chi.improject.eventbus.OnUserStatusChangeEvent;
 import com.example.alv_chi.improject.exception.ConnectException;
 import com.example.alv_chi.improject.fragment.BaseFragment;
 import com.example.alv_chi.improject.fragment.ChattingRoomFragment;
+import com.example.alv_chi.improject.util.ChineseToPinyinHelper;
 import com.example.alv_chi.improject.util.SystemUtil;
 import com.example.alv_chi.improject.xmpp.XmppHelper;
 
@@ -34,33 +37,40 @@ import org.jivesoftware.smack.chat.Chat;
 import org.jivesoftware.smack.chat.ChatManagerListener;
 import org.jivesoftware.smack.chat.ChatMessageListener;
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.roster.Roster;
+import org.jivesoftware.smack.roster.RosterEntry;
+import org.jivesoftware.smack.roster.RosterListener;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-public class InComingMessageListenerService extends Service implements ChatManagerListener, ChatMessageListener {
+public class XmppListenerService extends Service implements ChatManagerListener, ChatMessageListener, RosterListener {
 
     private static final String TAG = "InComingMessageService";
     private BaseActivity currentActivity;
     private DataManager dataManagerInstance;
     private int singleUserJIDMessageId;
     private NotificationManager notificationManager;
+    private Roster roster;
 
 
     @Override
     public void onCreate() {
         super.onCreate();
         try {
-            XmppHelper.getXmppHelperInStance().getChatManager().addChatListener(InComingMessageListenerService.this);
+            XmppHelper.getXmppHelperInStance().getChatManager().addChatListener(XmppListenerService.this);
             Log.e(TAG, "onCreate: 服务活了");
             initialize();
         } catch (ConnectException e) {
             e.printStackTrace();
-            Log.e(TAG, "InComingMessageListenerService onCreate: ConnectException=" + e.getMessage());
+            Log.e(TAG, "XmppListenerService onCreate: ConnectException=" + e.getMessage());
         }
-
-
     }
+
 
     private void initialize() {
         Constants.AppConfigConstants.isNeedToLogin = false;
@@ -97,8 +107,75 @@ public class InComingMessageListenerService extends Service implements ChatManag
      */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
+        initializeContactsData();
         return START_STICKY;// this value for : this service will reCreate after this service is killed;
+    }
+
+    private void initializeContactsData() {
+
+        try {
+            Set<RosterEntry> contacts = XmppHelper.getXmppHelperInStance().getContacts();
+
+            roster = XmppHelper.getXmppHelperInStance().getRoster();
+            roster.addRosterListener(this);
+
+            Iterator<RosterEntry> iterator = contacts.iterator();
+            while (iterator.hasNext()) {
+                RosterEntry rosterEntry = iterator.next();
+                if (rosterEntry == null) continue;
+                String name = rosterEntry.getName();
+                String userJID = rosterEntry.getUser();
+                String navigationLetter = null;
+                boolean isOnline = false;
+
+
+                if (name != null) {
+                    String pingYin = ChineseToPinyinHelper.getInstance().getPinyin(name).toUpperCase();
+                    navigationLetter = pingYin.charAt(0) + "";
+                    if (!navigationLetter.matches("[A-Z]")) {
+                        navigationLetter = "#";
+                    }
+                } else {
+                    name = "Unknown";
+                    navigationLetter = "#";
+                }
+
+                Presence presence = XmppHelper.getXmppHelperInStance().getRoster().getPresence(userJID+"/Smack");
+
+                isOnline = getUserStatus(isOnline, presence);
+                DataManager.getDataManagerInstance().getIsOnline().put(userJID, isOnline);
+
+                DataManager.getDataManagerInstance().getContactItems().add(new ContactItem(userJID, navigationLetter, name
+                        , null, DataManager.getDataManagerInstance().getIsOnline().get(userJID)));//avatar temporary set null
+            }
+
+            Collections.sort(DataManager.getDataManagerInstance().getContactItems());//sort the ContactItems
+
+            Log.e(TAG, "initializeContactsData: 联系人在服务初始化了DataManager.getDataManagerInstance().getContactItems().size()="+DataManager.getDataManagerInstance().getContactItems().size() );
+
+        } catch (ConnectException e) {
+            e.printStackTrace();
+            Log.e(TAG, "initializeContactsData: ConnectException=" + e.getMessage());
+        }
+
+
+    }
+
+    private boolean getUserStatus(boolean isOnline, Presence presence) {
+        if (presence != null) {
+            Presence.Type type = presence.getType();
+
+            switch (type) {
+                case available:
+                    isOnline = true;
+                    break;
+                default:
+                    isOnline = false;
+                    break;
+            }
+
+        }
+        return isOnline;
     }
 
 
@@ -120,9 +197,9 @@ public class InComingMessageListenerService extends Service implements ChatManag
 
         Message message = new Message();
 //       this is the name of which send this message;
-        message.setSubject(Constants.AppConfigConstants.CLIENT_USER_NAME);
+        message.setSubject(DataManager.getDataManagerInstance().getCurrentMasterUserName());////此处应该获取正在登陆的用户信息：
         message.setBody(baseItem.getMesage());
-        message.setFrom(Constants.AppConfigConstants.CLIENT_EMAIL);
+        message.setFrom(Constants.AppConfigConstants.CLIENT_EMAIL);///此处应该获取正在登陆的用户信息：
         message.setTo(baseItem.getUserJID());
         chat.sendMessage(message);
 
@@ -232,7 +309,7 @@ public class InComingMessageListenerService extends Service implements ChatManag
     public void onDestroy() {
         super.onDestroy();
 //        release resource
-
+        roster.removeRosterListener(this);
         try {
             XmppHelper.getXmppHelperInStance().logOut();
             XmppHelper.getXmppHelperInStance().getChatManager().removeChatListener(this);
@@ -259,9 +336,47 @@ public class InComingMessageListenerService extends Service implements ChatManag
         }
     }
 
+
+
+//    RosterListener needs to implement those methods
+
+    @Override
+    public void entriesAdded(Collection<String> addresses) {
+
+    }
+
+    @Override
+    public void entriesUpdated(Collection<String> addresses) {
+
+    }
+
+    @Override
+    public void entriesDeleted(Collection<String> addresses) {
+
+    }
+
+    @Override
+    public void presenceChanged(Presence presence) {
+
+        String JIDFromUser = presence.getFrom();
+
+        if (JIDFromUser.contains("/"))
+        {
+            JIDFromUser=JIDFromUser.split("/")[0];
+        }
+        Log.e(TAG, "presenceChanged: JIDFromUser=" + JIDFromUser);
+        boolean isOnline = false;
+        isOnline = getUserStatus(isOnline, presence);
+        DataManager.getDataManagerInstance().getIsOnline().put(JIDFromUser, isOnline);
+
+//      this event is posted to  notify the ChattingActivity to change its toolbar status and update DataMangae;
+        EventBusHelper.getEventBusHelperInstance().getEventBusInstance().postSticky(new OnUserStatusChangeEvent(presence));
+
+    }
+
     public class MyBinder extends Binder {
-        public InComingMessageListenerService getInComingMessageListenerService() {
-            return InComingMessageListenerService.this;
+        public XmppListenerService getInComingMessageListenerService() {
+            return XmppListenerService.this;
         }
     }
 }

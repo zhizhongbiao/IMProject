@@ -17,6 +17,8 @@ import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smackx.offline.OfflineMessageManager;
+import org.jivesoftware.smackx.vcardtemp.VCardManager;
+import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 
 import java.io.IOException;
 import java.util.List;
@@ -159,5 +161,13 @@ public class XmppHelper implements XMPP {
     }
 
 
+    public VCardManager getVCardManage() throws ConnectException {
+        return VCardManager.getInstanceFor(getXMPPConnectionInstance());
+    }
+
+
+    public VCard getUserVCard(String userJID) throws ConnectException, SmackException.NotConnectedException, XMPPException.XMPPErrorException, SmackException.NoResponseException {
+        return getVCardManage().loadVCard(userJID);
+    }
 
 }

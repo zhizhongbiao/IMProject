@@ -13,24 +13,28 @@ import com.example.alv_chi.improject.R;
 import com.example.alv_chi.improject.bean.BaseItem;
 import com.example.alv_chi.improject.constant.Constants;
 import com.example.alv_chi.improject.custom.IconfontTextView;
+import com.example.alv_chi.improject.data.DataManager;
 import com.example.alv_chi.improject.eventbus.EventBusHelper;
-import com.example.alv_chi.improject.eventbus.OnUserChattingToStatusEvent;
+import com.example.alv_chi.improject.eventbus.OnUserStatusChangeEvent;
 import com.example.alv_chi.improject.fragment.BaseFragment;
 import com.example.alv_chi.improject.fragment.ChattingRoomFragment;
-import com.example.alv_chi.improject.service.InComingMessageListenerService;
+import com.example.alv_chi.improject.service.XmppListenerService;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.jivesoftware.smack.packet.Presence;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class ChatRoomActivity extends BaseActivity {
 
 
     private static final String TAG = "ChatRoomActivity";
 
-    private InComingMessageListenerService inComingMessageListenerService;
+    private XmppListenerService xmppListenerService;
     private ServiceConnection serviceConnection;
     private Intent serviceIntent;
 
@@ -64,9 +68,17 @@ public class ChatRoomActivity extends BaseActivity {
 
         itvToolbarRight.setText(R.string.is_user_online);
 
-        boolean isOnline = baseItem.isOnline();
+        HashMap<String, Boolean> isOnline = DataManager.getDataManagerInstance().getIsOnline();
+        int size = isOnline .size();
 
-        setUserChattingToIsOnline(isOnline);
+        Log.e(TAG, "intializeToolbar: DataManager.getDataManagerInstance().getIsOnline().size="+ size);
+
+        Set<Map.Entry<String, Boolean>> entries = isOnline.entrySet();
+        for (Map.Entry<String, Boolean> entry : entries) {
+            Log.e(TAG, "intializeToolbar:key/value ="+entry.getKey()+"/"+entry.getValue() );
+        }
+
+        setUserChattingToIsOnline(DataManager.getDataManagerInstance().getIsOnline().get(baseItem.getUserJID()));///////////？？？？？？？？？？有可能取出null
 
 
     }
@@ -83,11 +95,19 @@ public class ChatRoomActivity extends BaseActivity {
     }
 
 
-    //    this event is posted by ContactsFragment  ;
-    @Subscribe(threadMode = ThreadMode.MAIN, priority = 10, sticky = false)
-    public void onUserChattingToChangeStatus(OnUserChattingToStatusEvent event) {
+    //    this event is posted by XmppListenerService  ;
+    @Subscribe(threadMode = ThreadMode.MAIN, priority = 10, sticky = true)
+    public void onUserStatusChange(OnUserStatusChangeEvent event) {
         Presence presence = event.getPresence();
-        if (baseItem.getUserJID().equals(presence.getFrom())) {
+        String JIDFrom = presence.getFrom();
+
+        if (JIDFrom.contains("/"))
+        {
+            JIDFrom=JIDFrom.split("/")[0];
+        }
+//      update the DataManage
+        DataManager.getDataManagerInstance().getIsOnline().put(JIDFrom, presence.isAvailable());
+        if (baseItem.getUserJID().equals(JIDFrom)) {
             setUserChattingToIsOnline(presence.isAvailable());
         }
     }
@@ -140,13 +160,13 @@ public class ChatRoomActivity extends BaseActivity {
     }
 
     private void initService() {
-        serviceIntent = new Intent(this, InComingMessageListenerService.class);
+        serviceIntent = new Intent(this, XmppListenerService.class);
         bindInComingMessageListenerService(serviceIntent);
     }
 
     private void setCurrentActivityToListenerService(ChatRoomActivity currentActivity) {
-        if (getInComingMessageListenerService() != null) {
-            getInComingMessageListenerService().setCurrentActivity(currentActivity);
+        if (getXmppListenerService() != null) {
+            getXmppListenerService().setCurrentActivity(currentActivity);
         }
     }
 
@@ -155,7 +175,7 @@ public class ChatRoomActivity extends BaseActivity {
         serviceConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder iBinder) {
-                inComingMessageListenerService = ((InComingMessageListenerService.MyBinder) iBinder).getInComingMessageListenerService();
+                xmppListenerService = ((XmppListenerService.MyBinder) iBinder).getInComingMessageListenerService();
                 setCurrentActivityToListenerService(ChatRoomActivity.this);
 
             }
@@ -176,8 +196,8 @@ public class ChatRoomActivity extends BaseActivity {
         unbindService(serviceConn);
     }
 
-    public InComingMessageListenerService getInComingMessageListenerService() {
-        return inComingMessageListenerService;
+    public XmppListenerService getXmppListenerService() {
+        return xmppListenerService;
     }
 
 }

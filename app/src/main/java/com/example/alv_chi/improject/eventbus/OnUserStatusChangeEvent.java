@@ -5,11 +5,11 @@ import org.jivesoftware.smack.packet.Presence;
 /**
  * Created by Alv_chi on 2017/3/7.
  */
-public class OnUserChattingToStatusEvent {
+public class OnUserStatusChangeEvent {
 
     private Presence presence;
 
-    public OnUserChattingToStatusEvent(Presence presence) {
+    public OnUserStatusChangeEvent(Presence presence) {
         this.presence = presence;
     }
 

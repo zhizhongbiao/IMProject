@@ -34,7 +34,7 @@ import com.example.alv_chi.improject.fragment.ContactsFragment;
 import com.example.alv_chi.improject.fragment.GroupsFragment;
 import com.example.alv_chi.improject.fragment.RecentChatFragment;
 import com.example.alv_chi.improject.fragment.ShareFragment;
-import com.example.alv_chi.improject.service.InComingMessageListenerService;
+import com.example.alv_chi.improject.service.XmppListenerService;
 import com.example.alv_chi.improject.util.SystemUtil;
 
 import java.util.ArrayList;
@@ -290,7 +290,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
 //            the Menu Item :
             case R.id.llLogOut:
-                stopService(new Intent(this, InComingMessageListenerService.class));
+                stopService(new Intent(this, XmppListenerService.class));
                 Intent intent = new Intent(this,LogInAndSignUpActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startAnotherActivity(this, intent);

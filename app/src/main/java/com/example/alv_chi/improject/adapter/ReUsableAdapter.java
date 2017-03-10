@@ -39,6 +39,9 @@ public class ReUsableAdapter extends RecyclerView.Adapter {
     public List<ContactItem> getContactItems() {
         return contactItems;
     }
+    public void setContactItems(List<ContactItem> contactItems) {
+        this.contactItems = contactItems;
+    }
 
     public HashMap<String, Integer> getNavigationPositions() {
         return navigationPositions;

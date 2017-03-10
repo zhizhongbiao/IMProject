@@ -13,6 +13,7 @@ import com.example.alv_chi.improject.fragment.BaseFragment;
 import com.example.alv_chi.improject.fragment.LoginFragment;
 import com.example.alv_chi.improject.handler.HandlerHelper;
 import com.example.alv_chi.improject.handler.OnThreadTaskFinishedListener;
+import com.example.alv_chi.improject.service.XmppListenerService;
 import com.example.alv_chi.improject.util.ThreadUtil;
 import com.example.alv_chi.improject.xmpp.XmppHelper;
 
@@ -25,6 +26,8 @@ public class LogInAndSignUpActivity extends BaseActivity implements OnThreadTask
 
     @BindView(R.id.flFragmentContainer)
     FrameLayout flFragmentContainer;
+
+    private Intent serviceIntent;
 
 
     @Override
@@ -89,13 +92,18 @@ public class LogInAndSignUpActivity extends BaseActivity implements OnThreadTask
 
     @Override
     public void onThreadTaskFinished() {
-
+        startInComingMessageListenerService();
         Intent intent = new Intent(this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         //kill this LogInAndSignUpActivity
         this.finish();
 
+    }
+
+    public void startInComingMessageListenerService() {
+        serviceIntent = new Intent(this, XmppListenerService.class);
+        startService(serviceIntent);
     }
 
     @Override
