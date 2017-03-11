@@ -1,7 +1,6 @@
 package com.example.alv_chi.improject.fragment;
 
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -17,7 +16,6 @@ import android.widget.Toast;
 import com.example.alv_chi.improject.R;
 import com.example.alv_chi.improject.activity.BaseActivity;
 import com.example.alv_chi.improject.activity.LogInAndSignUpActivity;
-import com.example.alv_chi.improject.activity.MainActivity;
 import com.example.alv_chi.improject.constant.Constants;
 import com.example.alv_chi.improject.data.DataManager;
 import com.example.alv_chi.improject.exception.ConnectException;
@@ -26,6 +24,8 @@ import com.example.alv_chi.improject.handler.HandlerHelper;
 import com.example.alv_chi.improject.handler.OnThreadTaskFinishedListener;
 import com.example.alv_chi.improject.util.ThreadUtil;
 import com.example.alv_chi.improject.xmpp.XmppHelper;
+
+import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -127,13 +127,24 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
 
     @Override
     public void onThreadTaskFinished() {
-        mHoldingActivity.startInComingMessageListenerService();
-//        DataManager.getDataManagerInstance().setCurrentMasterInfo();
-        saveLoginInfoToSp(masterLoginName, masterLoginPassWord);
         Log.e(TAG, "onThreadTaskFinished: LoginFragment");
-        Intent intent = new Intent(mHoldingActivity, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
+        mHoldingActivity.startInComingMessageListenerService();
+        mHoldingActivity.startMainActivity();
+        saveLoginInfoToSp(masterLoginName, masterLoginPassWord);
+//        DataManager.getDataManagerInstance().setCurrentMasterInfo();
+
+        try {
+
+            VCard userVCard = XmppHelper.getXmppHelperInStance().getUserVCard(Constants.AppConfigConstants.CLIENT_EMAIL);
+            String emailHome = userVCard.getEmailHome();
+            String emailWork = userVCard.getEmailWork();
+            Log.e(TAG, "onThreadTaskFinished: emailHome/emailWork="+emailHome+"/"+emailWork );
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(TAG, "onThreadTaskFinished: Exception="+e.getMessage() );
+        }
+
+
         //kill this LogInAndSignUpActivity
         mHoldingActivity.finish();
     }

@@ -57,7 +57,7 @@ public class LogInAndSignUpActivity extends BaseActivity implements OnThreadTask
     }
 
     @Override
-    protected int getContentViewId() {
+    protected int getActivityLayoutId() {
         return R.layout.activity_login_and_signup;
     }
 
@@ -93,12 +93,16 @@ public class LogInAndSignUpActivity extends BaseActivity implements OnThreadTask
     @Override
     public void onThreadTaskFinished() {
         startInComingMessageListenerService();
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
+        startMainActivity();
         //kill this LogInAndSignUpActivity
         this.finish();
 
+    }
+
+    public void startMainActivity() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 
     public void startInComingMessageListenerService() {

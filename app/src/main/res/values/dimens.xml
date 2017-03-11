@@ -17,7 +17,7 @@
     <dimen name="small_margin_III">14dp</dimen>
     <dimen name="middle_margin">15dp</dimen>
     <dimen name="big_margin">22dp</dimen>
-    <dimen name="big_margin_II">29dp</dimen>
+    <dimen name="big_margin_II">30dp</dimen>
     <dimen name="big_margin_III">38dp</dimen>
     <dimen name="big_margin_IIII">45dp</dimen>
     <dimen name="big_margin_IIIII">50dp</dimen>

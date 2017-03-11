@@ -257,7 +257,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     @Override
-    protected int getContentViewId() {
+    protected int getActivityLayoutId() {
         return R.layout.activity_main;
     }
 

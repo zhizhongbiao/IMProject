@@ -40,7 +40,7 @@ public class StartActivity extends BaseActivity {
     }
 
     @Override
-    protected int getContentViewId() {
+    protected int getActivityLayoutId() {
         return R.layout.activity_start;
     }
 

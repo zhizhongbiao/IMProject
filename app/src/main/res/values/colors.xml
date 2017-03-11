@@ -14,5 +14,7 @@
     <color name="blackTransparent">#770a0a0a</color>
     <color name="blackTransparentII">#58252424</color>
     <color name="white">#FFF</color>
+    <color name="sky_blue">#47c5ff</color>
+    <color name="orange">#fd3b05</color>
 
 </resources>

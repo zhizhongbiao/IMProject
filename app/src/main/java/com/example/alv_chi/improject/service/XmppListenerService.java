@@ -67,6 +67,7 @@ public class XmppListenerService extends Service implements ChatManagerListener,
             initialize();
         } catch (ConnectException e) {
             e.printStackTrace();
+//            如果此处是因为死而复生，而产生的错误应该进行异步联网和登陆；
             Log.e(TAG, "XmppListenerService onCreate: ConnectException=" + e.getMessage());
         }
     }

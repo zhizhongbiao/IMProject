@@ -170,4 +170,5 @@ public class XmppHelper implements XMPP {
         return getVCardManage().loadVCard(userJID);
     }
 
+
 }

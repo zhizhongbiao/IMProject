@@ -49,7 +49,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected abstract void intializeToolbar(ToolbarViewHolder toolbarViewHolder);
 
     //    subClasses need return their LayoutResId
-    protected abstract int getContentViewId();
+    protected abstract int getActivityLayoutId();
 
     //    subClasses can override this method to their intentFromLastContext if have
     protected void handleIntent(Intent intentFromLastContext) {
@@ -115,10 +115,10 @@ public abstract class BaseActivity extends AppCompatActivity {
         currentAngle = angle;
     }
 
-    protected PopupWindow createThePopupWindow(View customCotentView
+    protected PopupWindow createThePopupWindow(final View customCotentView
             , int width, int height, PopupWindow.OnDismissListener onDismissListener) {
 
-        PopupWindow popupWindow = new PopupWindow(this);
+        final PopupWindow popupWindow = new PopupWindow(this);
         popupWindow.setElevation(100);
         if (height == PUPOP_WINDOW_WRAP_CONTEN) {
             popupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -141,6 +141,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
 //        popupWindow.setAnimationStyle(R.anim.scale_and_alpha);
         popupWindow.setTouchable(true);
+
 
         return popupWindow;
     }
