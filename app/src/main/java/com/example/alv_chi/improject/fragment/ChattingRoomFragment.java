@@ -19,7 +19,7 @@ import com.example.alv_chi.improject.bean.TextMessageItem;
 import com.example.alv_chi.improject.constant.Constants;
 import com.example.alv_chi.improject.custom.IconfontTextView;
 import com.example.alv_chi.improject.data.DataManager;
-import com.example.alv_chi.improject.eventbus.DatasHaveArrivedChattingFragmentEvent;
+import com.example.alv_chi.improject.eventbus.OnDatasArrivedChattingFragmentEvent;
 import com.example.alv_chi.improject.eventbus.EventBusHelper;
 import com.example.alv_chi.improject.util.SystemUtil;
 
@@ -74,7 +74,7 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
             }
             baseItem = messages.get(0);
 //            this is posted to XmppListenerService
-            EventBusHelper.getEventBusHelperInstance().getEventBusInstance().postSticky(new DatasHaveArrivedChattingFragmentEvent(baseItem.getUserJID()));
+            EventBusHelper.getEventBusHelperInstance().getEventBusInstance().postSticky(new OnDatasArrivedChattingFragmentEvent(baseItem.getUserJID()));
 
         }
 

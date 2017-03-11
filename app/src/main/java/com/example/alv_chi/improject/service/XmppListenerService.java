@@ -19,7 +19,7 @@ import com.example.alv_chi.improject.bean.RecentChatItem;
 import com.example.alv_chi.improject.bean.TextMessageItem;
 import com.example.alv_chi.improject.constant.Constants;
 import com.example.alv_chi.improject.data.DataManager;
-import com.example.alv_chi.improject.eventbus.DatasHaveArrivedChattingFragmentEvent;
+import com.example.alv_chi.improject.eventbus.OnDatasArrivedChattingFragmentEvent;
 import com.example.alv_chi.improject.eventbus.EventBusHelper;
 import com.example.alv_chi.improject.eventbus.MessageCreatedEvent;
 import com.example.alv_chi.improject.eventbus.OnUserStatusChangeEvent;
@@ -119,6 +119,8 @@ public class XmppListenerService extends Service implements ChatManagerListener,
             roster = XmppHelper.getXmppHelperInStance().getRoster();
             roster.addRosterListener(this);
 
+            DataManager.getDataManagerInstance().getContactItems().clear();
+
             Iterator<RosterEntry> iterator = contacts.iterator();
             while (iterator.hasNext()) {
                 RosterEntry rosterEntry = iterator.next();
@@ -141,7 +143,6 @@ public class XmppListenerService extends Service implements ChatManagerListener,
                 }
 
                 Presence presence = XmppHelper.getXmppHelperInStance().getRoster().getPresence(userJID+"/Smack");
-
                 isOnline = getUserStatus(isOnline, presence);
                 DataManager.getDataManagerInstance().getIsOnline().put(userJID, isOnline);
 
@@ -294,7 +295,7 @@ public class XmppListenerService extends Service implements ChatManagerListener,
 
 //      this event is posted by ChattingRoomFragment  ;
     @Subscribe(threadMode = ThreadMode.MAIN, priority = 10, sticky = true)
-    public void onDatasHaveArrivedChattingFragmnet(DatasHaveArrivedChattingFragmentEvent event) {
+    public void onDatasHaveArrivedChattingFragmnet(OnDatasArrivedChattingFragmentEvent event) {
         if (notificationManager != null && dataManagerInstance.getMessageNotificationIds().containsKey(event.getUserJIDOfDatas())) {
             notificationManager.cancel(dataManagerInstance.getMessageNotificationIds().get(event.getUserJIDOfDatas()));
         }

@@ -89,6 +89,7 @@ public class ContactsFragment extends BaseFragment implements LetterNavigationVi
     @Override
     public void onResume() {
         super.onResume();
+//        invoke this method in case it can not getRosters from server
         autoRefreshContactItems();
     }
 

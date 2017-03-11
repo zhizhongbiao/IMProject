@@ -41,6 +41,7 @@ public class ReUsableAdapter extends RecyclerView.Adapter {
     }
     public void setContactItems(List<ContactItem> contactItems) {
         this.contactItems = contactItems;
+        pickTheNavigationLetterOfFirstContactItem(contactItems);
     }
 
     public HashMap<String, Integer> getNavigationPositions() {
@@ -53,16 +54,18 @@ public class ReUsableAdapter extends RecyclerView.Adapter {
         this.viewType = viewType;
         layoutInflater = LayoutInflater.from(this.context);
 
-        if (contactItems==null)
-        {
-            Log.e(TAG, "ReUsableAdapter: contactItems="+contactItems );
-            return;
-        }
+
         pickTheNavigationLetterOfFirstContactItem(contactItems);
 
     }
 
     private void pickTheNavigationLetterOfFirstContactItem(List<ContactItem> contactItems) {
+        if (contactItems==null)
+        {
+            Log.e(TAG, "ReUsableAdapter: contactItems="+contactItems );
+            return;
+        }
+
         for (int i = 0; i < contactItems.size(); i++) {
             String navigationLetter = contactItems.get(i).getNavigationLetter();
             if (!navigationPositions.containsKey(navigationLetter)) {
@@ -103,7 +106,8 @@ public class ReUsableAdapter extends RecyclerView.Adapter {
         ContactsViewHolder contactsViewHolder = holder;
         contactsViewHolder.llContactItemRoot.setOnClickListener(new OnRvRecentChatAndRvContactsAdapterItemClickListener(context, contactItem));
         contactsViewHolder.tvContactName.setText(name);
-        if (navigationPositions.get(navigationLetter) == position) {
+        Integer naviLetterPosition = navigationPositions.get(navigationLetter);
+        if (naviLetterPosition !=null&& naviLetterPosition== position) {
             contactsViewHolder.tvLetterNavigation.setVisibility(View.VISIBLE);
             contactsViewHolder.tvLetterNavigation.setText(navigationLetter);
         } else {

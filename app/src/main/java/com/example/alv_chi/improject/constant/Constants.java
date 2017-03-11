@@ -29,8 +29,8 @@ public class Constants {
     }
 
     public static class AppConfigConstants {
-        public static final String OPEN_FIRE_SERVER_IP = "10.0.0.10";
-//        public static final String OPEN_FIRE_SERVER_IP="192.168.1.100";
+//        public static final String OPEN_FIRE_SERVER_IP = "10.0.0.10";
+        public static final String OPEN_FIRE_SERVER_IP="192.168.1.100";
 
         public static final String OPEN_FIRE_SERVER_HOST_NAME = "windows10.microdone.cn";
         public static final String OPEN_FIRE_SERVER_DOMAIN_NAME = "windows10.microdone.cn";
