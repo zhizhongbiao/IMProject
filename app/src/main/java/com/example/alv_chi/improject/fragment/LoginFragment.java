@@ -25,8 +25,6 @@ import com.example.alv_chi.improject.handler.OnThreadTaskFinishedListener;
 import com.example.alv_chi.improject.util.ThreadUtil;
 import com.example.alv_chi.improject.xmpp.XmppHelper;
 
-import org.jivesoftware.smackx.vcardtemp.packet.VCard;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -51,10 +49,11 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
     LinearLayout llUserLoginPassword;
     @BindView(R.id.btnLoginButton)
     Button btnLoginButton;
-    @BindView(R.id.view)
-    View view;
+
     @BindView(R.id.activity_login)
     LinearLayout activityLogin;
+    @BindView(R.id.tvUserRegister)
+    TextView tvUserRegister;
 
     private LogInAndSignUpActivity mHoldingActivity;
     private String masterLoginName;
@@ -65,7 +64,7 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
         return new LoginFragment();
     }
 
-    public void getLoginInfoFrom() {
+    public void getLoginInfoFromSp() {
         sharedPreferences = mHoldingActivity.getPreferences(MODE_PRIVATE);
         String userName = sharedPreferences.getString(Constants.KeyConstants.MASTER_USER_LOGIN_NAME, null);
         String loginPsw = sharedPreferences.getString(Constants.KeyConstants.MASTER_USER_LOGIN_PASSWORD, null);
@@ -100,8 +99,9 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
     }
 
     private void initialContentView() {
-        getLoginInfoFrom();
+        getLoginInfoFromSp();
         btnLoginButton.setOnClickListener(this);
+        tvUserRegister.setOnClickListener(this);
     }
 
     @Override
@@ -110,8 +110,8 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onDestroy() {
+        super.onDestroy();
         removeThisOnThreadTaskFinishedListenerFromActivityHandler();//remove listener when this is destroyed
     }
 
@@ -126,27 +126,37 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
     }
 
     @Override
-    public void onThreadTaskFinished() {
-        Log.e(TAG, "onThreadTaskFinished: LoginFragment");
-        mHoldingActivity.startInComingMessageListenerService();
-        mHoldingActivity.startMainActivity();
-        saveLoginInfoToSp(masterLoginName, masterLoginPassWord);
-//        DataManager.getDataManagerInstance().setCurrentMasterInfo();
+    public void onThreadTaskFinished(int messageType) {
+        switch (messageType) {
+            case Constants.HandlerMessageType.LOGIN_SUCCESS:
+                Log.e(TAG, "onThreadTaskFinished: LoginFragment");
+                mHoldingActivity.startInComingMessageListenerService();
+                mHoldingActivity.startMainActivity();
+                saveLoginInfoToSp(masterLoginName, masterLoginPassWord);
 
-        try {
+//                DataManager.getDataManagerInstance().setCurrentMasterInfo();
 
-            VCard userVCard = XmppHelper.getXmppHelperInStance().getUserVCard(Constants.AppConfigConstants.CLIENT_EMAIL);
-            String emailHome = userVCard.getEmailHome();
-            String emailWork = userVCard.getEmailWork();
-            Log.e(TAG, "onThreadTaskFinished: emailHome/emailWork="+emailHome+"/"+emailWork );
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.e(TAG, "onThreadTaskFinished: Exception="+e.getMessage() );
+//        try {
+//
+//            VCard userVCard = XmppHelper.getXmppHelperInStance().getUserVCard(Constants.AppConfigConstants.CLIENT_EMAIL);
+//            String emailHome = userVCard.getEmailHome();
+//            String emailWork = userVCard.getEmailWork();
+//            Log.e(TAG, "onThreadTaskFinished: emailHome/emailWork="+emailHome+"/"+emailWork );
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            Log.e(TAG, "onThreadTaskFinished: Exception="+e.getMessage() );
+//        }
+
+
+                //kill this LogInAndSignUpActivity
+                mHoldingActivity.finish();
+                break;
+            case Constants.HandlerMessageType.LOGIN_FAILURE:
+                btnLoginButton.setClickable(true);
+                break;
         }
 
 
-        //kill this LogInAndSignUpActivity
-        mHoldingActivity.finish();
     }
 
 
@@ -155,6 +165,9 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
         switch (v.getId()) {
             case R.id.btnLoginButton:
                 login();
+                break;
+            case R.id.tvUserRegister:
+                mHoldingActivity.replaceFragmentAndAddToBackStack(new SignUpFragment());
                 break;
         }
     }
@@ -178,10 +191,14 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
                     HandlerHelper.sendMessageByHandler(mHandler, TAG, Constants.HandlerMessageType.LOGIN_SUCCESS);
 
                 } catch (LoginNameOrPasswordException e) {
+                    HandlerHelper.sendMessageByHandler(mHandler, TAG, Constants.HandlerMessageType.LOGIN_FAILURE);
+                    Log.e(TAG, "login happen Exception="+e.getMessage());
                     e.printStackTrace();
                     loginNameOrPswWrong();
 
                 } catch (ConnectException e) {
+                    HandlerHelper.sendMessageByHandler(mHandler, TAG, Constants.HandlerMessageType.LOGIN_FAILURE);
+                    Log.e(TAG, "login happen Exception="+e.getMessage());
                     e.printStackTrace();
                     connectServerWrong(e);
                 }
@@ -191,14 +208,6 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
     }
 
     private void connectServerWrong(ConnectException e) {
-        btnLoginButton.post(new Runnable() {
-            @Override
-            public void run() {
-                btnLoginButton.setClickable(true);
-            }
-        });
-        Log.e(TAG, "happen Exception");
-        e.printStackTrace();
         mHoldingActivity.showAlertDialogInThread("Tips"
                 , "服务器连接不上，请稍后再试！"
                 , "知道了，下次再试"
@@ -230,13 +239,6 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
     }
 
     private void loginNameOrPswWrong() {
-        btnLoginButton.post(new Runnable() {
-            @Override
-            public void run() {
-                btnLoginButton.setClickable(true);
-            }
-        });
-
 
         mHoldingActivity.showAlertDialogInThread("Tips"
                 , "您的用户名或者密码错了，请更正再试！"
@@ -267,4 +269,5 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
         strFromEt = strFromEt.trim();
         return strFromEt;
     }
+
 }

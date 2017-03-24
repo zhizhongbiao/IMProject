@@ -44,7 +44,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 
-public class MainActivity extends BaseActivity implements View.OnClickListener {
+public class MainActivity extends BaseActivity implements View.OnClickListener, ViewPager.OnPageChangeListener {
 
     private static final String TAG = "MainActivity";
     @BindView(R.id.vpContent)
@@ -139,6 +139,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         tlBottom.setupWithViewPager(vpContent);
         mVpFragmentAdapter = new VpFragmentAdapter(mSupportFragmentManager, fragments);
         vpContent.setAdapter(mVpFragmentAdapter);
+        vpContent.addOnPageChangeListener(this);
 //        vpContent.setPageTransformer(false, new DepthPageTransformer());
 
         int tabCount = tlBottom.getTabCount();
@@ -329,4 +330,27 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
 
+
+//    vp's OnPageChangeListener
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
+        if (state==ViewPager.SCROLL_STATE_IDLE)
+        {
+            mContactsFragment.showTheNavigationLetterView();
+        }else
+        {
+            mContactsFragment.hideTheNavigationLetterViewAndCenterTextView();
+        }
+    }
 }

@@ -21,7 +21,7 @@ import com.example.alv_chi.improject.constant.Constants;
 import com.example.alv_chi.improject.data.DataManager;
 import com.example.alv_chi.improject.eventbus.OnDatasArrivedChattingFragmentEvent;
 import com.example.alv_chi.improject.eventbus.EventBusHelper;
-import com.example.alv_chi.improject.eventbus.MessageCreatedEvent;
+import com.example.alv_chi.improject.eventbus.OnMessageCreatedEvent;
 import com.example.alv_chi.improject.eventbus.OnUserStatusChangeEvent;
 import com.example.alv_chi.improject.exception.ConnectException;
 import com.example.alv_chi.improject.fragment.BaseFragment;
@@ -286,7 +286,7 @@ public class XmppListenerService extends Service implements ChatManagerListener,
                 , baseItem.getUserJID()
                 , baseItem.isOnline());
 //        this is to RecentChatFragment
-        EventBusHelper.getEventBusHelperInstance().getEventBusInstance().postSticky(new MessageCreatedEvent(recentChatItem));
+        EventBusHelper.getEventBusHelperInstance().getEventBusInstance().postSticky(new OnMessageCreatedEvent(recentChatItem));
     }
 
 

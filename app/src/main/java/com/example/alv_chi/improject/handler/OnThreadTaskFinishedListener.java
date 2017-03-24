@@ -5,7 +5,7 @@ package com.example.alv_chi.improject.handler;
  */
 
 public interface OnThreadTaskFinishedListener {
-    void onThreadTaskFinished();
+    void onThreadTaskFinished(int messageType);
     void addThisOnThreadTaskFinishedListenerToActivityHandler();
     void removeThisOnThreadTaskFinishedListenerFromActivityHandler();
 }

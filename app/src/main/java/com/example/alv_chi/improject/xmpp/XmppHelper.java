@@ -1,27 +1,28 @@
 package com.example.alv_chi.improject.xmpp;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.example.alv_chi.improject.constant.Constants;
 import com.example.alv_chi.improject.exception.ConnectException;
 import com.example.alv_chi.improject.exception.LoginNameOrPasswordException;
+import com.example.alv_chi.improject.util.SystemUtil;
 
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.chat.ChatManager;
-import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
-import org.jivesoftware.smackx.offline.OfflineMessageManager;
+import org.jivesoftware.smackx.iqregister.AccountManager;
 import org.jivesoftware.smackx.vcardtemp.VCardManager;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Set;
 
 
@@ -144,17 +145,17 @@ public class XmppHelper implements XMPP {
     }
 
 
-    public void getOffLineMessage() throws ConnectException, SmackException.NotConnectedException, XMPPException.XMPPErrorException, SmackException.NoResponseException {
-        OfflineMessageManager offlineMessageManager = new OfflineMessageManager(getXMPPConnectionInstance());
-        List<Message> offlineMessages = offlineMessageManager.getMessages();
-        for (Message offlineMessage : offlineMessages) {
+//    public void getOffLineMessage() throws ConnectException, SmackException.NotConnectedException, XMPPException.XMPPErrorException, SmackException.NoResponseException {
+//        OfflineMessageManager offlineMessageManager = new OfflineMessageManager(getXMPPConnectionInstance());
+//        List<Message> offlineMessages = offlineMessageManager.getMessages();
+//        for (Message offlineMessage : offlineMessages) {
 //            offlineMessage.get
 //            offlineMessage.getBody()
-        }
-    }
+//        }
+//    }
 
 
-//   you must clear your XmppSetup when you logout ,or you can not send and receive message when login again ;
+    //   you must clear your XmppSetup when you logout ,or you can not send and receive message when login again ;
     public void clearXmppSetup() {
         xmppTcpConnectionInstance = null;
         xmppConfigBuilder = null;
@@ -170,5 +171,114 @@ public class XmppHelper implements XMPP {
         return getVCardManage().loadVCard(userJID);
     }
 
+    public AccountManager getAccountManager() throws ConnectException {
+        return AccountManager.getInstance(getXMPPConnectionInstance());
+    }
+
+    /**
+     * create a Map attributes first when create a new user acount and the standard is below:
+     * <li>name -- the user's name.
+     * <li>first -- the user's first name.
+     * <li>last -- the user's last name.
+     * <li>email -- the user's email address.
+     * <li>city -- the user's city.
+     * <li>state -- the user's state.
+     * <li>zip -- the user's ZIP code.
+     * <li>phone -- the user's phone number.
+     * <li>url -- the user's website.
+     * <li>date -- the date the registration took place.
+     * <li>misc -- other miscellaneous information to associate with the account.
+     * <li>text -- textual information to associate with the account.
+     * <li>remove -- empty flag to remove account.
+     *
+     * @param loginName
+     * @param password
+     */
+
+    public boolean userRegister(String loginName, String password, String email, String studentId) throws ConnectException, SmackException.NotConnectedException, XMPPException.XMPPErrorException, SmackException.NoResponseException {
+        AccountManager accountManager = getAccountManager();
+
+        if (accountManager == null) {
+            Log.e(TAG, "userRegister: accountManager == null" );
+            return false;
+        }
+
+        boolean isSupportCreateNewAccount = accountManager.supportsAccountCreation();
+        if (!isSupportCreateNewAccount) {
+            Log.e(TAG, "userRegister: isSupportCreateNewAccount ="+isSupportCreateNewAccount );
+            return false;
+        }
+
+        HashMap<String, String> accountAttributes = getaccountAttibutes(email, studentId);
+
+        accountManager.createAccount(loginName, password, accountAttributes);
+
+
+        return true;
+    }
+
+
+    public boolean changeAccountPassword(String newPassword) throws ConnectException {
+        AccountManager accountManager = getAccountManager();
+        if (accountManager == null) {
+            Log.e(TAG, "changeAccountPassword: accountManager == null" );
+            return false;
+        }
+        try {
+            accountManager.changePassword(newPassword);
+        } catch (SmackException.NoResponseException e) {
+            e.printStackTrace();
+        } catch (XMPPException.XMPPErrorException e) {
+            Log.e(TAG, "updateAccountPassword: server may not support ,XMPPErrorException="+e.getMessage() );
+            e.printStackTrace();
+        } catch (SmackException.NotConnectedException e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+
+    public boolean deleteAccount() throws ConnectException {
+        AccountManager accountManager = getAccountManager();
+        if (accountManager == null) {
+            Log.e(TAG, "changeAccountPassword: accountManager == null" );
+            return false;
+        }
+        try {
+            accountManager.deleteAccount();
+            return true;
+        } catch (SmackException.NoResponseException e) {
+            e.printStackTrace();
+        } catch (XMPPException.XMPPErrorException e) {
+            Log.e(TAG, "updateAccountPassword: server may not support ,XMPPErrorException="+e.getMessage() );
+            e.printStackTrace();
+        } catch (SmackException.NotConnectedException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    @NonNull
+    private HashMap<String, String> getaccountAttibutes(String email, String studentId) {
+        if (email==null||studentId==null)
+        {
+            Log.e(TAG, "getaccountAttibutes: email/studentId="+email+"/"+studentId );
+            return null;
+        }
+        HashMap<String, String> accountAttributes = new HashMap<>();
+        accountAttributes.put("name", "");
+        accountAttributes.put("first", "temporaryNotSupport");
+        accountAttributes.put("last", "temporaryNotSupport");
+        accountAttributes.put("city", "temporaryNotSupport");
+        accountAttributes.put("state", "temporaryNotSupport");
+        accountAttributes.put("zip", "temporaryNotSupport");
+        accountAttributes.put("phone", "");
+        accountAttributes.put("url", "temporaryNotSupport");
+        accountAttributes.put("remove", "temporaryNotSupport");
+        accountAttributes.put("misc", "");
+        accountAttributes.put(Constants.KeyConstants.STUDENT_REGISTER_DATE, studentId);
+        accountAttributes.put(Constants.KeyConstants.STUDENT_REGISTER_DATE, SystemUtil.getCurrentSystemTime());
+        accountAttributes.put(Constants.KeyConstants.STUDENT_EMAIL, email);
+        return accountAttributes;
+    }
 
 }

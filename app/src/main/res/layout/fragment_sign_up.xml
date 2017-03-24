@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/meinv4"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context="com.example.alv_chi.improject.activity.LogInAndSignUpActivity">
+
+    <com.example.alv_chi.improject.custom.CircleImageView
+        android:id="@+id/civAvatar"
+        android:layout_width="110dp"
+        android:layout_height="110dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="@dimen/middle_margin"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/meinv4" />
+
+    <Button
+        android:id="@+id/btnUploadNewAvatar"
+        style="@style/BigBlackTextStyle"
+        android:layout_width="130dp"
+        android:layout_height="@dimen/big_margin_II"
+        android:background="@drawable/shape_sky_blue_bg"
+        android:gravity="center"
+        android:text="上传头像" />
+
+    <LinearLayout
+        android:id="@+id/llUserName"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/big_margin_IIII"
+        android:layout_marginTop="@dimen/small_margin_III"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/BigBlackTextStyle"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/big_margin_II"
+            android:layout_marginLeft="@dimen/small_margin_II"
+            android:layout_weight="1"
+            android:background="@color/gray"
+            android:gravity="center"
+            android:text="姓名" />
+
+        <EditText
+            android:id="@+id/etUserName"
+            style="@style/BigBlackTextStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:gravity="center"
+            android:maxLines="1"
+            android:text="陈冠希" />
+
+        <TextView
+            android:id="@+id/tvEditUserNameForSure"
+            style="@style/BigBlackTextStyle"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/big_margin_II"
+            android:layout_marginRight="@dimen/small_margin_II"
+            android:layout_weight="1"
+            android:background="@drawable/shape_sky_blue_bg"
+            android:gravity="center"
+            android:text="确定" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llUserPassword"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/big_margin_IIII"
+        android:layout_marginTop="@dimen/small_margin_III"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/BigBlackTextStyle"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/big_margin_II"
+            android:layout_marginLeft="@dimen/small_margin_II"
+            android:layout_weight="1"
+            android:background="@color/gray"
+            android:gravity="center"
+            android:text="密码" />
+
+        <EditText
+            android:id="@+id/etUserPassword"
+            style="@style/BigBlackTextStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:gravity="center"
+            android:maxLines="1"
+            android:inputType="textPassword"
+            android:text="陈冠希" />
+
+        <TextView
+            android:id="@+id/tvEditUserPasswordForSure"
+            style="@style/BigBlackTextStyle"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/big_margin_II"
+            android:layout_marginRight="@dimen/small_margin_II"
+            android:layout_weight="1"
+            android:background="@drawable/shape_sky_blue_bg"
+            android:gravity="center"
+            android:text="确定" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llUserID"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/big_margin_IIII"
+        android:layout_marginTop="@dimen/small_margin_III"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/BigBlackTextStyle"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/big_margin_II"
+            android:layout_marginLeft="@dimen/small_margin_II"
+            android:layout_weight="1"
+            android:background="@color/gray"
+            android:gravity="center"
+            android:text="学号" />
+
+        <EditText
+            android:id="@+id/etUserID"
+            style="@style/BigBlackTextStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:gravity="center"
+            android:maxLines="1"
+            android:text="2000010301" />
+
+        <TextView
+            android:id="@+id/tvEditUserIDForSure"
+            style="@style/BigBlackTextStyle"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/big_margin_II"
+            android:layout_marginRight="@dimen/small_margin_II"
+            android:layout_weight="1"
+            android:background="@drawable/shape_sky_blue_bg"
+            android:gravity="center"
+            android:text="确定" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llUserEmail"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/big_margin_IIII"
+        android:layout_marginTop="@dimen/small_margin_III"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/BigBlackTextStyle"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/big_margin_II"
+            android:layout_marginLeft="@dimen/small_margin_II"
+            android:layout_weight="1"
+            android:background="@color/gray"
+            android:gravity="center"
+            android:text="学号" />
+
+        <EditText
+            android:id="@+id/etUserEmail"
+            style="@style/BigBlackTextStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:gravity="center"
+            android:maxLines="1"
+            android:text="20000301@test.com" />
+
+        <TextView
+            android:id="@+id/tvEditUserEmailForSure"
+            style="@style/BigBlackTextStyle"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/big_margin_II"
+            android:layout_marginRight="@dimen/small_margin_II"
+            android:layout_weight="1"
+            android:background="@drawable/shape_sky_blue_bg"
+            android:gravity="center"
+            android:text="确定" />
+
+    </LinearLayout>
+
+
+    <Button
+        android:id="@+id/btnRegister"
+        style="@style/BigBlackTextStyle"
+        android:layout_width="130dp"
+        android:layout_height="@dimen/big_margin_II"
+        android:layout_marginTop="@dimen/small_margin_III"
+        android:background="@drawable/selector_gray_or_orange_bg"
+        android:enabled="false"
+        android:gravity="center"
+        android:text="注册帐号" />
+
+
+</LinearLayout>

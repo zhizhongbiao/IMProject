@@ -35,12 +35,15 @@ public class ActivityHandler extends Handler {
         int messageType = msg.what;
         OnThreadTaskFinishedListener onThreadTaskFinishedListener = listeners.get(listenerKey);
         if (onThreadTaskFinishedListener == null) {
-            Log.e(TAG, "handleMessage: listenerKey/messageType=" + listenerKey + "/" + messageType);
+            Log.e(TAG, "handleMessage: onThreadTaskFinishedListener/listenerKey/messageType=" +onThreadTaskFinishedListener+"/"+ listenerKey + "/" + messageType);
             return;
         }
         switch (messageType) {
             case Constants.HandlerMessageType.LOGIN_SUCCESS:
-                onThreadTaskFinishedListener.onThreadTaskFinished();
+                onThreadTaskFinishedListener.onThreadTaskFinished(messageType);
+                break;
+            case Constants.HandlerMessageType.LOGIN_FAILURE:
+                onThreadTaskFinishedListener.onThreadTaskFinished(messageType);
                 break;
         }
 

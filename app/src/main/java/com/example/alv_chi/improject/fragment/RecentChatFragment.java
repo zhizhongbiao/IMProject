@@ -12,7 +12,7 @@ import com.example.alv_chi.improject.adapter.RvRecentChatAdapter;
 import com.example.alv_chi.improject.bean.RecentChatItem;
 import com.example.alv_chi.improject.data.DataManager;
 import com.example.alv_chi.improject.eventbus.EventBusHelper;
-import com.example.alv_chi.improject.eventbus.MessageCreatedEvent;
+import com.example.alv_chi.improject.eventbus.OnMessageCreatedEvent;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -65,7 +65,7 @@ public class RecentChatFragment extends BaseFragment {
 
 
     @Subscribe(threadMode = ThreadMode.MAIN, priority = 10, sticky = true)
-    public void onMessageCreatedEvent(MessageCreatedEvent event) {
+    public void onMessageCreatedEvent(OnMessageCreatedEvent event) {
         RecentChatItem recentChatItem = event.getRecentChatItem();
         DataManager.getDataManagerInstance().collectRecentChat(recentChatItem);
         rvRecentChatAdapter.notifyDataSetChanged();

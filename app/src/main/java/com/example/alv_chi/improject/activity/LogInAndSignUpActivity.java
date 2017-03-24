@@ -91,7 +91,7 @@ public class LogInAndSignUpActivity extends BaseActivity implements OnThreadTask
     }
 
     @Override
-    public void onThreadTaskFinished() {
+    public void onThreadTaskFinished(int messageType) {
         startInComingMessageListenerService();
         startMainActivity();
         //kill this LogInAndSignUpActivity

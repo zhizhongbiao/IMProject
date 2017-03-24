@@ -69,6 +69,4 @@ public abstract class BaseFragment extends Fragment {
         super.onResume();
         mHoldingActivity.setCurrentFragment(this);
     }
-
-
 }

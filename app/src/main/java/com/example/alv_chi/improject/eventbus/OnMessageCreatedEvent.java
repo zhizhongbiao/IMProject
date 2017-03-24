@@ -5,11 +5,11 @@ import com.example.alv_chi.improject.bean.RecentChatItem;
 /**
  * Created by Alv_chi on 2017/3/7.
  */
-public class MessageCreatedEvent {
+public class OnMessageCreatedEvent {
 
     private RecentChatItem recentChatItem;
 
-    public MessageCreatedEvent(RecentChatItem recentChatItem) {
+    public OnMessageCreatedEvent(RecentChatItem recentChatItem) {
         this.recentChatItem = recentChatItem;
     }
 

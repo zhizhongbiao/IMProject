@@ -200,11 +200,11 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
 
-    protected void replaceFragmentAndAddToBackStack(BaseFragment fragment) {
+    public void replaceFragmentAndAddToBackStack(BaseFragment fragment) {
         showFragment(fragment, true);
     }
 
-    protected void replaceFragmentWithoutAddingToBackStack(BaseFragment fragment) {
+    public void replaceFragmentWithoutAddingToBackStack(BaseFragment fragment) {
         showFragment(fragment, false);
     }
 
@@ -224,7 +224,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
 
-    protected void removeTheTopFragmentFromBackStack() {
+    public void removeTheTopFragmentFromBackStack() {
         if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
             getSupportFragmentManager().popBackStack();
         } else {

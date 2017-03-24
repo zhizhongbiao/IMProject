@@ -94,14 +94,31 @@
         android:id="@+id/btnLoginButton"
         android:text="登陆"
         style="@style/BigBlackTextStyle"
+        android:background="@drawable/shape_sky_blue_bg"
         android:focusable="false"
         />
 
-    <View
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:id="@+id/view" />
+        android:orientation="vertical"
+        android:gravity="center"
+        >
+
+        <TextView
+            android:id="@+id/tvUserRegister"
+            android:layout_width="150dp"
+            android:layout_height="@dimen/big_margin_III"
+            style="@style/BigBlackTextStyle"
+            android:text="注册学生账号"
+            android:gravity="center"
+            android:background="@drawable/shape_orange_bg"
+            />
+
+
+
+    </LinearLayout>
 
 
 </LinearLayout>

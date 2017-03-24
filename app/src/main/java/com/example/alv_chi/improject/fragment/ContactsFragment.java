@@ -131,6 +131,8 @@ public class ContactsFragment extends BaseFragment implements LetterNavigationVi
         mHoldingActivity = (MainActivity) baseActivity;
     }
 
+
+//    this from NavigationLetterView 's listener;
     @Override
     public void getChosenLetter(String letter) {
 
@@ -152,6 +154,20 @@ public class ContactsFragment extends BaseFragment implements LetterNavigationVi
         } else {
             cvLetterCardView.setVisibility(View.GONE);
         }
+    }
+
+//   this two methods are invoked by MainActivity
+    public  void showTheNavigationLetterView()
+    {
+        lnvLetterNavigationView.setVisibility(View.VISIBLE);
+    }
+
+
+    public void hideTheNavigationLetterViewAndCenterTextView()
+    {
+        lnvLetterNavigationView.setVisibility(View.GONE);
+        cvLetterCardView.setVisibility(View.GONE);
+
     }
 
 

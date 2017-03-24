@@ -26,11 +26,17 @@ public class Constants {
 
         //        key for is the user you are chatting to onLine
         public static final String IS_ONLINE = "I m Online";
+
+
+        //        student account parameters/arguements
+        public static final String STUDENT_EMAIL = "email";
+        public static final String STUDENT_ID = "Id";
+        public static final String STUDENT_REGISTER_DATE = "Id";
     }
 
     public static class AppConfigConstants {
-//        public static final String OPEN_FIRE_SERVER_IP = "10.0.0.10";
-        public static final String OPEN_FIRE_SERVER_IP="192.168.1.100";
+        //        public static final String OPEN_FIRE_SERVER_IP = "10.0.0.10";
+        public static final String OPEN_FIRE_SERVER_IP = "192.168.23.1";
 
         public static final String OPEN_FIRE_SERVER_HOST_NAME = "windows10.microdone.cn";
         public static final String OPEN_FIRE_SERVER_DOMAIN_NAME = "windows10.microdone.cn";
@@ -50,6 +56,7 @@ public class Constants {
 
     public static class HandlerMessageType {
         public static final int LOGIN_SUCCESS = 0;
+        public static final int LOGIN_FAILURE = -1;
 
     }
 }
