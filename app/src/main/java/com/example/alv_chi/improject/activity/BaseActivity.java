@@ -2,6 +2,8 @@ package com.example.alv_chi.improject.activity;
 
 
 import android.animation.ObjectAnimator;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -157,7 +159,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                 .setIcon(R.mipmap.meinv4)
                 .setTitle(title)
                 .setMessage(message)
-                .setCancelable(true);
+                .setCancelable(false);
 
         if (negativeButtonOnClickListener != null) {
             builder.setNegativeButton(negativeButtonMsg, negativeButtonOnClickListener);
@@ -296,6 +298,18 @@ public abstract class BaseActivity extends AppCompatActivity {
     //    this method is for activity initialize its firstFragment if it has one,
 //    if it has not firstFragment ,it must return null;
     protected abstract BaseFragment getFirstFragment();
+
+
+    public  ProgressDialog showProgressBar(Context context) {
+
+        ProgressDialog  progressDialog= new ProgressDialog(context);
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("please wait...loading ...");
+
+
+        progressDialog.show();
+        return progressDialog;
+    }
 
 
 }

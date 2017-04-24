@@ -35,7 +35,7 @@ public class Constants {
     }
 
     public static class AppConfigConstants {
-        //        public static final String OPEN_FIRE_SERVER_IP = "10.0.0.10";
+//                public static final String OPEN_FIRE_SERVER_IP = "172.27.156.177";
         public static final String OPEN_FIRE_SERVER_IP = "192.168.23.1";
 
         public static final String OPEN_FIRE_SERVER_HOST_NAME = "windows10.microdone.cn";
@@ -55,8 +55,8 @@ public class Constants {
     }
 
     public static class HandlerMessageType {
-        public static final int LOGIN_SUCCESS = 0;
-        public static final int LOGIN_FAILURE = -1;
+        public static final int SUCCESS = 0;
+        public static final int FAILURE = -1;
 
     }
 }

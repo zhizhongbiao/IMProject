@@ -69,8 +69,8 @@ public class ContactsFragment extends BaseFragment implements LetterNavigationVi
                 , contactItems
                 , ReUsableAdapter.CONTACTS_ITEM_VIEW_TYPE);
         rvContactItem.setAdapter(reUsableAdapter);
-        Log.e(TAG, "intializeRvContacts: 联系人展示完毕DataManager.getDataManagerInstance().getContactItems().size()=" + DataManager.getDataManagerInstance().getContactItems().size());
-        Log.e(TAG, "intializeRvContacts: 联系人展示完毕reUsableAdapter.getContactItems().size()=" + reUsableAdapter.getContactItems().size());
+//        Log.e(TAG, "intializeRvContacts: 联系人展示完毕DataManager.getDataManagerInstance().getContactItems().size()=" + DataManager.getDataManagerInstance().getContactItems().size());
+//        Log.e(TAG, "intializeRvContacts: 联系人展示完毕reUsableAdapter.getContactItems().size()=" + reUsableAdapter.getContactItems().size());
 
         rvContactItem.addOnScrollListener(new OnRecyclerViewScrollListener() {
             @Override

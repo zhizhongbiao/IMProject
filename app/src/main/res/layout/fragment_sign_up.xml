@@ -45,7 +45,7 @@
             android:text="姓名" />
 
         <EditText
-            android:id="@+id/etUserName"
+            android:id="@+id/etLoginUserName"
             style="@style/BigBlackTextStyle"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -166,7 +166,7 @@
             android:layout_weight="1"
             android:background="@color/gray"
             android:gravity="center"
-            android:text="学号" />
+            android:text="邮箱" />
 
         <EditText
             android:id="@+id/etUserEmail"

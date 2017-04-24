@@ -149,7 +149,7 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
                             , SystemUtil.getCurrentSystemTime()
                             , message, null, baseItem.getUserJID(), MessageRvAdapter.TEXT_MESSAGE_VIEW_TYPE, false,baseItem.isOnline());
                     mHoldingActivity.getXmppListenerService().sendMessage(textMessageItem);
-                    Log.e(TAG, "onClick: 发送成功 sendMessage: contactItem.getUserJID()=" + baseItem.getUserJID());
+//                    Log.e(TAG, "onClick: 发送成功 sendMessage: contactItem.getUserJID()=" + baseItem.getUserJID());
 
                     refreshMessageContainer(textMessageItem);
                 } catch (Exception e) {

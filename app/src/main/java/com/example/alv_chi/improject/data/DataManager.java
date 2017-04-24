@@ -29,6 +29,7 @@ public class DataManager {
     private String currentChattingUserJID;
     private String currentMasterUserName;
     private String currentMasterPassword;
+//    private String serverIP;
 
 
     public static DataManager getDataManagerInstance() {
@@ -42,6 +43,14 @@ public class DataManager {
     public void setCurrentChattingUserJID(String currentChattingUserJID) {
         this.currentChattingUserJID = currentChattingUserJID;
     }
+
+//    public String getServerIP() {
+//        return serverIP;
+//    }
+//
+//    public void setServerIP(String serverIP) {
+//        this.serverIP = serverIP;
+//    }
 
     public String getCurrentChattingUserJID() {
         return currentChattingUserJID;
@@ -112,7 +121,7 @@ public class DataManager {
         chats.clear();
         clearContactsData();
         currentChattingUserJID = "";
-        System.gc();
+//        System.gc();
     }
 
     public void clearContactsData()

@@ -1,5 +1,6 @@
 package com.example.alv_chi.improject.fragment;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -54,11 +55,25 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
     LinearLayout activityLogin;
     @BindView(R.id.tvUserRegister)
     TextView tvUserRegister;
+//    @BindView(R.id.textView4)
+//    TextView textView4;
+//    @BindView(R.id.etIPAddressOne)
+//    EditText etIPAddressOne;
+//    @BindView(R.id.etIPAddressTwo)
+//    EditText etIPAddressTwo;
+//    @BindView(R.id.etIPAddressThree)
+//    EditText etIPAddressThree;
+//    @BindView(R.id.etIPAddressFour)
+//    EditText etIPAddressFour;
+//    @BindView(R.id.llServerIP)
+//    LinearLayout llServerIP;
 
     private LogInAndSignUpActivity mHoldingActivity;
     private String masterLoginName;
     private String masterLoginPassWord;
+//    private String ipMatcher="^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$";
     private SharedPreferences sharedPreferences;
+    private ProgressDialog contentLoadingProgressBar;
 
     public static LoginFragment newInstance() {
         return new LoginFragment();
@@ -127,8 +142,12 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
 
     @Override
     public void onThreadTaskFinished(int messageType) {
+        if (contentLoadingProgressBar!=null)
+        {
+            contentLoadingProgressBar.dismiss();
+        }
         switch (messageType) {
-            case Constants.HandlerMessageType.LOGIN_SUCCESS:
+            case Constants.HandlerMessageType.SUCCESS:
                 Log.e(TAG, "onThreadTaskFinished: LoginFragment");
                 mHoldingActivity.startInComingMessageListenerService();
                 mHoldingActivity.startMainActivity();
@@ -151,7 +170,7 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
                 //kill this LogInAndSignUpActivity
                 mHoldingActivity.finish();
                 break;
-            case Constants.HandlerMessageType.LOGIN_FAILURE:
+            case Constants.HandlerMessageType.FAILURE:
                 btnLoginButton.setClickable(true);
                 break;
         }
@@ -176,11 +195,34 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
     public void login() {
         masterLoginName = getStringFromEditText(etUserName);
         masterLoginPassWord = getStringFromEditText(etUserLoginPassword);
+//        String IP = "";
+//        EditText[] ipEt = {etIPAddressOne, etIPAddressTwo, etIPAddressThree, etIPAddressFour};
+
+//        for (int i = 0; i < ipEt.length; i++) {
+//            String partOfIp = getStringFromEditText(ipEt[i]);
+//            if (i == 0) {
+//                IP = partOfIp;
+//            } else {
+//                IP = IP + "." + partOfIp;
+//            }
+//            Log.e(TAG, "login: IP=" + IP);
+//
+//        }
+//        if (!IP.matches(ipMatcher)) {
+//            Log.e(TAG, "login: IP Address Wrong!!!" );
+//            connectServerWrong(null);
+//            return;
+//        }
+//        DataManager.getDataManagerInstance().setServerIP(IP);
+//        DataManager.getDataManagerInstance().setServerIP(Constants.AppConfigConstants.OPEN_FIRE_SERVER_IP);
+
         if (masterLoginName.equals("") || masterLoginPassWord.equals("")) {
             loginNameOrPswWrong();
             return;
         }
         btnLoginButton.setClickable(false);
+        contentLoadingProgressBar = mHoldingActivity.showProgressBar(mHoldingActivity);
+
         ThreadUtil.executeThreadTask(new Runnable() {
             @Override
             public void run() {
@@ -188,17 +230,17 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
 
 //                    XmppHelper.getXmppHelperInStance().login(Constants.AppConfigConstants.CLIENT_USER_NAME, Constants.AppConfigConstants.CLIENT_PASSWORD);
                     XmppHelper.getXmppHelperInStance().login(masterLoginName, masterLoginPassWord);
-                    HandlerHelper.sendMessageByHandler(mHandler, TAG, Constants.HandlerMessageType.LOGIN_SUCCESS);
+                    HandlerHelper.sendMessageByHandler(mHandler, TAG, Constants.HandlerMessageType.SUCCESS);
 
                 } catch (LoginNameOrPasswordException e) {
-                    HandlerHelper.sendMessageByHandler(mHandler, TAG, Constants.HandlerMessageType.LOGIN_FAILURE);
-                    Log.e(TAG, "login happen Exception="+e.getMessage());
+                    HandlerHelper.sendMessageByHandler(mHandler, TAG, Constants.HandlerMessageType.FAILURE);
+                    Log.e(TAG, "login happen Exception=" + e.getMessage());
                     e.printStackTrace();
                     loginNameOrPswWrong();
 
                 } catch (ConnectException e) {
-                    HandlerHelper.sendMessageByHandler(mHandler, TAG, Constants.HandlerMessageType.LOGIN_FAILURE);
-                    Log.e(TAG, "login happen Exception="+e.getMessage());
+                    HandlerHelper.sendMessageByHandler(mHandler, TAG, Constants.HandlerMessageType.FAILURE);
+                    Log.e(TAG, "login happen Exception=" + e.getMessage());
                     e.printStackTrace();
                     connectServerWrong(e);
                 }
@@ -209,7 +251,7 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
 
     private void connectServerWrong(ConnectException e) {
         mHoldingActivity.showAlertDialogInThread("Tips"
-                , "服务器连接不上，请稍后再试！"
+                , "服务器IP地址不对或者服务器连接不上，请稍后再试！"
                 , "知道了，下次再试"
                 , new DialogInterface.OnClickListener() {
                     @Override
@@ -269,5 +311,6 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
         strFromEt = strFromEt.trim();
         return strFromEt;
     }
+
 
 }

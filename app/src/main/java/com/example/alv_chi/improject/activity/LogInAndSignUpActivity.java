@@ -79,7 +79,7 @@ public class LogInAndSignUpActivity extends BaseActivity implements OnThreadTask
             public void run() {
                 try {
                     XmppHelper.getXmppHelperInStance().login(DataManager.getDataManagerInstance().getCurrentMasterUserName(), DataManager.getDataManagerInstance().getCurrentMasterPassword());
-                    HandlerHelper.sendMessageByHandler(mHandler, TAG, Constants.HandlerMessageType.LOGIN_SUCCESS);
+                    HandlerHelper.sendMessageByHandler(mHandler, TAG, Constants.HandlerMessageType.SUCCESS);
 
                 } catch (Exception e) {
                     e.printStackTrace();

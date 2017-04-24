@@ -26,8 +26,6 @@ import org.jivesoftware.smack.packet.Presence;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
 public class ChatRoomActivity extends BaseActivity {
 
@@ -73,10 +71,11 @@ public class ChatRoomActivity extends BaseActivity {
 
         Log.e(TAG, "intializeToolbar: DataManager.getDataManagerInstance().getIsOnline().size="+ size);
 
-        Set<Map.Entry<String, Boolean>> entries = isOnline.entrySet();
-        for (Map.Entry<String, Boolean> entry : entries) {
-            Log.e(TAG, "intializeToolbar:key/value ="+entry.getKey()+"/"+entry.getValue() );
-        }
+//        just for testing
+//        Set<Map.Entry<String, Boolean>> entries = isOnline.entrySet();
+//        for (Map.Entry<String, Boolean> entry : entries) {
+//            Log.e(TAG, "intializeToolbar:key/value ="+entry.getKey()+"/"+entry.getValue() );
+//        }
 
         setUserChattingToIsOnline(DataManager.getDataManagerInstance().getIsOnline().get(baseItem.getUserJID()));///////////？？？？？？？？？？有可能取出null
 

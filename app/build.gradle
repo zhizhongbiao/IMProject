@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'//butterknife plugin
 apply plugin: 'com.antfortune.freeline'//freeline plugin
-
+apply plugin: 'org.greenrobot.greendao'//GreenDao
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
     defaultConfig {
         applicationId "com.example.alv_chi.improject"
-        minSdkVersion 22
+        minSdkVersion 21
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -19,6 +19,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+//   GreenDao 3.2 start
+    greendao {
+        schemaVersion 1    //数据库schema版本，也可以理解为数据库版本号
+        daoPackage'com.example.alv_chi.improject.dao'   //设置DaoMaster、DaoSession、Dao包名
+        targetGenDir'src/main/java'   //设置DaoMaster、DaoSession、Dao 的生成目标路径目录
+    }
+//    GreenDao 3.2 end
 
 }
 
@@ -43,4 +51,8 @@ dependencies {
     testCompile 'junit:junit:4.12'
     apt 'com.jakewharton:butterknife-compiler:8.4.0'
     compile 'org.greenrobot:eventbus:3.0.0'
+
+//    GreenDao 3.2
+    compile 'org.greenrobot:greendao:3.2.0'
+    compile 'org.greenrobot:greendao-generator:3.2.0'
 }

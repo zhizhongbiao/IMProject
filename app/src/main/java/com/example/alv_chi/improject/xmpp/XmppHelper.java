@@ -39,6 +39,7 @@ public class XmppHelper implements XMPP {
     private XMPPTCPConnectionConfiguration xmppConfigBuilder;
 
 
+
     public static XmppHelper getXmppHelperInStance() {
         if (xmppHelperInstance == null) {
             xmppHelperInstance = new XmppHelper();
@@ -53,7 +54,6 @@ public class XmppHelper implements XMPP {
 
     //          initialize XMPP
     private void initial() {
-
         xmppConfigBuilder = XMPPTCPConnectionConfiguration.builder()
                 .setHost(Constants.AppConfigConstants.OPEN_FIRE_SERVER_IP)
                 .setConnectTimeout(2000)

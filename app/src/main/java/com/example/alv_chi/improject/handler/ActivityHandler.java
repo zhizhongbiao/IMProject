@@ -23,8 +23,8 @@ public class ActivityHandler extends Handler {
         listeners.remove(key);
     }
 
-    public void addListeners(String key, OnThreadTaskFinishedListener value) {
-        listeners.put(key, value);
+    public void addListeners(String key, OnThreadTaskFinishedListener listener) {
+        listeners.put(key, listener);
     }
 
 
@@ -39,10 +39,10 @@ public class ActivityHandler extends Handler {
             return;
         }
         switch (messageType) {
-            case Constants.HandlerMessageType.LOGIN_SUCCESS:
+            case Constants.HandlerMessageType.SUCCESS:
                 onThreadTaskFinishedListener.onThreadTaskFinished(messageType);
                 break;
-            case Constants.HandlerMessageType.LOGIN_FAILURE:
+            case Constants.HandlerMessageType.FAILURE:
                 onThreadTaskFinishedListener.onThreadTaskFinished(messageType);
                 break;
         }

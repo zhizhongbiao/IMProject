@@ -26,6 +26,7 @@ import butterknife.ButterKnife;
 
 public class RecentChatFragment extends BaseFragment {
 
+    private static final String TAG = "RecentChatFragment";
     @BindView(R.id.rvRecentChat)
     RecyclerView rvRecentChat;
     private MainActivity mHoldingActivity;
@@ -52,7 +53,7 @@ public class RecentChatFragment extends BaseFragment {
     }
 
     @Override
-    public void onCreate( Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EventBusHelper.getEventBusHelperInstance().getEventBusInstance().register(this);
     }
@@ -67,7 +68,17 @@ public class RecentChatFragment extends BaseFragment {
     @Subscribe(threadMode = ThreadMode.MAIN, priority = 10, sticky = true)
     public void onMessageCreatedEvent(OnMessageCreatedEvent event) {
         RecentChatItem recentChatItem = event.getRecentChatItem();
+        if (DataManager.getDataManagerInstance().getCurrentMasterUserName().equals(recentChatItem.getUserName()))
+        {
+//            Log.e(TAG, "onMessageCreatedEvent: MasterUserName().equals(recentChatItem.getUserName())="+recentChatItem.getUserName() );
+            return;
+        }
+
         DataManager.getDataManagerInstance().collectRecentChat(recentChatItem);
-        rvRecentChatAdapter.notifyDataSetChanged();
+        if (rvRecentChatAdapter != null) {
+            rvRecentChatAdapter.notifyDataSetChanged();
+        }
+
+//        Log.e(TAG, "onMessageCreatedEvent: TimeStamp/Message=" + recentChatItem.getLatestMessageTimeStamp() + "/" + recentChatItem.getLatestMessage());
     }
 }

@@ -19,8 +19,8 @@ import com.example.alv_chi.improject.bean.RecentChatItem;
 import com.example.alv_chi.improject.bean.TextMessageItem;
 import com.example.alv_chi.improject.constant.Constants;
 import com.example.alv_chi.improject.data.DataManager;
-import com.example.alv_chi.improject.eventbus.OnDatasArrivedChattingFragmentEvent;
 import com.example.alv_chi.improject.eventbus.EventBusHelper;
+import com.example.alv_chi.improject.eventbus.OnDatasArrivedChattingFragmentEvent;
 import com.example.alv_chi.improject.eventbus.OnMessageCreatedEvent;
 import com.example.alv_chi.improject.eventbus.OnUserStatusChangeEvent;
 import com.example.alv_chi.improject.exception.ConnectException;
@@ -28,6 +28,7 @@ import com.example.alv_chi.improject.fragment.BaseFragment;
 import com.example.alv_chi.improject.fragment.ChattingRoomFragment;
 import com.example.alv_chi.improject.util.ChineseToPinyinHelper;
 import com.example.alv_chi.improject.util.SystemUtil;
+import com.example.alv_chi.improject.util.ThreadUtil;
 import com.example.alv_chi.improject.xmpp.XmppHelper;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -50,7 +51,7 @@ import java.util.Set;
 
 public class XmppListenerService extends Service implements ChatManagerListener, ChatMessageListener, RosterListener {
 
-    private static final String TAG = "InComingMessageService";
+    private static final String TAG = "XmppListenerService";
     private BaseActivity currentActivity;
     private DataManager dataManagerInstance;
     private int singleUserJIDMessageId;
@@ -64,12 +65,26 @@ public class XmppListenerService extends Service implements ChatManagerListener,
         try {
             XmppHelper.getXmppHelperInStance().getChatManager().addChatListener(XmppListenerService.this);
             Log.e(TAG, "onCreate: 服务活了");
-            initialize();
+
         } catch (ConnectException e) {
             e.printStackTrace();
-//            如果此处是因为死而复生，而产生的错误应该进行异步联网和登陆；
+//            如果此处出了错应再次启动监听，因为addChatListener中含有网络操作，所以用异步任务，
+//             第一次启动监听不用异步任务是因为，前面已经初始化了，addChatListener中网络操作已经被执行完了；
+            ThreadUtil.executeThreadTask(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        XmppHelper.getXmppHelperInStance().getChatManager().addChatListener(XmppListenerService.this);
+
+                    } catch (ConnectException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+            });
             Log.e(TAG, "XmppListenerService onCreate: ConnectException=" + e.getMessage());
         }
+
+        initialize();
     }
 
 
@@ -153,7 +168,7 @@ public class XmppListenerService extends Service implements ChatManagerListener,
 
             Collections.sort(DataManager.getDataManagerInstance().getContactItems());//sort the ContactItems
 
-            Log.e(TAG, "initializeContactsData: 联系人在服务初始化了DataManager.getDataManagerInstance().getContactItems().size()="+DataManager.getDataManagerInstance().getContactItems().size() );
+//            Log.e(TAG, "initializeContactsData: 联系人在服务初始化了DataManager.getDataManagerInstance().getContactItems().size()="+DataManager.getDataManagerInstance().getContactItems().size() );
 
         } catch (ConnectException e) {
             e.printStackTrace();
@@ -287,6 +302,7 @@ public class XmppListenerService extends Service implements ChatManagerListener,
                 , baseItem.isOnline());
 //        this is to RecentChatFragment
         EventBusHelper.getEventBusHelperInstance().getEventBusInstance().postSticky(new OnMessageCreatedEvent(recentChatItem));
+//        Log.e(TAG, "createRecentChatRecord: TimeStamp/Message="+baseItem.getCurrentTimeStamp()+"/"+baseItem.getMesage() );
     }
 
 
@@ -366,7 +382,7 @@ public class XmppListenerService extends Service implements ChatManagerListener,
         {
             JIDFromUser=JIDFromUser.split("/")[0];
         }
-        Log.e(TAG, "presenceChanged: JIDFromUser=" + JIDFromUser);
+//        Log.e(TAG, "presenceChanged: JIDFromUser=" + JIDFromUser);
         boolean isOnline = false;
         isOnline = getUserStatus(isOnline, presence);
         DataManager.getDataManagerInstance().getIsOnline().put(JIDFromUser, isOnline);
