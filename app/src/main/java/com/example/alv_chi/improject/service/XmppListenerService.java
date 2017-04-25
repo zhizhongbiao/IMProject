@@ -26,6 +26,8 @@ import com.example.alv_chi.improject.eventbus.OnUserStatusChangeEvent;
 import com.example.alv_chi.improject.exception.ConnectException;
 import com.example.alv_chi.improject.fragment.BaseFragment;
 import com.example.alv_chi.improject.fragment.ChattingRoomFragment;
+import com.example.alv_chi.improject.greendao.DataBaseUtil;
+import com.example.alv_chi.improject.greendao.MessageRecord;
 import com.example.alv_chi.improject.util.ChineseToPinyinHelper;
 import com.example.alv_chi.improject.util.SystemUtil;
 import com.example.alv_chi.improject.util.ThreadUtil;
@@ -158,7 +160,7 @@ public class XmppListenerService extends Service implements ChatManagerListener,
                     navigationLetter = "#";
                 }
 
-                Presence presence = XmppHelper.getXmppHelperInStance().getRoster().getPresence(userJID+"/Smack");
+                Presence presence = XmppHelper.getXmppHelperInStance().getRoster().getPresence(userJID + "/Smack");
                 isOnline = getUserStatus(isOnline, presence);
                 DataManager.getDataManagerInstance().getIsOnline().put(userJID, isOnline);
 
@@ -239,9 +241,8 @@ public class XmppListenerService extends Service implements ChatManagerListener,
         String userNameFrom = message.getSubject();
         String stanzaId = message.getStanzaId();
         Boolean isOnline = dataManagerInstance.getIsOnline().get(JIDFromUserSendMsg);
-        if (isOnline==null)
-        {
-            isOnline=false;
+        if (isOnline == null) {
+            isOnline = false;
         }
 
         if (userNameFrom == null || userNameFrom.trim().equals("")) {
@@ -263,7 +264,7 @@ public class XmppListenerService extends Service implements ChatManagerListener,
             if (currentActivity != null && JIDFromUserSendMsg.equals(DataManager.getDataManagerInstance().getCurrentChattingUserJID())) {
                 BaseFragment currentFragment = currentActivity.getmCurrentFragment();
                 if (currentFragment instanceof ChattingRoomFragment) {
-                    ((ChattingRoomFragment) currentFragment).refreshMessageContainer(messageItem);
+                    ((ChattingRoomFragment) currentFragment).refreshMessageContainer(false,messageItem);
                 }
             } else {
 
@@ -293,7 +294,7 @@ public class XmppListenerService extends Service implements ChatManagerListener,
     }
 
     // notify the RecentChatFragment create recentChatItem;
-    private void createRecentChatRecord(BaseItem baseItem) {
+    private void createRecentChatRecord(final BaseItem baseItem) {
         RecentChatItem recentChatItem = new RecentChatItem(baseItem.getUserName()
                 , baseItem.getCurrentTimeStamp()
                 , baseItem.getMesage()
@@ -303,6 +304,19 @@ public class XmppListenerService extends Service implements ChatManagerListener,
 //        this is to RecentChatFragment
         EventBusHelper.getEventBusHelperInstance().getEventBusInstance().postSticky(new OnMessageCreatedEvent(recentChatItem));
 //        Log.e(TAG, "createRecentChatRecord: TimeStamp/Message="+baseItem.getCurrentTimeStamp()+"/"+baseItem.getMesage() );
+
+
+//        store the message record in anotherThread
+        ThreadUtil.executeThreadTask(new Runnable() {
+            @Override
+            public void run() {
+                DataBaseUtil.getDataBaseInstance().create(new MessageRecord(0L, baseItem.getUserName(), dataManagerInstance.getCurrentMasterUserName(),
+                        baseItem.getCurrentTimeStamp(), baseItem.getMesage(),
+                        baseItem.getCurrentTimeStamp(), baseItem.getMesage(), baseItem.getUserJID(), baseItem.getTypeView()
+                        , baseItem.isReceivedMessage(), baseItem.isOnline()));
+                Log.e(TAG, "createRecentChatRecord run: 插入消息记录线程完成执行" );
+            }
+        });
     }
 
 
@@ -310,16 +324,18 @@ public class XmppListenerService extends Service implements ChatManagerListener,
         this.currentActivity = currentActivity;
     }
 
-//      this event is posted by ChattingRoomFragment  ;
+    //      this event is posted by ChattingRoomFragment  ;
     @Subscribe(threadMode = ThreadMode.MAIN, priority = 10, sticky = true)
     public void onDatasHaveArrivedChattingFragmnet(OnDatasArrivedChattingFragmentEvent event) {
         if (notificationManager != null && dataManagerInstance.getMessageNotificationIds().containsKey(event.getUserJIDOfDatas())) {
             notificationManager.cancel(dataManagerInstance.getMessageNotificationIds().get(event.getUserJIDOfDatas()));
         }
         dataManagerInstance.getMessageNotificationIds().remove(event.getUserJIDOfDatas());
-        if (dataManagerInstance.getAllUsersMessageRecords().get(event.getUserJIDOfDatas()).size() > 100) {
+
+        if (dataManagerInstance.getAllUsersMessageRecords().get(event.getUserJIDOfDatas()).size() > 5) {
 //            此处将超出100的部分数据保存进数据库，并将将多出部分删除；
         }
+
     }
 
 
@@ -355,7 +371,6 @@ public class XmppListenerService extends Service implements ChatManagerListener,
     }
 
 
-
 //    RosterListener needs to implement those methods
 
     @Override
@@ -378,9 +393,8 @@ public class XmppListenerService extends Service implements ChatManagerListener,
 
         String JIDFromUser = presence.getFrom();
 
-        if (JIDFromUser.contains("/"))
-        {
-            JIDFromUser=JIDFromUser.split("/")[0];
+        if (JIDFromUser.contains("/")) {
+            JIDFromUser = JIDFromUser.split("/")[0];
         }
 //        Log.e(TAG, "presenceChanged: JIDFromUser=" + JIDFromUser);
         boolean isOnline = false;

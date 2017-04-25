@@ -8,10 +8,11 @@ import org.greenrobot.greendao.annotation.Generated;
  * Created by Alv_chi on 2017/4/24.
  */
 @Entity
-public class MessageDao {
+public class MessageRecord {
     @Id(autoincrement = true)
     private Long id;
     private String userName;
+    private String masterUserName;
     private String latestMessageTimeStamp;
     private String latestMessage;
 
@@ -22,13 +23,14 @@ public class MessageDao {
     private int typeView;
     private boolean isReceivedMessage;
     private boolean isOnline;
-    @Generated(hash = 853197296)
-    public MessageDao(Long id, String userName, String latestMessageTimeStamp,
-            String latestMessage, String currentTimeStamp, String mesage,
-            String userJID, int typeView, boolean isReceivedMessage,
-            boolean isOnline) {
+    @Generated(hash = 1860373992)
+    public MessageRecord(Long id, String userName, String masterUserName,
+            String latestMessageTimeStamp, String latestMessage,
+            String currentTimeStamp, String mesage, String userJID, int typeView,
+            boolean isReceivedMessage, boolean isOnline) {
         this.id = id;
         this.userName = userName;
+        this.masterUserName = masterUserName;
         this.latestMessageTimeStamp = latestMessageTimeStamp;
         this.latestMessage = latestMessage;
         this.currentTimeStamp = currentTimeStamp;
@@ -38,8 +40,8 @@ public class MessageDao {
         this.isReceivedMessage = isReceivedMessage;
         this.isOnline = isOnline;
     }
-    @Generated(hash = 1332182039)
-    public MessageDao() {
+    @Generated(hash = 772980815)
+    public MessageRecord() {
     }
     public Long getId() {
         return this.id;
@@ -52,6 +54,12 @@ public class MessageDao {
     }
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+    public String getMasterUserName() {
+        return this.masterUserName;
+    }
+    public void setMasterUserName(String masterUserName) {
+        this.masterUserName = masterUserName;
     }
     public String getLatestMessageTimeStamp() {
         return this.latestMessageTimeStamp;
@@ -101,4 +109,6 @@ public class MessageDao {
     public void setIsOnline(boolean isOnline) {
         this.isOnline = isOnline;
     }
+   
+
 }

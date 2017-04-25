@@ -5,12 +5,20 @@
     android:background="@mipmap/meinv4"
     android:orientation="vertical">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rvMessageContainer"
+    <in.srain.cube.views.ptr.PtrClassicFrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_gravity="start"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:id="@+id/pcfl"
+        >
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rvMessageContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+             />
+    </in.srain.cube.views.ptr.PtrClassicFrameLayout>
 
 
     <include layout="@layout/view_split_line" />
