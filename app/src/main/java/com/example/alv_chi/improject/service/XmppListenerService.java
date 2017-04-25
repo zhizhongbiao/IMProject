@@ -310,7 +310,8 @@ public class XmppListenerService extends Service implements ChatManagerListener,
         ThreadUtil.executeThreadTask(new Runnable() {
             @Override
             public void run() {
-                DataBaseUtil.getDataBaseInstance().create(new MessageRecord(0L, baseItem.getUserName(), dataManagerInstance.getCurrentMasterUserName(),
+//                MessageRecord 第一个参数为数据库的主键值，设置为null的目的是让数据库的主键值自动增长，而不是手动去设置麻烦。
+                DataBaseUtil.getDataBaseInstance().create(new MessageRecord(null, baseItem.getUserName(), dataManagerInstance.getCurrentMasterUserName(),
                         baseItem.getCurrentTimeStamp(), baseItem.getMesage(),
                         baseItem.getCurrentTimeStamp(), baseItem.getMesage(), baseItem.getUserJID(), baseItem.getTypeView()
                         , baseItem.isReceivedMessage(), baseItem.isOnline()));

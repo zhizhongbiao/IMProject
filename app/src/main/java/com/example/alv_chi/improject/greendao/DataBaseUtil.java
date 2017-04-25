@@ -68,7 +68,7 @@ public class DataBaseUtil {
         List<MessageRecord> messageRecords = messageRecordDao.queryBuilder()
                 .where(MessageRecordDao.Properties.MasterUserName.eq(messageRecord.getMasterUserName()))
                 .where(MessageRecordDao.Properties.UserName.eq(messageRecord.getUserName()))
-                .orderAsc(MessageRecordDao.Properties.Id)
+                .orderDesc(MessageRecordDao.Properties.Id)
                 .limit(numOfMsgRecords)
                 .build()
                 .list();

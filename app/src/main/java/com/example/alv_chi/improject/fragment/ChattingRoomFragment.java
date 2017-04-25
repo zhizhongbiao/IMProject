@@ -1,5 +1,8 @@
 package com.example.alv_chi.improject.fragment;
 
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -37,6 +40,8 @@ import in.srain.cube.views.ptr.PtrClassicDefaultHeader;
 import in.srain.cube.views.ptr.PtrClassicFrameLayout;
 import in.srain.cube.views.ptr.PtrDefaultHandler;
 import in.srain.cube.views.ptr.PtrFrameLayout;
+import in.srain.cube.views.ptr.header.MaterialHeader;
+import in.srain.cube.views.ptr.header.StoreHouseHeader;
 
 /**
  * Created by Alv_chi on 2017/1/14.
@@ -126,8 +131,19 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
 
     private void initialUltraPTR() {
         PtrClassicDefaultHeader ptrClassicDefaultHeader = new PtrClassicDefaultHeader(mHoldingActivity);
-        pcfl.setHeaderView(ptrClassicDefaultHeader);
-        pcfl.addPtrUIHandler(ptrClassicDefaultHeader);
+        StoreHouseHeader storeHouseHeader = new StoreHouseHeader(mHoldingActivity);
+        storeHouseHeader.setDropHeight(5)
+                .setLineWidth(3)
+                .setTextColor(Color.RED)
+                .initWithString("load more Msg...");
+
+        MaterialHeader materialHeader = new MaterialHeader(mHoldingActivity);
+        materialHeader.setColorSchemeColors(new int[]{Color.RED,Color.GREEN,Color.BLUE});
+        materialHeader.invalidateDrawable(new BitmapDrawable(getResources(), BitmapFactory.decodeResource(getResources(),R.mipmap.meinv4)));
+
+        pcfl.setHeaderView(storeHouseHeader);
+        pcfl.addPtrUIHandler(storeHouseHeader);
+
         pcfl.setPtrHandler(new PtrDefaultHandler() {
             @Override
             public void onRefreshBegin(PtrFrameLayout frame) {
@@ -136,7 +152,7 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
                     public void run() {
                         if (baseItem != null) {
                             factor++;
-                            messageRecords = DataBaseUtil.getDataBaseInstance().retrive(30 * factor, new MessageRecord(0L, baseItem.getUserName()
+                            messageRecords = DataBaseUtil.getDataBaseInstance().retrive(30 * factor, new MessageRecord(null, baseItem.getUserName()
                                     , DataManager.getDataManagerInstance().getCurrentMasterUserName(),
                                     baseItem.getCurrentTimeStamp(), baseItem.getMesage(),
                                     baseItem.getCurrentTimeStamp(), baseItem.getMesage(), baseItem.getUserJID(), baseItem.getTypeView()
@@ -259,10 +275,10 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
     }
 
     private void showTheMsgRecordFromDB() {
-        if (messageRecords.size() == 0) {
+        if (messageRecords.size() == textMessageItems.size()) {
             Toast.makeText(mHoldingActivity, "无更多消息记录", Toast.LENGTH_SHORT).show();
         } else {
-
+            textMessageItems.clear();
             for (MessageRecord messageRecord : messageRecords) {
                 refreshMessageContainer(true, new TextMessageItem(messageRecord.getUserName(), messageRecord.getLatestMessageTimeStamp()
                         , messageRecord.getMesage(), null, messageRecord.getUserJID(), messageRecord.getTypeView()
