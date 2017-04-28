@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.example.alv_chi.improject.R;
 import com.example.alv_chi.improject.bean.TextMessageItem;
 import com.example.alv_chi.improject.custom.CircleImageView;
+import com.example.alv_chi.improject.data.DataManager;
 
 import java.util.List;
 
@@ -64,7 +65,7 @@ public class MessageRvAdapter extends RecyclerView.Adapter<MessageRvAdapter.View
 
             viewHolder.tvYourCurrentTime.setText(textMessageItem.getCurrentTimeStamp());
             viewHolder.tvYourChattingMessage.setText(textMessageItem.getMesage());
-            viewHolder.tvYourUserName.setText(textMessageItem.getUserName());
+            viewHolder.tvYourUserName.setText(DataManager.getDataManagerInstance().getCurrentMasterUserName());
         } else {
             viewHolder.llYourTextMessage.setVisibility(View.GONE);
             viewHolder.llOtherTextMessage.setVisibility(View.VISIBLE);

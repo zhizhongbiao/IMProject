@@ -215,29 +215,24 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
 //        }
 //        DataManager.getDataManagerInstance().setServerIP(IP);
 //        DataManager.getDataManagerInstance().setServerIP(Constants.AppConfigConstants.OPEN_FIRE_SERVER_IP);
-
         if (masterLoginName.equals("") || masterLoginPassWord.equals("")) {
             loginNameOrPswWrong();
             return;
         }
         btnLoginButton.setClickable(false);
         contentLoadingProgressBar = mHoldingActivity.showProgressBar(mHoldingActivity);
-
         ThreadUtil.executeThreadTask(new Runnable() {
             @Override
             public void run() {
                 try {
-
 //                    XmppHelper.getXmppHelperInStance().login(Constants.AppConfigConstants.CLIENT_USER_NAME, Constants.AppConfigConstants.CLIENT_PASSWORD);
                     XmppHelper.getXmppHelperInStance().login(masterLoginName, masterLoginPassWord);
                     HandlerHelper.sendMessageByHandler(mHandler, TAG, Constants.HandlerMessageType.SUCCESS);
-
                 } catch (LoginNameOrPasswordException e) {
                     HandlerHelper.sendMessageByHandler(mHandler, TAG, Constants.HandlerMessageType.FAILURE);
                     Log.e(TAG, "login happen Exception=" + e.getMessage());
                     e.printStackTrace();
                     loginNameOrPswWrong();
-
                 } catch (ConnectException e) {
                     HandlerHelper.sendMessageByHandler(mHandler, TAG, Constants.HandlerMessageType.FAILURE);
                     Log.e(TAG, "login happen Exception=" + e.getMessage());

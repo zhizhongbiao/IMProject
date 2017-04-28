@@ -4,16 +4,17 @@
     android:id="@+id/flFragmentContainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-   android:background="@color/cyan"
+   android:background="@mipmap/start_image"
     tools:context="com.example.alv_chi.improject.activity.StartActivity">
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:gravity="center"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:gravity="start"
         style="@style/BigBlackTextStyleIII"
-        android:text="this is the start page"
+        android:textColor="@color/cyan"
+        android:text="communication makes things easy"
         />
 
 </FrameLayout>

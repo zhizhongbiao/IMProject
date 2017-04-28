@@ -85,12 +85,9 @@ public class LetterNavigationView extends View {
             invalidate();
             return;
         }
-
         perLetterAreaHeight = mHeight / 27.0;
-        String letter ;
-
+        String letter;
         for (int i = 0; i < 27; i++) {
-
             if (i == 26) {
                 letter = "#";
             } else {
@@ -104,10 +101,12 @@ public class LetterNavigationView extends View {
             } else {
                 settingPaint(defautColor, defautTextSize);
             }
-            canvas.drawText(letter, mWidthCwnter - (letterWidth / 2), ((float) (i * perLetterAreaHeight + ((perLetterAreaHeight + letterHeight) / 2))), mPaint);
+            canvas.drawText(letter, mWidthCwnter - (letterWidth / 2)
+                    , ((float) (i * perLetterAreaHeight
+                            + ((perLetterAreaHeight + letterHeight) / 2)))
+                    , mPaint);
             rect.setEmpty();
         }
-
     }
 
     @Override

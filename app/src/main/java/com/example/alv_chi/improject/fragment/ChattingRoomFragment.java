@@ -1,8 +1,6 @@
 package com.example.alv_chi.improject.fragment;
 
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -36,11 +34,9 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import in.srain.cube.views.ptr.PtrClassicDefaultHeader;
 import in.srain.cube.views.ptr.PtrClassicFrameLayout;
 import in.srain.cube.views.ptr.PtrDefaultHandler;
 import in.srain.cube.views.ptr.PtrFrameLayout;
-import in.srain.cube.views.ptr.header.MaterialHeader;
 import in.srain.cube.views.ptr.header.StoreHouseHeader;
 
 /**
@@ -130,16 +126,16 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
     }
 
     private void initialUltraPTR() {
-        PtrClassicDefaultHeader ptrClassicDefaultHeader = new PtrClassicDefaultHeader(mHoldingActivity);
+//        PtrClassicDefaultHeader ptrClassicDefaultHeader = new PtrClassicDefaultHeader(mHoldingActivity);
         StoreHouseHeader storeHouseHeader = new StoreHouseHeader(mHoldingActivity);
         storeHouseHeader.setDropHeight(5)
                 .setLineWidth(3)
                 .setTextColor(Color.RED)
-                .initWithString("load more Msg...");
+                .initWithString("load more Msgs...");
 
-        MaterialHeader materialHeader = new MaterialHeader(mHoldingActivity);
-        materialHeader.setColorSchemeColors(new int[]{Color.RED,Color.GREEN,Color.BLUE});
-        materialHeader.invalidateDrawable(new BitmapDrawable(getResources(), BitmapFactory.decodeResource(getResources(),R.mipmap.meinv4)));
+//        MaterialHeader materialHeader = new MaterialHeader(mHoldingActivity);
+//        materialHeader.setColorSchemeColors(new int[]{Color.RED,Color.GREEN,Color.BLUE});
+//        materialHeader.invalidateDrawable(new BitmapDrawable(getResources(), BitmapFactory.decodeResource(getResources(),R.mipmap.meinv4)));
 
         pcfl.setHeaderView(storeHouseHeader);
         pcfl.addPtrUIHandler(storeHouseHeader);
@@ -152,7 +148,7 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
                     public void run() {
                         if (baseItem != null) {
                             factor++;
-                            messageRecords = DataBaseUtil.getDataBaseInstance().retrive(30 * factor, new MessageRecord(null, baseItem.getUserName()
+                            messageRecords = DataBaseUtil.getDataBaseInstance(mHoldingActivity.getApplicationContext()).retrive(30 * factor, new MessageRecord(null, baseItem.getUserName()
                                     , DataManager.getDataManagerInstance().getCurrentMasterUserName(),
                                     baseItem.getCurrentTimeStamp(), baseItem.getMesage(),
                                     baseItem.getCurrentTimeStamp(), baseItem.getMesage(), baseItem.getUserJID(), baseItem.getTypeView()
@@ -163,7 +159,6 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
                             } else {
                                 HandlerHelper.sendMessageByHandler(mHandler, TAG, Constants.HandlerMessageType.SUCCESS);
                             }
-
 
                         } else {
                             HandlerHelper.sendMessageByHandler(mHandler, TAG, Constants.HandlerMessageType.FAILURE);

@@ -1,8 +1,8 @@
 package com.example.alv_chi.improject.greendao;
 
+import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.example.alv_chi.improject.application.MyApp;
 import com.example.alv_chi.improject.dao.DaoMaster;
 import com.example.alv_chi.improject.dao.DaoSession;
 
@@ -30,23 +30,23 @@ public class GreenDaoUtil {
         return greenDaoUtilInstance;
     }
 
-    private void initialGreeenDao() {
-        devOpenHelper = new DaoMaster.DevOpenHelper(MyApp.getMyAppContext(), "IMProject_MessageRecord_db", null);
+    private void initialGreeenDao(Context appContext) {
+        devOpenHelper = new DaoMaster.DevOpenHelper(appContext, "IMProject_MessageRecord_db", null);
         db = devOpenHelper.getWritableDatabase();
         daoMaster = new DaoMaster(db);
         daoSession = daoMaster.newSession();
     }
 
-    public DaoSession getDaoSession() {
+    public DaoSession getDaoSession(Context appContext) {
         if (daoSession == null) {
-            initialGreeenDao();
+            initialGreeenDao(appContext);
         }
         return daoSession;
     }
 
-    public SQLiteDatabase getDb() {
+    public SQLiteDatabase getDb(Context appContext) {
         if (db == null) {
-            initialGreeenDao();
+            initialGreeenDao(appContext);
         }
         return db;
     }

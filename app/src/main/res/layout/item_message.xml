@@ -26,7 +26,7 @@
 
             <TextView
                 android:id="@+id/tvYourUserName"
-                style="@style/SmallGrayTextStyle"
+                style="@style/MiddleBlackTextStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -69,7 +69,7 @@
                 android:layout_marginLeft="@dimen/small_margin_II"
                 android:layout_marginRight="@dimen/small_margin_II"
                 android:scaleType="centerCrop"
-                android:src="@mipmap/meinv4" />
+                android:src="@mipmap/avatar_green" />
         </LinearLayout>
 
     </LinearLayout>
@@ -99,7 +99,7 @@
 
             <TextView
                 android:id="@+id/tvOtherUserName"
-                style="@style/SmallGrayTextStyle"
+                style="@style/MiddleBlackTextStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
@@ -123,7 +123,7 @@
                 android:layout_marginLeft="@dimen/small_margin_II"
                 android:layout_marginRight="@dimen/small_margin_II"
                 android:scaleType="centerCrop"
-                android:src="@mipmap/meinv4" />
+                android:src="@mipmap/avatar_gray" />
 
             <TextView
                 android:id="@+id/tvOtherChattingMessage"

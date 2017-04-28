@@ -30,7 +30,7 @@
             android:layout_centerVertical="true"
             android:layout_marginRight="@dimen/middle_margin"
             android:layout_toStartOf="@+id/tvToolbarCenter"
-            android:src="@mipmap/meinv4" />
+            android:src="@mipmap/avatar_gray" />
 
         <com.example.alv_chi.improject.custom.IconfontTextView
             android:id="@+id/itvToolbarLeft"

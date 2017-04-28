@@ -7,6 +7,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.example.alv_chi.improject.R;
@@ -130,15 +131,11 @@ public class XmppListenerService extends Service implements ChatManagerListener,
     }
 
     private void initializeContactsData() {
-
         try {
             Set<RosterEntry> contacts = XmppHelper.getXmppHelperInStance().getContacts();
-
             roster = XmppHelper.getXmppHelperInStance().getRoster();
             roster.addRosterListener(this);
-
             DataManager.getDataManagerInstance().getContactItems().clear();
-
             Iterator<RosterEntry> iterator = contacts.iterator();
             while (iterator.hasNext()) {
                 RosterEntry rosterEntry = iterator.next();
@@ -147,8 +144,6 @@ public class XmppListenerService extends Service implements ChatManagerListener,
                 String userJID = rosterEntry.getUser();
                 String navigationLetter = null;
                 boolean isOnline = false;
-
-
                 if (name != null) {
                     String pingYin = ChineseToPinyinHelper.getInstance().getPinyin(name).toUpperCase();
                     navigationLetter = pingYin.charAt(0) + "";
@@ -159,25 +154,19 @@ public class XmppListenerService extends Service implements ChatManagerListener,
                     name = "Unknown";
                     navigationLetter = "#";
                 }
-
                 Presence presence = XmppHelper.getXmppHelperInStance().getRoster().getPresence(userJID + "/Smack");
                 isOnline = getUserStatus(isOnline, presence);
                 DataManager.getDataManagerInstance().getIsOnline().put(userJID, isOnline);
-
-                DataManager.getDataManagerInstance().getContactItems().add(new ContactItem(userJID, navigationLetter, name
-                        , null, DataManager.getDataManagerInstance().getIsOnline().get(userJID)));//avatar temporary set null
+                DataManager.getDataManagerInstance().getContactItems()
+                        .add(new ContactItem(userJID, navigationLetter, name
+                                , null, DataManager.getDataManagerInstance().getIsOnline().get(userJID)));//avatar_green temporary set null
             }
-
             Collections.sort(DataManager.getDataManagerInstance().getContactItems());//sort the ContactItems
-
 //            Log.e(TAG, "initializeContactsData: 联系人在服务初始化了DataManager.getDataManagerInstance().getContactItems().size()="+DataManager.getDataManagerInstance().getContactItems().size() );
-
         } catch (ConnectException e) {
             e.printStackTrace();
             Log.e(TAG, "initializeContactsData: ConnectException=" + e.getMessage());
         }
-
-
     }
 
     private boolean getUserStatus(boolean isOnline, Presence presence) {
@@ -204,7 +193,7 @@ public class XmppListenerService extends Service implements ChatManagerListener,
         chat.addMessageListener(this);
     }
 
-
+    //    send message logic
     public synchronized void sendMessage(BaseItem baseItem) throws ConnectException, SmackException.NotConnectedException {
         Chat chat;
         if (dataManagerInstance.getChats().containsKey(baseItem.getUserJID())) {
@@ -224,11 +213,12 @@ public class XmppListenerService extends Service implements ChatManagerListener,
 
         dataManagerInstance.collectMessages(dataManagerInstance.getAllUsersMessageRecords(), baseItem);
 
+//        show the message in the ChattingRoomFragment
         createRecentChatRecord(baseItem);
     }
 
 
-    @Override
+    @Override            // Receive message logic
     public void processMessage(Chat chat, Message message) {
         String JIDFromUserSendMsg = message.getFrom();
         if (JIDFromUserSendMsg.contains("/")) {
@@ -236,61 +226,71 @@ public class XmppListenerService extends Service implements ChatManagerListener,
         }
 // Using a hashmap to manage the chats , which is very conenient to reuse;
         dataManagerInstance.getChats().put(JIDFromUserSendMsg, chat);
-
         String receivedMsg = message.getBody();
         String userNameFrom = message.getSubject();
-        String stanzaId = message.getStanzaId();
         Boolean isOnline = dataManagerInstance.getIsOnline().get(JIDFromUserSendMsg);
         if (isOnline == null) {
             isOnline = false;
         }
-
         if (userNameFrom == null || userNameFrom.trim().equals("")) {
             userNameFrom = JIDFromUserSendMsg.split("@")[0];
         }
         if (receivedMsg != null) {
-            TextMessageItem messageItem = new TextMessageItem(userNameFrom
-                    , SystemUtil.getCurrentSystemTime()
-                    , receivedMsg, null, JIDFromUserSendMsg, MessageRvAdapter.TEXT_MESSAGE_VIEW_TYPE, true, isOnline);
-
-            if (!dataManagerInstance.getMessageNotificationIds().containsKey(JIDFromUserSendMsg)) {
-                dataManagerInstance.getMessageNotificationIds().put(JIDFromUserSendMsg, ++singleUserJIDMessageId);
-            }
-
-            dataManagerInstance.collectMessages(dataManagerInstance.getAllUsersMessageRecords(), messageItem);
-
+            TextMessageItem messageItem = saveTheMessageInfo(JIDFromUserSendMsg, receivedMsg, userNameFrom, isOnline);
             createRecentChatRecord(messageItem);
-
-            if (currentActivity != null && JIDFromUserSendMsg.equals(DataManager.getDataManagerInstance().getCurrentChattingUserJID())) {
-                BaseFragment currentFragment = currentActivity.getmCurrentFragment();
-                if (currentFragment instanceof ChattingRoomFragment) {
-                    ((ChattingRoomFragment) currentFragment).refreshMessageContainer(false,messageItem);
-                }
+            if (currentActivity != null && JIDFromUserSendMsg
+                    .equals(DataManager.getDataManagerInstance().getCurrentChattingUserJID())) {
+//                show massage
+                showMessageIntheChattingRoomFragment(messageItem);
             } else {
-
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                intent.putExtra(Constants.KeyConstants.IS_THIS_INTEN_FROM_PENDING_INTENT, true);
-                intent.putParcelableArrayListExtra(Constants.KeyConstants.USER_MESSAGES_RECORD
-                        , dataManagerInstance.getAllUsersMessageRecords().get(JIDFromUserSendMsg));
-
-                PendingIntent pendingIntent = PendingIntent.getActivity(this, dataManagerInstance.getMessageNotificationIds().get(JIDFromUserSendMsg), intent, PendingIntent.FLAG_CANCEL_CURRENT);
-                Notification notification = new Notification.Builder(this)
-                        .setAutoCancel(true)
-                        .setContentText(receivedMsg)
-                        .setContentTitle(userNameFrom)
-                        .setDefaults(Notification.DEFAULT_ALL)
-                        .setSmallIcon(R.mipmap.ic_launcher)//UserAvatar
-                        .setContentIntent(pendingIntent)
-                        .build();
-
-                notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                notificationManager.notify(dataManagerInstance.getMessageNotificationIds().get(JIDFromUserSendMsg), notification);
-
+//                notify coming message
+                notifyComingMessageInStateBar(JIDFromUserSendMsg, receivedMsg, userNameFrom);
             }
-
-
         }
+    }
+
+    @NonNull
+    private TextMessageItem saveTheMessageInfo(String JIDFromUserSendMsg, String receivedMsg, String userNameFrom, Boolean isOnline) {
+        TextMessageItem messageItem = new TextMessageItem(userNameFrom
+                , SystemUtil.getCurrentSystemTime()
+                , receivedMsg, null, JIDFromUserSendMsg, MessageRvAdapter.TEXT_MESSAGE_VIEW_TYPE, true, isOnline);
+
+        if (!dataManagerInstance.getMessageNotificationIds().containsKey(JIDFromUserSendMsg)) {
+            dataManagerInstance.getMessageNotificationIds().put(JIDFromUserSendMsg, ++singleUserJIDMessageId);
+        }
+        dataManagerInstance.collectMessages(dataManagerInstance.getAllUsersMessageRecords(), messageItem);
+        return messageItem;
+    }
+
+    private void showMessageIntheChattingRoomFragment(TextMessageItem messageItem) {
+        BaseFragment currentFragment = currentActivity.getmCurrentFragment();
+        if (currentFragment instanceof ChattingRoomFragment) {
+            ((ChattingRoomFragment) currentFragment).refreshMessageContainer(false, messageItem);
+        }
+    }
+
+    private void notifyComingMessageInStateBar(String JIDFromUserSendMsg
+            , String receivedMsg, String userNameFrom) {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra(Constants.KeyConstants.IS_THIS_INTEN_FROM_PENDING_INTENT, true);
+        intent.putParcelableArrayListExtra(Constants.KeyConstants.USER_MESSAGES_RECORD
+                , dataManagerInstance.getAllUsersMessageRecords().get(JIDFromUserSendMsg));
+        PendingIntent pendingIntent = PendingIntent.getActivity(this
+                , dataManagerInstance.getMessageNotificationIds().get(JIDFromUserSendMsg)
+                , intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        Notification notification = new Notification.Builder(this)
+                .setAutoCancel(true)
+                .setContentText(receivedMsg)
+                .setContentTitle(userNameFrom)
+                .setDefaults(Notification.DEFAULT_ALL)
+                .setSmallIcon(R.mipmap.ic_launcher)//UserAvatar
+                .setContentIntent(pendingIntent)
+                .build();
+        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.notify(dataManagerInstance
+                .getMessageNotificationIds()
+                .get(JIDFromUserSendMsg), notification);
     }
 
     // notify the RecentChatFragment create recentChatItem;
@@ -304,18 +304,16 @@ public class XmppListenerService extends Service implements ChatManagerListener,
 //        this is to RecentChatFragment
         EventBusHelper.getEventBusHelperInstance().getEventBusInstance().postSticky(new OnMessageCreatedEvent(recentChatItem));
 //        Log.e(TAG, "createRecentChatRecord: TimeStamp/Message="+baseItem.getCurrentTimeStamp()+"/"+baseItem.getMesage() );
-
-
 //        store the message record in anotherThread
         ThreadUtil.executeThreadTask(new Runnable() {
             @Override
             public void run() {
 //                MessageRecord 第一个参数为数据库的主键值，设置为null的目的是让数据库的主键值自动增长，而不是手动去设置麻烦。
-                DataBaseUtil.getDataBaseInstance().create(new MessageRecord(null, baseItem.getUserName(), dataManagerInstance.getCurrentMasterUserName(),
+                DataBaseUtil.getDataBaseInstance(XmppListenerService.this.getApplicationContext()).create(new MessageRecord(null, baseItem.getUserName(), dataManagerInstance.getCurrentMasterUserName(),
                         baseItem.getCurrentTimeStamp(), baseItem.getMesage(),
                         baseItem.getCurrentTimeStamp(), baseItem.getMesage(), baseItem.getUserJID(), baseItem.getTypeView()
                         , baseItem.isReceivedMessage(), baseItem.isOnline()));
-                Log.e(TAG, "createRecentChatRecord run: 插入消息记录线程完成执行" );
+                Log.e(TAG, "createRecentChatRecord run: 插入消息记录线程完成执行");
             }
         });
     }
@@ -333,9 +331,9 @@ public class XmppListenerService extends Service implements ChatManagerListener,
         }
         dataManagerInstance.getMessageNotificationIds().remove(event.getUserJIDOfDatas());
 
-        if (dataManagerInstance.getAllUsersMessageRecords().get(event.getUserJIDOfDatas()).size() > 5) {
-//            此处将超出100的部分数据保存进数据库，并将将多出部分删除；
-        }
+//        if (dataManagerInstance.getAllUsersMessageRecords().get(event.getUserJIDOfDatas()).size() > 5) {
+////            此处将超出100的部分数据保存进数据库，并将将多出部分删除；
+//        }
 
     }
 

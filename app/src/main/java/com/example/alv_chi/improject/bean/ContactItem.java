@@ -133,19 +133,13 @@ public class ContactItem implements Comparable<ContactItem>, Parcelable, BaseIte
     }
 
 
-    //    Override this method for sorting this item;
-
+    //    Override this method for sorting these items;
     @Override
     public int compareTo(ContactItem item) {
-
         if (getNavigationLetter().equals("#")) {
-
-            return 1;
-        }
+            return 1;}
         if (item.getNavigationLetter().matches("[A-Z]")) {
-            return getNavigationLetter().compareTo(item.getNavigationLetter());
-        }
-
+            return getNavigationLetter().compareTo(item.getNavigationLetter());}
         return -1;
     }
 
