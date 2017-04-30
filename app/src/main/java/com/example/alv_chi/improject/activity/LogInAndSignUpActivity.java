@@ -92,7 +92,7 @@ public class LogInAndSignUpActivity extends BaseActivity implements OnThreadTask
 
     @Override
     public void onThreadTaskFinished(int messageType) {
-        startInComingMessageListenerService();
+        startXmppListenerService();
         startMainActivity();
         //kill this LogInAndSignUpActivity
         this.finish();
@@ -105,7 +105,7 @@ public class LogInAndSignUpActivity extends BaseActivity implements OnThreadTask
         startActivity(intent);
     }
 
-    public void startInComingMessageListenerService() {
+    public void startXmppListenerService() {
         serviceIntent = new Intent(this, XmppListenerService.class);
         startService(serviceIntent);
     }

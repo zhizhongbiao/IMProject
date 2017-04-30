@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/flFragmentContainer"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-   android:background="@mipmap/start_image"
-    tools:context="com.example.alv_chi.improject.activity.StartActivity">
+xmlns:tools="http://schemas.android.com/tools"
+android:id="@+id/flFragmentContainer"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:background="@mipmap/start_image"
+tools:context="com.example.alv_chi.improject.activity.StartActivity">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:gravity="start"
-        style="@style/BigBlackTextStyleIII"
-        android:textColor="@color/cyan"
-        android:text="communication makes things easy"
-        />
+<TextView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:gravity="start"
+    style="@style/BigBlackTextStyleIII"
+    android:textColor="@color/cyan"
+    android:text="communication makes things easy"
+    />
 
 </FrameLayout>

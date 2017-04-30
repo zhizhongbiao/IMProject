@@ -35,13 +35,13 @@ public class DataBaseUtil {
 
     //    create message records;
     public void create(MessageRecord messageRecord) {
-        Log.e(TAG, "create: MasterName/userName"+messageRecord.getMasterUserName()+"/"+messageRecord.getUserName() );
+
         long rowNum = messageRecordDao.insert(messageRecord);
-//        if (rowNum > 0) {
-//            Log.e(TAG, "create: 消息插入成功！rowNum=" + rowNum);
-//        } else {
-//            Log.e(TAG, "create: 消息插入失败！rowNum=" + rowNum);
-//        }
+        if (rowNum > 0) {
+            Log.e(TAG, "create: 消息插入成功！rowNum=" + rowNum);
+        } else {
+            Log.e(TAG, "create: 消息插入失败！rowNum=" + rowNum);
+        }
     }
 
 
@@ -62,7 +62,7 @@ public class DataBaseUtil {
     //    retrive message records;
     public List<MessageRecord> retrive(int numOfMsgRecords
             , MessageRecord messageRecord) {
-        Log.e(TAG, "retrive: MasterName/userName"+messageRecord.getMasterUserName()+"/"+messageRecord.getUserName() );
+
         List<MessageRecord> messageRecords = messageRecordDao.queryBuilder()
                 .where(MessageRecordDao.Properties
                         .MasterUserName
@@ -73,7 +73,7 @@ public class DataBaseUtil {
                 .limit(numOfMsgRecords)
                 .build()
                 .list();
-//        Log.e(TAG, "retrive: 消息查询成功！messageRecords.size()=" + messageRecords.size());
+        Log.e(TAG, "retrive: 消息查询成功！messageRecords.size()=" + messageRecords.size());
         return messageRecords;
     }
 

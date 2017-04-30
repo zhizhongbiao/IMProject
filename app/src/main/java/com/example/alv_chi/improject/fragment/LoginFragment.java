@@ -55,23 +55,24 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
     LinearLayout activityLogin;
     @BindView(R.id.tvUserRegister)
     TextView tvUserRegister;
-//    @BindView(R.id.textView4)
-//    TextView textView4;
-//    @BindView(R.id.etIPAddressOne)
-//    EditText etIPAddressOne;
-//    @BindView(R.id.etIPAddressTwo)
-//    EditText etIPAddressTwo;
-//    @BindView(R.id.etIPAddressThree)
-//    EditText etIPAddressThree;
-//    @BindView(R.id.etIPAddressFour)
-//    EditText etIPAddressFour;
-//    @BindView(R.id.llServerIP)
-//    LinearLayout llServerIP;
+    @BindView(R.id.textView4)
+    TextView textView4;
+    @BindView(R.id.etIPAddressOne)
+    EditText etIPAddressOne;
+    @BindView(R.id.etIPAddressTwo)
+    EditText etIPAddressTwo;
+    @BindView(R.id.etIPAddressThree)
+    EditText etIPAddressThree;
+    @BindView(R.id.etIPAddressFour)
+    EditText etIPAddressFour;
+    @BindView(R.id.llServerIP)
+    LinearLayout llServerIP;
+
 
     private LogInAndSignUpActivity mHoldingActivity;
     private String masterLoginName;
     private String masterLoginPassWord;
-//    private String ipMatcher="^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$";
+        private String ipMatcher="^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$";
     private SharedPreferences sharedPreferences;
     private ProgressDialog contentLoadingProgressBar;
 
@@ -142,14 +143,13 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
 
     @Override
     public void onThreadTaskFinished(int messageType) {
-        if (contentLoadingProgressBar!=null)
-        {
+        if (contentLoadingProgressBar != null) {
             contentLoadingProgressBar.dismiss();
         }
         switch (messageType) {
             case Constants.HandlerMessageType.SUCCESS:
                 Log.e(TAG, "onThreadTaskFinished: LoginFragment");
-                mHoldingActivity.startInComingMessageListenerService();
+                mHoldingActivity.startXmppListenerService();
                 mHoldingActivity.startMainActivity();
                 saveLoginInfoToSp(masterLoginName, masterLoginPassWord);
 
@@ -195,26 +195,26 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
     public void login() {
         masterLoginName = getStringFromEditText(etUserName);
         masterLoginPassWord = getStringFromEditText(etUserLoginPassword);
-//        String IP = "";
-//        EditText[] ipEt = {etIPAddressOne, etIPAddressTwo, etIPAddressThree, etIPAddressFour};
+        String IP = "";
+        EditText[] ipEt = {etIPAddressOne, etIPAddressTwo, etIPAddressThree, etIPAddressFour};
 
-//        for (int i = 0; i < ipEt.length; i++) {
-//            String partOfIp = getStringFromEditText(ipEt[i]);
-//            if (i == 0) {
-//                IP = partOfIp;
-//            } else {
-//                IP = IP + "." + partOfIp;
-//            }
-//            Log.e(TAG, "login: IP=" + IP);
-//
-//        }
-//        if (!IP.matches(ipMatcher)) {
-//            Log.e(TAG, "login: IP Address Wrong!!!" );
-//            connectServerWrong(null);
-//            return;
-//        }
-//        DataManager.getDataManagerInstance().setServerIP(IP);
-//        DataManager.getDataManagerInstance().setServerIP(Constants.AppConfigConstants.OPEN_FIRE_SERVER_IP);
+        for (int i = 0; i < ipEt.length; i++) {
+            String partOfIp = getStringFromEditText(ipEt[i]);
+            if (i == 0) {
+                IP = partOfIp;
+            } else {
+                IP = IP + "." + partOfIp;
+            }
+            Log.e(TAG, "login: IP=" + IP);
+
+        }
+        if (!IP.matches(ipMatcher)) {
+            Log.e(TAG, "login: IP Address Wrong!!!");
+            connectServerWrong(null);
+            return;
+        }
+        DataManager.getDataManagerInstance().setServerIP(IP);
+        DataManager.getDataManagerInstance().setServerIP(Constants.AppConfigConstants.OPEN_FIRE_SERVER_IP);
         if (masterLoginName.equals("") || masterLoginPassWord.equals("")) {
             loginNameOrPswWrong();
             return;
@@ -306,6 +306,7 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
         strFromEt = strFromEt.trim();
         return strFromEt;
     }
+
 
 
 }
