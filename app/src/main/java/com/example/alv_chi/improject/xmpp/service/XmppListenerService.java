@@ -193,7 +193,7 @@ public class XmppListenerService extends Service implements XMPP
     @Override
     public void chatCreated(Chat chat, boolean createdLocally) {
         Log.e(TAG, "chatCreated: createdLocally=" + createdLocally);
-        chat.addMessageListener(this);
+        chat.addMessageListener(XmppListenerService.this);
     }
 
     //    send message logic
@@ -205,17 +205,18 @@ public class XmppListenerService extends Service implements XMPP
             try {
                 chat = getChatManager().createChat(baseItem.getUserJID());
                 dataManagerInstance.getChats().put(baseItem.getUserJID(), chat);
+                Log.e(TAG, "sendMessage: sendMsg="+baseItem.getMesage() );
             } catch (NullPointerException e) {
-                Log.e(TAG, "sendMessage: getXmppTcpConnectionInstance()==null 没连接服务器");
+                Log.e(TAG, "sendMessage: getXmppTcpConnectionInstance()==null 没连接服务器 NullPointerException="+e.getMessage());
                 throw new ConnectException();
             }
         }
 
         Message message = new Message();
 //       this is the name of which send this message;
-        message.setSubject(DataManager.getDataManagerInstance().getCurrentMasterUserName());////此处应该获取正在登陆的用户信息：
+        message.setSubject(DataManager.getDataManagerInstance().getCurrentMasterUserName());
         message.setBody(baseItem.getMesage());
-        message.setFrom(Constants.AppConfigConstants.CLIENT_EMAIL);///此处应该获取正在登陆的用户信息：
+        message.setFrom(Constants.AppConfigConstants.CLIENT_EMAIL);
         message.setTo(baseItem.getUserJID());
         chat.sendMessage(message);
 
