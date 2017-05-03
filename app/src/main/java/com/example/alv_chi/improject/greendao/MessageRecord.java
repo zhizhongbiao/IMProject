@@ -109,6 +109,5 @@ public class MessageRecord {
     public void setIsOnline(boolean isOnline) {
         this.isOnline = isOnline;
     }
-   
-
+    
 }

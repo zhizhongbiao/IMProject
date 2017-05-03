@@ -3,7 +3,8 @@ package com.example.alv_chi.improject.greendao;
 import android.content.Context;
 import android.util.Log;
 
-import com.example.alv_chi.improject.dao.MessageRecordDao;
+import com.example.alv_chi.improject.data.constant.Constants;
+import com.example.alv_chi.improject.greendao.dao.MessageRecordDao;
 
 import java.util.List;
 
@@ -23,6 +24,10 @@ public class DataBaseUtil {
 
     ;
 
+    /**
+     * @param appContext this mast be the Application Context ,or operation will always fail
+     * @return
+     */
     public static DataBaseUtil getDataBaseInstance(Context appContext) {
         if (dataBaseUtilInstance == null) {
             dataBaseUtilInstance = new DataBaseUtil();
@@ -38,9 +43,9 @@ public class DataBaseUtil {
 
         long rowNum = messageRecordDao.insert(messageRecord);
         if (rowNum > 0) {
-            Log.e(TAG, "create: 消息插入成功！rowNum=" + rowNum);
+//            Log.e(TAG, "create: 消息插入成功！rowNum=" + rowNum);
         } else {
-            Log.e(TAG, "create: 消息插入失败！rowNum=" + rowNum);
+//            Log.e(TAG, "create: 消息插入失败！rowNum=" + rowNum);
         }
     }
 
@@ -49,6 +54,14 @@ public class DataBaseUtil {
     public void delete(MessageRecord messageRecord) {
         messageRecordDao.delete(messageRecord);
         Log.e(TAG, "delete: 消息删除成功！");
+
+    }
+
+    //    delete;
+    public void deleteOldLoginInfo() {
+        MessageRecord oldLoginInfo = messageRecordDao.loadByRowId(Constants.DatabaseConstants.LOGIN_INGO_DB_ID);
+        messageRecordDao.delete(oldLoginInfo);
+//        Log.e(TAG, "delete: 旧的LoginInfo删除成功！");
 
     }
 
@@ -75,6 +88,14 @@ public class DataBaseUtil {
                 .list();
         Log.e(TAG, "retrive: 消息查询成功！messageRecords.size()=" + messageRecords.size());
         return messageRecords;
+    }
+
+    //    only for retriving  loginInfo record;
+    public MessageRecord retrive() {
+
+        MessageRecord loginInfo = (MessageRecord) messageRecordDao.loadByRowId(Constants.DatabaseConstants.LOGIN_INGO_DB_ID);
+//        Log.e(TAG, "retrive: 获取登陆信息成功！serverIP=" + loginInfo.getLatestMessageTimeStamp());
+        return loginInfo;
     }
 
 

@@ -2,6 +2,7 @@ package com.example.alv_chi.improject.fragment;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -17,14 +18,19 @@ import android.widget.Toast;
 import com.example.alv_chi.improject.R;
 import com.example.alv_chi.improject.activity.BaseActivity;
 import com.example.alv_chi.improject.activity.LogInAndSignUpActivity;
-import com.example.alv_chi.improject.constant.Constants;
+import com.example.alv_chi.improject.activity.MainActivity;
 import com.example.alv_chi.improject.data.DataManager;
-import com.example.alv_chi.improject.exception.ConnectException;
-import com.example.alv_chi.improject.exception.LoginNameOrPasswordException;
+import com.example.alv_chi.improject.data.constant.Constants;
+import com.example.alv_chi.improject.greendao.DataBaseUtil;
+import com.example.alv_chi.improject.greendao.MessageRecord;
 import com.example.alv_chi.improject.handler.HandlerHelper;
 import com.example.alv_chi.improject.handler.OnThreadTaskFinishedListener;
 import com.example.alv_chi.improject.util.ThreadUtil;
-import com.example.alv_chi.improject.xmpp.XmppHelper;
+
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.XMPPException;
+
+import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -72,9 +78,11 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
     private LogInAndSignUpActivity mHoldingActivity;
     private String masterLoginName;
     private String masterLoginPassWord;
-        private String ipMatcher="^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$";
+    private String ipMatcher = "^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$";
     private SharedPreferences sharedPreferences;
     private ProgressDialog contentLoadingProgressBar;
+    private String IP;
+
 
     public static LoginFragment newInstance() {
         return new LoginFragment();
@@ -82,21 +90,57 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
 
     public void getLoginInfoFromSp() {
         sharedPreferences = mHoldingActivity.getPreferences(MODE_PRIVATE);
-        String userName = sharedPreferences.getString(Constants.KeyConstants.MASTER_USER_LOGIN_NAME, null);
-        String loginPsw = sharedPreferences.getString(Constants.KeyConstants.MASTER_USER_LOGIN_PASSWORD, null);
+        final String serverIP = sharedPreferences.getString(Constants.KeyConstants.OPENFIRE_SERVER_IP, null);
+        final String userName = sharedPreferences.getString(Constants.KeyConstants.MASTER_USER_LOGIN_NAME, null);
+        final String loginPsw = sharedPreferences.getString(Constants.KeyConstants.MASTER_USER_LOGIN_PASSWORD, null);
 
-        if (userName == null || loginPsw == null) return;
+        if (userName == null || loginPsw == null || serverIP == null) return;
+//        此处应该把IP设进去
+        EditText[] ipEts = {etIPAddressOne, etIPAddressTwo, etIPAddressThree, etIPAddressFour};
+        String[] IPs = serverIP.split("\\.");//分割点“.”，要转义该字符，否则识别不出来。
+        if (IPs != null && IPs.length == 4) {
+            for (int i = 0; i < ipEts.length; i++) {
+                ipEts[i].setText(IPs[i]);
+            }
+        }
         etUserLoginPassword.setText(loginPsw);
         etUserName.setText(userName);
 
     }
 
-    public void saveLoginInfoToSp(String masterLoginName, String masterLoginPassWord) {
+    public void saveLoginInfoToSp(String masterLoginName, String masterLoginPassWord, String serverIP) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
+
         editor
-                .putString(Constants.KeyConstants.MASTER_USER_LOGIN_NAME, masterLoginName.trim())
-                .putString(Constants.KeyConstants.MASTER_USER_LOGIN_PASSWORD, masterLoginPassWord.trim())
+                .putString(Constants.KeyConstants.OPENFIRE_SERVER_IP, serverIP)
+                .putString(Constants.KeyConstants.MASTER_USER_LOGIN_NAME, masterLoginName)
+                .putString(Constants.KeyConstants.MASTER_USER_LOGIN_PASSWORD, masterLoginPassWord)
                 .commit();
+    }
+
+    private void saveTheLoginInfoToDB( String serverIP,  String userName,  String loginPsw) {
+//        Firstly , delete the old LoginInfo.After that insert the new LoginInfo,
+//        because all the LoginInfo have the same ID.
+        DataBaseUtil
+                .getDataBaseInstance(mHoldingActivity
+                        .getApplicationContext()
+                        .getApplicationContext())
+                .deleteOldLoginInfo();
+
+        MessageRecord newLoginInfo = new MessageRecord(Constants.DatabaseConstants.LOGIN_INGO_DB_ID
+                , userName, loginPsw, serverIP, null, null, null, null, -2, false, false);
+
+        DataBaseUtil.getDataBaseInstance(mHoldingActivity.getApplicationContext()).create(
+                newLoginInfo);
+//        Log.e(TAG, "run: DB 插入LoginInfo中.....");
+
+    }
+
+    private void saveTheCurrentLoginInfoToDataManager(String masterLoginName, String masterLoginPassWord, String serverIP) {
+        DataManager.getDataManagerInstance().setServerIP(serverIP);
+//            this is for testting
+//        DataManager.getDataManagerInstance().setServerIP(Constants.AppConfigConstants.OPEN_FIRE_SERVER_IP);
+//        Log.e(TAG, "saveLoginInfoToSp: setIP=" + serverIP);
 
         DataManager.getDataManagerInstance().setCurrentMasterUserName(masterLoginName);
         DataManager.getDataManagerInstance().setCurrentMasterPassword(masterLoginPassWord);
@@ -110,8 +154,13 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
     @Override
     protected void initializeView(View rootView, Bundle savedInstanceState) {
         ButterKnife.bind(this, rootView);
-        initialContentView();
         addThisOnThreadTaskFinishedListenerToActivityHandler();//add this listener to handler;
+//      if the service is alive ,it dose not need to login ;
+        if (!Constants.AppConfigConstants.ifNeedToLoginManually) {
+            Log.e(TAG, "initializeView: 自动登录isNeedManuallyToLogin=" + Constants.AppConfigConstants.ifNeedToLoginManually);
+            login(false);
+        }
+        initialContentView();
     }
 
     private void initialContentView() {
@@ -128,7 +177,8 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
     @Override
     public void onDestroy() {
         super.onDestroy();
-        removeThisOnThreadTaskFinishedListenerFromActivityHandler();//remove listener when this is destroyed
+        //remove listener when this is destroyed
+        removeThisOnThreadTaskFinishedListenerFromActivityHandler();
     }
 
     @Override
@@ -143,16 +193,10 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
 
     @Override
     public void onThreadTaskFinished(int messageType) {
-        if (contentLoadingProgressBar != null) {
-            contentLoadingProgressBar.dismiss();
-        }
+
+        btnLoginButton.setClickable(true);
         switch (messageType) {
             case Constants.HandlerMessageType.SUCCESS:
-                Log.e(TAG, "onThreadTaskFinished: LoginFragment");
-                mHoldingActivity.startXmppListenerService();
-                mHoldingActivity.startMainActivity();
-                saveLoginInfoToSp(masterLoginName, masterLoginPassWord);
-
 //                DataManager.getDataManagerInstance().setCurrentMasterInfo();
 
 //        try {
@@ -168,14 +212,32 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
 
 
                 //kill this LogInAndSignUpActivity
+                Log.e(TAG, "onThreadTaskFinished: LoginFragment Login success");
+                mHoldingActivity.hideTheProgressbar(contentLoadingProgressBar);
+                mHoldingActivity.startService(serviceIntent);
+                startMainActivity();
+//              kill this LogInAndSignUpActivity
                 mHoldingActivity.finish();
                 break;
-            case Constants.HandlerMessageType.FAILURE:
-                btnLoginButton.setClickable(true);
+            case Constants.HandlerMessageType.HUMAN_FAILURE:
+                mHoldingActivity.hideTheProgressbar(contentLoadingProgressBar);
+                DataManager.getDataManagerInstance()
+                        .getXmppListenerService()
+                        .setXmppTcpConnectionInstance(null);
+                loginNameOrPswWrong();
                 break;
+            case Constants.HandlerMessageType.SERVER_FAILURE:
+                mHoldingActivity.hideTheProgressbar(contentLoadingProgressBar);
+                DataManager.getDataManagerInstance()
+                        .getXmppListenerService()
+                        .setXmppTcpConnectionInstance(null);
+                connectServerWrong();
+                break;
+            case Constants.HandlerMessageType.BIND_SERVICE_SUCCESS:
+                login(true);
+                break;
+
         }
-
-
     }
 
 
@@ -183,7 +245,8 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnLoginButton:
-                login();
+                setWaiting();
+                bindXmppListenerService(mHoldingActivity, TAG, Constants.HandlerMessageType.BIND_SERVICE_SUCCESS);
                 break;
             case R.id.tvUserRegister:
                 mHoldingActivity.replaceFragmentAndAddToBackStack(new SignUpFragment());
@@ -192,60 +255,93 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
     }
 
     //    login logic
-    public void login() {
-        masterLoginName = getStringFromEditText(etUserName);
-        masterLoginPassWord = getStringFromEditText(etUserLoginPassword);
-        String IP = "";
-        EditText[] ipEt = {etIPAddressOne, etIPAddressTwo, etIPAddressThree, etIPAddressFour};
-
-        for (int i = 0; i < ipEt.length; i++) {
-            String partOfIp = getStringFromEditText(ipEt[i]);
-            if (i == 0) {
-                IP = partOfIp;
-            } else {
-                IP = IP + "." + partOfIp;
+    public void login(final boolean isManual) {
+        if (isManual) {
+            masterLoginName = getStringFromEditText(etUserName);
+            masterLoginPassWord = getStringFromEditText(etUserLoginPassword);
+            IP = "";
+            EditText[] ipEt = {etIPAddressOne, etIPAddressTwo, etIPAddressThree, etIPAddressFour};
+            for (int i = 0; i < ipEt.length; i++) {
+                String partOfIp = getStringFromEditText(ipEt[i]);
+                if (i == 0) {
+                    IP = partOfIp;
+                } else {
+                    IP = IP + "." + partOfIp;
+                }
+//                Log.e(TAG, "login: IP=" + IP);
             }
-            Log.e(TAG, "login: IP=" + IP);
+            if (!IP.matches(ipMatcher)) {
+                Log.e(TAG, "login: IP Address Wrong!!!");
+                Toast.makeText(mHoldingActivity, "IP地址填写有误！", Toast.LENGTH_SHORT).show();
+                mHoldingActivity.hideTheProgressbar(contentLoadingProgressBar);
+                return;
+            }
 
+
+            if (masterLoginName.equals("") || masterLoginPassWord.equals("")) {
+                loginNameOrPswWrong();
+                mHoldingActivity.hideTheProgressbar(contentLoadingProgressBar);
+                return;
+            }
+            saveTheCurrentLoginInfoToDataManager(masterLoginName, masterLoginPassWord, IP);
         }
-        if (!IP.matches(ipMatcher)) {
-            Log.e(TAG, "login: IP Address Wrong!!!");
-            connectServerWrong(null);
-            return;
-        }
-        DataManager.getDataManagerInstance().setServerIP(IP);
-        DataManager.getDataManagerInstance().setServerIP(Constants.AppConfigConstants.OPEN_FIRE_SERVER_IP);
-        if (masterLoginName.equals("") || masterLoginPassWord.equals("")) {
-            loginNameOrPswWrong();
-            return;
-        }
-        btnLoginButton.setClickable(false);
-        contentLoadingProgressBar = mHoldingActivity.showProgressBar(mHoldingActivity);
+//        else {
+//
+//            ThreadUtil.executeThreadTask(new Runnable() {
+//                @Override
+//                public void run() {
+//                    try {
+//                        XmppHelper.getXmppHelperInStance().login(DataManager.getDataManagerInstance().getCurrentMasterUserName()
+//                                , DataManager.getDataManagerInstance().getCurrentMasterPassword());
+//                        HandlerHelper.sendMessageByHandler(mHandler, TAG, Constants.HandlerMessageType.SUCCESS);
+//
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                        Log.e(TAG, "login: Exception=" + e.getMessage());
+//                    }
+//                }
+//            });
+
+//        }
+
+
         ThreadUtil.executeThreadTask(new Runnable() {
             @Override
             public void run() {
                 try {
-//                    XmppHelper.getXmppHelperInStance().login(Constants.AppConfigConstants.CLIENT_USER_NAME, Constants.AppConfigConstants.CLIENT_PASSWORD);
-                    XmppHelper.getXmppHelperInStance().login(masterLoginName, masterLoginPassWord);
+                    if (isManual) {
+                        DataManager.getDataManagerInstance().getXmppListenerService().login(masterLoginName, masterLoginPassWord, IP);
+                        saveLoginInfoToSp(masterLoginName, masterLoginPassWord, IP);
+                        saveTheLoginInfoToDB(IP, masterLoginName, masterLoginPassWord);
+                    }
+
                     HandlerHelper.sendMessageByHandler(mHandler, TAG, Constants.HandlerMessageType.SUCCESS);
-                } catch (LoginNameOrPasswordException e) {
-                    HandlerHelper.sendMessageByHandler(mHandler, TAG, Constants.HandlerMessageType.FAILURE);
-                    Log.e(TAG, "login happen Exception=" + e.getMessage());
+                } catch (XMPPException e) {
+                    HandlerHelper.sendMessageByHandler(mHandler, TAG, Constants.HandlerMessageType.HUMAN_FAILURE);
+                    Log.e(TAG, "login happen XMPPException=" + e.getMessage());
                     e.printStackTrace();
-                    loginNameOrPswWrong();
-                } catch (ConnectException e) {
-                    HandlerHelper.sendMessageByHandler(mHandler, TAG, Constants.HandlerMessageType.FAILURE);
-                    Log.e(TAG, "login happen Exception=" + e.getMessage());
+                } catch (SmackException e) {
                     e.printStackTrace();
-                    connectServerWrong(e);
+                    HandlerHelper.sendMessageByHandler(mHandler, TAG, Constants.HandlerMessageType.SERVER_FAILURE);
+                    Log.e(TAG, "login happen SmackException=" + e.getMessage());
+                } catch (IOException e) {
+                    HandlerHelper.sendMessageByHandler(mHandler, TAG, Constants.HandlerMessageType.SERVER_FAILURE);
+                    Log.e(TAG, "login happen IOException=" + e.getMessage());
+                    e.printStackTrace();
                 }
             }
         });
 
+
     }
 
-    private void connectServerWrong(ConnectException e) {
-        mHoldingActivity.showAlertDialogInThread("Tips"
+    private void setWaiting() {
+        btnLoginButton.setClickable(false);
+        contentLoadingProgressBar = mHoldingActivity.showProgressBar(mHoldingActivity, "please wait...loading ...");
+    }
+
+    private void connectServerWrong() {
+        mHoldingActivity.showAlertDialog("Tips"
                 , "服务器IP地址不对或者服务器连接不上，请稍后再试！"
                 , "知道了，下次再试"
                 , new DialogInterface.OnClickListener() {
@@ -277,7 +373,7 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
 
     private void loginNameOrPswWrong() {
 
-        mHoldingActivity.showAlertDialogInThread("Tips"
+        mHoldingActivity.showAlertDialog("Tips"
                 , "您的用户名或者密码错了，请更正再试！"
                 , "知错了，下次改正"
                 , new DialogInterface.OnClickListener() {
@@ -307,6 +403,11 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
         return strFromEt;
     }
 
+    public void startMainActivity() {
+        Intent intent = new Intent(mHoldingActivity, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
 
 
 }

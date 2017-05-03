@@ -1,55 +1,32 @@
 package com.example.alv_chi.improject.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 
 import com.example.alv_chi.improject.R;
-import com.example.alv_chi.improject.constant.Constants;
-import com.example.alv_chi.improject.data.DataManager;
 import com.example.alv_chi.improject.fragment.BaseFragment;
 import com.example.alv_chi.improject.fragment.LoginFragment;
-import com.example.alv_chi.improject.handler.HandlerHelper;
-import com.example.alv_chi.improject.handler.OnThreadTaskFinishedListener;
-import com.example.alv_chi.improject.service.XmppListenerService;
-import com.example.alv_chi.improject.util.ThreadUtil;
-import com.example.alv_chi.improject.xmpp.XmppHelper;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class LogInAndSignUpActivity extends BaseActivity implements OnThreadTaskFinishedListener {
+public class LogInAndSignUpActivity extends BaseActivity {
 
     private static final String TAG = "LogInAndSignUpActivity";
 
     @BindView(R.id.flFragmentContainer)
     FrameLayout flFragmentContainer;
 
-    private Intent serviceIntent;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        if the service is alive ,it dose not need to login ;
-        if (!Constants.AppConfigConstants.isNeedToLogin) {
-            addThisOnThreadTaskFinishedListenerToActivityHandler();
-            login();
-        }
         setContentView(R.layout.activity_login_and_signup);
         ButterKnife.bind(this);
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
 
-        if (!Constants.AppConfigConstants.isNeedToLogin) {
-            removeThisOnThreadTaskFinishedListenerFromActivityHandler();
-        }
-    }
 
     @Override
     protected void intializeToolbar(ToolbarViewHolder toolbarViewHolder) {
@@ -71,52 +48,5 @@ public class LogInAndSignUpActivity extends BaseActivity implements OnThreadTask
         return LoginFragment.newInstance();
     }
 
-    //    login logic
-    public void login() {
 
-        ThreadUtil.executeThreadTask(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    XmppHelper.getXmppHelperInStance().login(DataManager.getDataManagerInstance().getCurrentMasterUserName(), DataManager.getDataManagerInstance().getCurrentMasterPassword());
-                    HandlerHelper.sendMessageByHandler(mHandler, TAG, Constants.HandlerMessageType.SUCCESS);
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Log.e(TAG, "login: Exception=" + e.getMessage());
-                }
-            }
-        });
-
-    }
-
-    @Override
-    public void onThreadTaskFinished(int messageType) {
-        startXmppListenerService();
-        startMainActivity();
-        //kill this LogInAndSignUpActivity
-        this.finish();
-
-    }
-
-    public void startMainActivity() {
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-    }
-
-    public void startXmppListenerService() {
-        serviceIntent = new Intent(this, XmppListenerService.class);
-        startService(serviceIntent);
-    }
-
-    @Override
-    public void addThisOnThreadTaskFinishedListenerToActivityHandler() {
-        mHandler.addListeners(TAG, this);
-    }
-
-    @Override
-    public void removeThisOnThreadTaskFinishedListenerFromActivityHandler() {
-        mHandler.removeListener(TAG);
-    }
 }

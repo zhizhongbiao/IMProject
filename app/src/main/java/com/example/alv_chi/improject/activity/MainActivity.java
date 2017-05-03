@@ -24,7 +24,7 @@ import android.widget.Toast;
 import com.example.alv_chi.improject.R;
 import com.example.alv_chi.improject.adapter.VpFragmentAdapter;
 import com.example.alv_chi.improject.bean.BaseItem;
-import com.example.alv_chi.improject.constant.Constants;
+import com.example.alv_chi.improject.data.constant.Constants;
 import com.example.alv_chi.improject.custom.CircleImageView;
 import com.example.alv_chi.improject.custom.IconfontTextView;
 import com.example.alv_chi.improject.custom.TabButton;
@@ -34,7 +34,7 @@ import com.example.alv_chi.improject.fragment.ContactsFragment;
 import com.example.alv_chi.improject.fragment.GroupsFragment;
 import com.example.alv_chi.improject.fragment.RecentChatFragment;
 import com.example.alv_chi.improject.fragment.ShareFragment;
-import com.example.alv_chi.improject.service.XmppListenerService;
+import com.example.alv_chi.improject.xmpp.service.XmppListenerService;
 import com.example.alv_chi.improject.util.SystemUtil;
 
 import java.util.ArrayList;
@@ -117,6 +117,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     private void initializeDrawerLayout() {
+        textViewUserName.setText(DataManager.getDataManagerInstance().getCurrentMasterUserName());
         dlDrawerRoot.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
 
             @Override
@@ -294,7 +295,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 stopService(new Intent(this, XmppListenerService.class));
                 Intent intent = new Intent(this,LogInAndSignUpActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startAnotherActivity(this, intent);
+//                startAnotherActivity(this, intent);
+                startActivity( intent);
                 this.finish();
                 break;
             case R.id.llSetting:

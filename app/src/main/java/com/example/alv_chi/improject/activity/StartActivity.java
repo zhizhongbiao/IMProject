@@ -19,7 +19,7 @@ public class StartActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        getActivityHandler().postDelayed(new Runnable() {
+        getMyHandler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 Intent intent = new Intent(StartActivity.this, LogInAndSignUpActivity.class);

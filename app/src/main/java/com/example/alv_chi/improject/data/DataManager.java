@@ -3,6 +3,7 @@ package com.example.alv_chi.improject.data;
 import com.example.alv_chi.improject.bean.BaseItem;
 import com.example.alv_chi.improject.bean.ContactItem;
 import com.example.alv_chi.improject.bean.RecentChatItem;
+import com.example.alv_chi.improject.xmpp.service.XmppListenerService;
 
 import org.jivesoftware.smack.chat.Chat;
 
@@ -30,6 +31,16 @@ public class DataManager {
     private String currentMasterUserName;
     private String currentMasterPassword;
     private String serverIP;
+
+    public XmppListenerService getXmppListenerService() {
+        return xmppListenerService;
+    }
+
+    public void setXmppListenerService(XmppListenerService xmppListenerService) {
+        this.xmppListenerService = xmppListenerService;
+    }
+
+    private XmppListenerService xmppListenerService;
 
 
     public static DataManager getDataManagerInstance() {
@@ -120,6 +131,7 @@ public class DataManager {
         recentChats.clear();
         chats.clear();
         clearContactsData();
+        setXmppListenerService(null);
         currentChattingUserJID = "";
 //        System.gc();
     }
@@ -128,6 +140,10 @@ public class DataManager {
     {
         contactItems.clear();
         isOnline.clear();
-
     }
+
+
+
+
+
 }

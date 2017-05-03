@@ -8,52 +8,72 @@
     android:orientation="vertical"
     tools:context="com.example.alv_chi.improject.activity.BaseActivity">
 
-    <RelativeLayout
-        android:id="@+id/rlCusotmToolbarRoot"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/big_margin_IIII"
-        android:background="@color/cyan">
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:id="@+id/rlCusotmToolbarRoot"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/big_margin_IIII"
+            android:background="@color/cyan">
+
+            <TextView
+                android:id="@+id/tvToolbarCenter"
+                style="@style/BigBlackTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:gravity="center"
+                android:text="Title" />
+
+            <com.example.alv_chi.improject.custom.CircleImageView
+                android:id="@+id/civToolabrCenter"
+                android:layout_width="@dimen/big_margin_III"
+                android:layout_height="@dimen/big_margin_III"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/middle_margin"
+                android:layout_toStartOf="@+id/tvToolbarCenter"
+                android:src="@mipmap/avatar_gray" />
+
+            <com.example.alv_chi.improject.custom.IconfontTextView
+                android:id="@+id/itvToolbarLeft"
+                style="@style/BigBlackTextStyleII"
+                android:layout_width="@dimen/big_margin_IIII"
+                android:layout_height="match_parent"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/small_padding_II"
+                android:gravity="center"
+                android:text="backOut" />
+
+            <com.example.alv_chi.improject.custom.IconfontTextView
+                android:id="@+id/itvToolbarRight"
+                style="@style/BigBlackTextStyleII"
+                android:layout_width="@dimen/big_margin_IIII"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginRight="@dimen/small_padding_II"
+                android:gravity="center"
+                android:text="TbLeftMenu" />
+
+
+        </RelativeLayout>
+
 
         <TextView
-            android:id="@+id/tvToolbarCenter"
-            style="@style/BigBlackTextStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+            android:id="@+id/tvWarningText"
+            style="@style/MiddleWhiteTextStyle"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/big_margin"
+            android:background="@color/red"
             android:gravity="center"
-            android:text="Title" />
+            android:text="警告 网络已断"
+            android:visibility="gone" />
 
-        <com.example.alv_chi.improject.custom.CircleImageView
-            android:id="@+id/civToolabrCenter"
-            android:layout_width="@dimen/big_margin_III"
-            android:layout_height="@dimen/big_margin_III"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="@dimen/middle_margin"
-            android:layout_toStartOf="@+id/tvToolbarCenter"
-            android:src="@mipmap/avatar_gray" />
 
-        <com.example.alv_chi.improject.custom.IconfontTextView
-            android:id="@+id/itvToolbarLeft"
-            style="@style/BigBlackTextStyleII"
-            android:layout_width="@dimen/big_margin_IIII"
-            android:layout_height="match_parent"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="@dimen/small_padding_II"
-            android:gravity="center"
-            android:text="backOut" />
-
-        <com.example.alv_chi.improject.custom.IconfontTextView
-            android:id="@+id/itvToolbarRight"
-            style="@style/BigBlackTextStyleII"
-            android:layout_width="@dimen/big_margin_IIII"
-            android:layout_height="match_parent"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginRight="@dimen/small_padding_II"
-            android:gravity="center"
-            android:text="TbLeftMenu" />
-    </RelativeLayout>
+    </FrameLayout>
 
 
 </LinearLayout>

@@ -11,9 +11,9 @@ import com.example.alv_chi.improject.activity.MainActivity;
 import com.example.alv_chi.improject.adapter.RvRecentChatAdapter;
 import com.example.alv_chi.improject.bean.RecentChatItem;
 import com.example.alv_chi.improject.data.DataManager;
-import com.example.alv_chi.improject.eventbus.EventBusHelper;
 import com.example.alv_chi.improject.eventbus.OnMessageCreatedEvent;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -55,13 +55,13 @@ public class RecentChatFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EventBusHelper.getEventBusHelperInstance().getEventBusInstance().register(this);
+        EventBus.getDefault().register(this);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        EventBusHelper.getEventBusHelperInstance().getEventBusInstance().unregister(this);
+        EventBus.getDefault().unregister(this);
     }
 
 

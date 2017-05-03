@@ -9,8 +9,8 @@ android {
         applicationId "com.example.alv_chi.improject"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -23,15 +23,14 @@ android {
 //   GreenDao 3.2 start
     greendao {
         schemaVersion 1    //数据库schema版本，也可以理解为数据库版本号
-        daoPackage'com.example.alv_chi.improject.dao'   //设置DaoMaster、DaoSession、Dao包名
-        targetGenDir'src/main/java'   //设置DaoMaster、DaoSession、Dao 的生成目标路径目录
+        daoPackage 'com.example.alv_chi.improject.greendao.dao'   //设置DaoMaster、DaoSession、Dao包名
+        targetGenDir 'src/main/java'   //设置DaoMaster、DaoSession、Dao 的生成目标路径目录
     }
 //    GreenDao 3.2 end
 
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
@@ -50,10 +49,12 @@ dependencies {
     compile 'org.igniterealtime.smack:smack-android-extensions:4.1.0'
     compile 'org.igniterealtime.smack:smack-experimental:4.1.0'
     compile 'org.igniterealtime.smack:smack-tcp:4.1.0'
-//    smack 4.1.0 library end:
+    //    smack 4.1.0 library end:
     //    GreenDao 3.2
     compile 'org.greenrobot:greendao:3.2.0'
     compile 'org.greenrobot:greendao-generator:3.2.0'
     //    UltraPullToRefresh
     compile 'in.srain.cube:ultra-ptr:1.0.11'
+    //    Ultra PullTo Refresh with load more
+//    compile 'in.srain.cube:ptr-load-more:1.0.6’
 }

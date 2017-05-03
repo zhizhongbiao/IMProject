@@ -17,11 +17,9 @@ import com.example.alv_chi.improject.activity.ChatRoomActivity;
 import com.example.alv_chi.improject.adapter.MessageRvAdapter;
 import com.example.alv_chi.improject.bean.BaseItem;
 import com.example.alv_chi.improject.bean.TextMessageItem;
-import com.example.alv_chi.improject.constant.Constants;
 import com.example.alv_chi.improject.custom.IconfontTextView;
 import com.example.alv_chi.improject.data.DataManager;
-import com.example.alv_chi.improject.eventbus.EventBusHelper;
-import com.example.alv_chi.improject.eventbus.OnDatasArrivedChattingFragmentEvent;
+import com.example.alv_chi.improject.data.constant.Constants;
 import com.example.alv_chi.improject.greendao.DataBaseUtil;
 import com.example.alv_chi.improject.greendao.MessageRecord;
 import com.example.alv_chi.improject.handler.HandlerHelper;
@@ -71,6 +69,8 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
     private ArrayList<TextMessageItem> textMessageItems;
     private BaseItem baseItem;
     private List<MessageRecord> messageRecords;
+    private int beforeSize;
+    private int afterSize;
 
 
     public static ChattingRoomFragment newInstance(Bundle bundle) {
@@ -84,15 +84,22 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
         ArrayList<BaseItem> messages = bundle.getParcelableArrayList(Constants.KeyConstants.USER_MESSAGES_RECORD);
         if (messages != null) {
 
+            boolean ifNeedGetMsgsFromDB = true;
             for (BaseItem message : messages) {
                 if (message instanceof TextMessageItem) {
                     refreshMessageContainer(false, (TextMessageItem) message);
+                    ifNeedGetMsgsFromDB = false;
                 }
             }
-            baseItem = messages.get(0);
-//            this is posted to XmppListenerService
-            EventBusHelper.getEventBusHelperInstance().getEventBusInstance().postSticky(new OnDatasArrivedChattingFragmentEvent(baseItem.getUserJID()));
 
+            if (ifNeedGetMsgsFromDB) {
+                getMsgRecords();
+            }
+
+
+            baseItem = messages.get(0);
+//            XmppListenerService calls this method to clean the notification in the statebar
+            DataManager.getDataManagerInstance().getXmppListenerService().cleanCurrentMessageNotification(baseItem.getUserJID());
         }
 
     }
@@ -122,7 +129,6 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
         messageRvAdapter = new MessageRvAdapter(mHoldingActivity, textMessageItems);
         rvMessageContainer.setAdapter(messageRvAdapter);
 
-
     }
 
     private void initialUltraPTR() {
@@ -143,30 +149,35 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
         pcfl.setPtrHandler(new PtrDefaultHandler() {
             @Override
             public void onRefreshBegin(PtrFrameLayout frame) {
-                ThreadUtil.executeThreadTask(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (baseItem != null) {
-                            factor++;
-                            messageRecords = DataBaseUtil.getDataBaseInstance(mHoldingActivity.getApplicationContext()).retrive(30 * factor, new MessageRecord(null, baseItem.getUserName()
-                                    , DataManager.getDataManagerInstance().getCurrentMasterUserName(),
-                                    baseItem.getCurrentTimeStamp(), baseItem.getMesage(),
-                                    baseItem.getCurrentTimeStamp(), baseItem.getMesage(), baseItem.getUserJID(), baseItem.getTypeView()
-                                    , baseItem.isReceivedMessage(), baseItem.isOnline()));
-                            if (messageRecords == null) {
-                                HandlerHelper.sendMessageByHandler(mHandler, TAG, Constants.HandlerMessageType.FAILURE);
-                                Log.e(TAG, "initialUltraPTR run: messageRecords==null");
-                            } else {
-                                HandlerHelper.sendMessageByHandler(mHandler, TAG, Constants.HandlerMessageType.SUCCESS);
-                            }
+                getMsgRecords();
+            }
+        });
+    }
 
-                        } else {
-                            HandlerHelper.sendMessageByHandler(mHandler, TAG, Constants.HandlerMessageType.FAILURE);
-                            Log.e(TAG, "initialUltraPTR run: baseItem==null");
-                        }
+    private void getMsgRecords() {
+        ThreadUtil.executeThreadTask(new Runnable() {
+            @Override
+            public void run() {
+                if (baseItem != null) {
 
+                    messageRecords = DataBaseUtil.getDataBaseInstance(mHoldingActivity.getApplicationContext()).retrive(20 * factor, new MessageRecord(null, baseItem.getUserName()
+                            , DataManager.getDataManagerInstance().getCurrentMasterUserName(),
+                            baseItem.getCurrentTimeStamp(), baseItem.getMesage(),
+                            baseItem.getCurrentTimeStamp(), baseItem.getMesage(), baseItem.getUserJID(), baseItem.getTypeView()
+                            , baseItem.isReceivedMessage(), baseItem.isOnline()));
+                    factor++;
+                    if (messageRecords == null) {
+                        HandlerHelper.sendMessageByHandler(mHandler, TAG, Constants.HandlerMessageType.FAILURE);
+                        Log.e(TAG, "initialUltraPTR run: messageRecords==null");
+                    } else {
+                        HandlerHelper.sendMessageByHandler(mHandler, TAG, Constants.HandlerMessageType.SUCCESS);
                     }
-                });
+
+                } else {
+                    HandlerHelper.sendMessageByHandler(mHandler, TAG, Constants.HandlerMessageType.FAILURE);
+                    Log.e(TAG, "initialUltraPTR run: baseItem==null");
+                }
+
             }
         });
     }
@@ -206,26 +217,34 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnSend:
-                String message = getReadyToBeSentMessage();
-                etPenddingMessage.setText("");
-                if (message == null || message.equals("")) {
-                    Toast.makeText(mHoldingActivity, "不能发空信息", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                try {
-                    TextMessageItem textMessageItem = new TextMessageItem(baseItem.getUserName()
-                            , SystemUtil.getCurrentSystemTime()
-                            , message, null, baseItem.getUserJID(), MessageRvAdapter.TEXT_MESSAGE_VIEW_TYPE, false, baseItem.isOnline());
-                    mHoldingActivity.getXmppListenerService().sendMessage(textMessageItem);
-//                    Log.e(TAG, "onClick: 发送成功 sendMessage: contactItem.getUserJID()=" + baseItem.getUserJID());
-
-                    refreshMessageContainer(false, textMessageItem);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Log.e(TAG, "onClick: 发送失败！  ： " + e.getMessage());
-                }
+                sendMsgs();
                 break;
         }
+    }
+
+    private void sendMsgs() {
+        String message = getReadyToBeSentMessage();
+        etPenddingMessage.setText("");
+        if (message == null || message.equals("")) {
+            Toast.makeText(mHoldingActivity, "不能发空信息", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        try {
+            TextMessageItem textMessageItem = new TextMessageItem(baseItem.getUserName()
+                    , SystemUtil.getCurrentSystemTime()
+                    , message, null, baseItem.getUserJID(), MessageRvAdapter.TEXT_MESSAGE_VIEW_TYPE, false, baseItem.isOnline());
+
+            DataManager.getDataManagerInstance().getXmppListenerService().sendMessage(textMessageItem);
+            refreshMessageContainer(false, textMessageItem);
+//                    Log.e(TAG, "onClick: 发送成功 sendMessage: contactItem.getUserJID()=" + baseItem.getUserJID());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(TAG, "sendMsgs: 发送消息失败 Exception="+e.getMessage() );
+            Toast.makeText(mHoldingActivity, "your account might have been logined in other device or Network is unavailable", Toast.LENGTH_SHORT).show();
+            mHoldingActivity.showTheWarningText("you are offline , please login again");
+        }
+
     }
 
 
@@ -238,15 +257,22 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
 
 
     public synchronized void refreshMessageContainer(final boolean isFromDatabase, final TextMessageItem textMessageItem) {
-        getHoldingActivity().getActivityHandler().post(new Runnable() {
+        getHoldingActivity().getMyHandler().post(new Runnable() {
             @Override
             public void run() {
                 if (isFromDatabase) {
                     textMessageItems.add(0, textMessageItem);
+                    int currentSize = textMessageItems.size();
+                    if (currentSize > beforeSize) {
+                        linearLayoutManager.scrollToPosition(currentSize - beforeSize);//不滚动到相应的位置问题有待解决
+//                        Log.e(TAG, "run: deltaSize="+(currentSize-beforeSize) );
+                    }
                 } else {
                     textMessageItems.add(textMessageItem);
+                    if (textMessageItems.size() > 0) {
+                        linearLayoutManager.scrollToPosition(textMessageItems.size() - 1);//此处不生效，有待解决？？？？？？？？？？？
+                    }
 
-//                linearLayoutManager.scrollToPosition(textMessageItems.size() - 1);//此处不生效，有待解决？？？？？？？？？？？
                 }
                 messageRvAdapter.notifyDataSetChanged();
             }
@@ -262,6 +288,7 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
                 showTheMsgRecordFromDB();
                 break;
             case Constants.HandlerMessageType.FAILURE:
+                factor = 1;
                 Toast.makeText(mHoldingActivity, "加载消息记录出错", Toast.LENGTH_SHORT).show();
                 break;
         }
@@ -270,16 +297,20 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
     }
 
     private void showTheMsgRecordFromDB() {
-        if (messageRecords.size() == textMessageItems.size()) {
+        afterSize = messageRecords.size();
+        beforeSize = textMessageItems.size();
+        if (afterSize == beforeSize) {
             Toast.makeText(mHoldingActivity, "无更多消息记录", Toast.LENGTH_SHORT).show();
         } else {
             textMessageItems.clear();
+            DataManager.getDataManagerInstance().getAllUsersMessageRecords().get(baseItem.getUserJID()).clear();
             for (MessageRecord messageRecord : messageRecords) {
-                refreshMessageContainer(true, new TextMessageItem(messageRecord.getUserName(), messageRecord.getLatestMessageTimeStamp()
+                TextMessageItem textMessageItem = new TextMessageItem(messageRecord.getUserName(), messageRecord.getLatestMessageTimeStamp()
                         , messageRecord.getMesage(), null, messageRecord.getUserJID(), messageRecord.getTypeView()
-                        , messageRecord.getIsReceivedMessage(), messageRecord.getIsOnline()));
+                        , messageRecord.getIsReceivedMessage(), messageRecord.getIsOnline());
+                refreshMessageContainer(true, textMessageItem);
+                DataManager.getDataManagerInstance().getAllUsersMessageRecords().get(baseItem.getUserJID()).add(0, textMessageItem);
             }
-
         }
     }
 

@@ -6,8 +6,12 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
@@ -27,10 +31,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.alv_chi.improject.R;
+import com.example.alv_chi.improject.broadcastreceiver.NetworkChangeBroadcastReceiver;
 import com.example.alv_chi.improject.custom.CircleImageView;
 import com.example.alv_chi.improject.custom.IconfontTextView;
+import com.example.alv_chi.improject.data.constant.Constants;
 import com.example.alv_chi.improject.fragment.BaseFragment;
-import com.example.alv_chi.improject.handler.ActivityHandler;
+import com.example.alv_chi.improject.handler.MyHandler;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
@@ -42,9 +48,12 @@ public abstract class BaseActivity extends AppCompatActivity {
     private LinearLayout rootLayout;
     protected ToolbarViewHolder toolbarViewHolder;
     private View lastContentView;
-    private ActivityHandler activityHandler;
+    private MyHandler myHandler;
     private BaseFragment mCurrentFragment;
-    protected ActivityHandler mHandler;
+    protected MyHandler mHandler;
+    private TextView mWarningText;
+    private IntentFilter intentFilter;
+    private NetworkChangeBroadcastReceiver networkChangeBroadcastReceiver;
 
 
     //       subclasses can override this method for customing the toolbar
@@ -64,11 +73,11 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     ;
 
-    public ActivityHandler getActivityHandler() {
-        if (activityHandler == null) {
-            activityHandler = new ActivityHandler();
+    public MyHandler getMyHandler() {
+        if (myHandler == null) {
+            myHandler = new MyHandler();
         }
-        return activityHandler;
+        return myHandler;
     }
 
 
@@ -78,7 +87,10 @@ public abstract class BaseActivity extends AppCompatActivity {
         getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);//to tell window that activity need transition animation;
         super.setContentView(R.layout.activity_base);
 
-        mHandler = getActivityHandler();
+//        register the NetworkChangeBroadcastReceiver
+        initialNetworkChangeListen();
+
+        mHandler = getMyHandler();
 
         if (getIntent() != null) {
             handleIntent(getIntent());
@@ -89,22 +101,45 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     }
 
+    private void initialNetworkChangeListen() {
+        intentFilter = new IntentFilter();
+        intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
+        intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
+        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        intentFilter.addAction(Constants.KeyConstants.CURRENT_ACCOUNT_IS_LOGINED_BY_OTHERS_EXCEPTION);
+        networkChangeBroadcastReceiver = new NetworkChangeBroadcastReceiver(this);
+        registerReceiver(networkChangeBroadcastReceiver, intentFilter);
+    }
+
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (activityHandler != null) {
+        if (myHandler != null) {
 //            kill all tasks in the queue when BacicActivity is destroy:
-            activityHandler.removeCallbacksAndMessages(null);
+            myHandler.removeCallbacksAndMessages(null);
         }
+        unregisterReceiver(networkChangeBroadcastReceiver);
     }
 
 
     //        initial View
     private void initial() {
         RelativeLayout toolbar = (RelativeLayout) findViewById(R.id.rlCusotmToolbarRoot);
+        mWarningText = (TextView) findViewById(R.id.tvWarningText);
         toolbarViewHolder = new ToolbarViewHolder(toolbar);
         intializeToolbar(toolbarViewHolder);
+    }
+
+    public void showTheWarningText(@NonNull String warningMsgs)
+    {
+        mWarningText.setVisibility(View.VISIBLE);
+        mWarningText.setText(warningMsgs);
+    }
+
+    public void hideTheWarningText()
+    {
+        mWarningText.setVisibility(View.GONE);
     }
 
     protected void startRotationAnimation(View view, float angle, int duration) {
@@ -121,7 +156,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             , int width, int height, PopupWindow.OnDismissListener onDismissListener) {
 
         final PopupWindow popupWindow = new PopupWindow(this);
-        popupWindow.setElevation(100);
+//        popupWindow.setElevation(100);
         if (height == PUPOP_WINDOW_WRAP_CONTEN) {
             popupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
         } else {
@@ -149,7 +184,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
 
-    protected void showAlertDialog(String title, String message
+    public void showAlertDialog(String title, String message
             , String positiveButtonMsg, final DialogInterface.OnClickListener positiveButtonOnClickListener
             , String negativeButtonMsg, final DialogInterface.OnClickListener negativeButtonOnClickListener
             , String neutralButtonMsg, final DialogInterface.OnClickListener neutralButtonOnClickListener) {
@@ -175,22 +210,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         alertDialog.show();
     }
 
-    public void showAlertDialogInThread(final String title, final String message
-            , final String positiveButtonMsg, final DialogInterface.OnClickListener positiveButtonOnClickListener
-            , final String negativeButtonMsg, final DialogInterface.OnClickListener negativeButtonOnClickListener
-            , final String neutralButtonMsg, final DialogInterface.OnClickListener neutralButtonOnClickListener) {
-
-        getActivityHandler().post(new Runnable() {
-            @Override
-            public void run() {
-                showAlertDialog(title, message
-                        , positiveButtonMsg, positiveButtonOnClickListener
-                        , negativeButtonMsg, negativeButtonOnClickListener
-                        , neutralButtonMsg, neutralButtonOnClickListener);
-            }
-        });
-
-    }
 
     public void startAnotherActivity(BaseActivity activity, Intent intent) {
         Transition explode = TransitionInflater.from(activity).inflateTransition(R.transition.explode);
@@ -300,15 +319,21 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected abstract BaseFragment getFirstFragment();
 
 
-    public  ProgressDialog showProgressBar(Context context) {
+    public  ProgressDialog showProgressBar(Context context,String message ) {
 
         ProgressDialog  progressDialog= new ProgressDialog(context);
         progressDialog.setCancelable(false);
-        progressDialog.setMessage("please wait...loading ...");
+        progressDialog.setMessage(message);
 
 
         progressDialog.show();
         return progressDialog;
+    }
+
+    public void hideTheProgressbar(ProgressDialog progressBar) {
+        if (progressBar != null && progressBar.isShowing()) {
+            progressBar.dismiss();
+        }
     }
 
 

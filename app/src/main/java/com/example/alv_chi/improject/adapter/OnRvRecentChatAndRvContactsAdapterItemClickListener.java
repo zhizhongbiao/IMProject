@@ -6,7 +6,7 @@ import android.view.View;
 
 import com.example.alv_chi.improject.activity.ChatRoomActivity;
 import com.example.alv_chi.improject.bean.BaseItem;
-import com.example.alv_chi.improject.constant.Constants;
+import com.example.alv_chi.improject.data.constant.Constants;
 import com.example.alv_chi.improject.data.DataManager;
 
 /**

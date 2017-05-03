@@ -1,6 +1,5 @@
 package com.example.alv_chi.improject.fragment;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,7 +16,6 @@ import com.example.alv_chi.improject.adapter.ReUsableAdapter;
 import com.example.alv_chi.improject.bean.ContactItem;
 import com.example.alv_chi.improject.custom.LetterNavigationView;
 import com.example.alv_chi.improject.data.DataManager;
-import com.example.alv_chi.improject.service.XmppListenerService;
 
 import java.util.List;
 
@@ -72,6 +70,11 @@ public class ContactsFragment extends BaseFragment implements LetterNavigationVi
 //        Log.e(TAG, "intializeRvContacts: 联系人展示完毕DataManager.getDataManagerInstance().getContactItems().size()=" + DataManager.getDataManagerInstance().getContactItems().size());
 //        Log.e(TAG, "intializeRvContacts: 联系人展示完毕reUsableAdapter.getContactItems().size()=" + reUsableAdapter.getContactItems().size());
 
+        RvSetScrollListener();
+
+    }
+
+    private void RvSetScrollListener() {
         rvContactItem.addOnScrollListener(new OnRecyclerViewScrollListener() {
             @Override
             public void scrollUp(RecyclerView recyclerView, int scrollYdistance) {
@@ -83,7 +86,6 @@ public class ContactsFragment extends BaseFragment implements LetterNavigationVi
                 updateLetterNavigationView();
             }
         });
-
     }
 
     @Override
@@ -101,8 +103,7 @@ public class ContactsFragment extends BaseFragment implements LetterNavigationVi
             @Override
             public void run() {
 
-                Intent serviceIntent = new Intent(mHoldingActivity, XmppListenerService.class);
-                mHoldingActivity.startService(serviceIntent);
+               DataManager.getDataManagerInstance().getXmppListenerService().initializeContactsData();
 
                 reUsableAdapter.setContactItems(DataManager.getDataManagerInstance().getContactItems());
                 reUsableAdapter.notifyDataSetChanged();
@@ -114,11 +115,6 @@ public class ContactsFragment extends BaseFragment implements LetterNavigationVi
     }
 
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        DataManager.getDataManagerInstance().clearContactsData();
-    }
 
     private void updateLetterNavigationView() {
         if (isTouchingOnLetterNavigationView) return;
@@ -143,7 +139,6 @@ public class ContactsFragment extends BaseFragment implements LetterNavigationVi
             return;
         }
         linearLayoutManager.scrollToPositionWithOffset(position, 0);
-
     }
 
     @Override

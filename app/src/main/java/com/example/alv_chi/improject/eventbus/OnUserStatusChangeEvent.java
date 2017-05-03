@@ -1,5 +1,6 @@
 package com.example.alv_chi.improject.eventbus;
 
+
 import org.jivesoftware.smack.packet.Presence;
 
 /**

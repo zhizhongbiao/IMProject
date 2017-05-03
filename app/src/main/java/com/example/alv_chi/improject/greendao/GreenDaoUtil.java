@@ -3,8 +3,8 @@ package com.example.alv_chi.improject.greendao;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.example.alv_chi.improject.dao.DaoMaster;
-import com.example.alv_chi.improject.dao.DaoSession;
+import com.example.alv_chi.improject.greendao.dao.DaoMaster;
+import com.example.alv_chi.improject.greendao.dao.DaoSession;
 
 /**
  * Created by Alv_chi on 2017/4/24.

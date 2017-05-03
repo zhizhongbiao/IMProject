@@ -1,7 +1,9 @@
 package com.example.alv_chi.improject.util;
 
+import android.app.Service;
 import android.content.Context;
 import android.os.Build;
+import android.os.Vibrator;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
@@ -81,21 +83,31 @@ public class SystemUtil {
     }
 
 
-    public static void showSoftInput(Context context,View view)
-    {
+    public static void showSoftInput(Context context, View view) {
         InputMethodManager inputMethodManager = (InputMethodManager) context.getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputMethodManager.showSoftInput(view,InputMethodManager.SHOW_FORCED);
+        inputMethodManager.showSoftInput(view, InputMethodManager.SHOW_FORCED);
     }
 
-    public static void hideSoftInput(Context context,View view)
-    {
+    public static void hideSoftInput(Context context, View view) {
         InputMethodManager inputMethodManager = (InputMethodManager) context.getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputMethodManager.showSoftInput(view,InputMethodManager.HIDE_NOT_ALWAYS);
+        inputMethodManager.showSoftInput(view, InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
-    public static boolean isSoftInputOpened(Context context,View view)
-    {
+    public static boolean isSoftInputOpened(Context context, View view) {
         InputMethodManager inputMethodManager = (InputMethodManager) context.getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         return inputMethodManager.isActive();
     }
+
+//
+    public static void Vibrate(Context context, long milliseconds) {
+        Vibrator vib = (Vibrator) context.getSystemService(Service.VIBRATOR_SERVICE);
+        vib.vibrate(milliseconds);
+    }
+
+    public static void Vibrate(Context context,  long[] pattern, boolean isRepeat) {
+        Vibrator vib = (Vibrator) context.getSystemService(Service.VIBRATOR_SERVICE);
+        vib.vibrate(pattern, isRepeat ? 1 : -1);
+    }
+
+
 }

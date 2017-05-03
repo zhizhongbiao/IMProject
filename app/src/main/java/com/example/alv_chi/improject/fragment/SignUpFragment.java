@@ -1,5 +1,6 @@
 package com.example.alv_chi.improject.fragment;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,12 +13,12 @@ import android.widget.Toast;
 import com.example.alv_chi.improject.R;
 import com.example.alv_chi.improject.activity.BaseActivity;
 import com.example.alv_chi.improject.activity.LogInAndSignUpActivity;
-import com.example.alv_chi.improject.constant.Constants;
 import com.example.alv_chi.improject.custom.CircleImageView;
+import com.example.alv_chi.improject.data.DataManager;
+import com.example.alv_chi.improject.data.constant.Constants;
 import com.example.alv_chi.improject.handler.HandlerHelper;
 import com.example.alv_chi.improject.handler.OnThreadTaskFinishedListener;
 import com.example.alv_chi.improject.util.ThreadUtil;
-import com.example.alv_chi.improject.xmpp.XmppHelper;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -58,11 +59,12 @@ public class SignUpFragment extends BaseFragment implements View.OnClickListener
     @BindView(R.id.tvEditUserPasswordForSure)
     TextView tvEditUserPasswordForSure;
 
-    private LogInAndSignUpActivity holdingActivity;
+    private LogInAndSignUpActivity mHoldingActivity;
     private String userName;
     private String userID;
     private String userEmail;
     private String userPasssword;
+    private ProgressDialog progressDialog;
 
 
     @Override
@@ -101,7 +103,7 @@ public class SignUpFragment extends BaseFragment implements View.OnClickListener
 
     @Override
     protected void castActivity(BaseActivity baseActivity) {
-        holdingActivity = (LogInAndSignUpActivity) baseActivity;
+        mHoldingActivity = (LogInAndSignUpActivity) baseActivity;
     }
 
 
@@ -131,9 +133,8 @@ public class SignUpFragment extends BaseFragment implements View.OnClickListener
                 setViewsEnable(true, etLoginUserName, tvEditUserNameForSure);
                 break;
             case R.id.btnRegister:
-                userRegister();
-
-
+                progressDialog = mHoldingActivity.showProgressBar(mHoldingActivity, "Registering ...please wait...");
+                bindXmppListenerService(mHoldingActivity,TAG,Constants.HandlerMessageType.BIND_SERVICE_SUCCESS);
                 break;
         }
     }
@@ -143,15 +144,17 @@ public class SignUpFragment extends BaseFragment implements View.OnClickListener
             @Override
             public void run() {
                 try {
-                    boolean isUserRegisterSuccess = XmppHelper.getXmppHelperInStance().userRegister(userName, userPasssword, userEmail, userID);
+                    boolean isUserRegisterSuccess = DataManager
+                            .getDataManagerInstance()
+                            .getXmppListenerService()
+                            .userRegister(userName, userPasssword, userEmail, userID
+                                    ,Constants.AppConfigConstants.OPEN_FIRE_SERVER_IP);//此处暂时设置为固定的，日后有时间改为动态ServerIP.
                     Log.e(TAG, "onClick: isUserRegisterSuccess=" + isUserRegisterSuccess);
                     if (isUserRegisterSuccess) {
-
                         HandlerHelper.sendMessageByHandler(mHandler, TAG, Constants.HandlerMessageType.SUCCESS);
                     } else {
                         HandlerHelper.sendMessageByHandler(mHandler, TAG, Constants.HandlerMessageType.FAILURE);
                     }
-
                 } catch (Exception e) {
                     e.printStackTrace();
                     Log.e(TAG, "onClick: exception=" + e.getMessage());
@@ -183,10 +186,8 @@ public class SignUpFragment extends BaseFragment implements View.OnClickListener
             if (data != null && !data.trim().equals("")) {
                 return data;
             }
-//            Snackbar.make(et, "", Snackbar.LENGTH_SHORT);
-            Toast.makeText(holdingActivity, "输入不能为空,请重新输入", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mHoldingActivity, "输入不能为空,请重新输入", Toast.LENGTH_SHORT).show();
         }
-
         return null;
     }
 
@@ -194,11 +195,19 @@ public class SignUpFragment extends BaseFragment implements View.OnClickListener
     public void onThreadTaskFinished(int messageType) {
         switch (messageType) {
             case Constants.HandlerMessageType.SUCCESS:
-                Toast.makeText(holdingActivity, "注册成功！", Toast.LENGTH_SHORT).show();
-                holdingActivity.removeTheTopFragmentFromBackStack();
+                mHoldingActivity.hideTheProgressbar(progressDialog);
+                Toast.makeText(mHoldingActivity, "注册成功！", Toast.LENGTH_SHORT).show();
+                mHoldingActivity.removeTheTopFragmentFromBackStack();
                 break;
             case Constants.HandlerMessageType.FAILURE:
-                Toast.makeText(holdingActivity, "注册失败，原因未知", Toast.LENGTH_SHORT).show();
+                DataManager.getDataManagerInstance()
+                        .getXmppListenerService()
+                        .setXmppTcpConnectionInstance(null);
+                mHoldingActivity.hideTheProgressbar(progressDialog);
+                Toast.makeText(mHoldingActivity, "注册失败，原因未知", Toast.LENGTH_SHORT).show();
+                break;
+            case Constants.HandlerMessageType.BIND_SERVICE_SUCCESS:
+                userRegister();
                 break;
         }
     }
