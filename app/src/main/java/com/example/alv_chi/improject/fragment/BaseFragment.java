@@ -109,10 +109,10 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        if (serviceConnection!=null)
+        if (serviceConnection!=null&&DataManager.getDataManagerInstance().getXmppListenerService()!=null)
         {
             mHoldingActivity.unbindService(serviceConnection);
-//            Log.e(TAG, "onStop: unbindService" );
+            Log.e(TAG, "onStop: unbindService" );
         }
     }
 }

@@ -175,7 +175,7 @@ public class XmppListenerService extends Service implements XMPP
             if (DataManager.getDataManagerInstance().getCurrentChattingUserJID() != null
                     && DataManager.getDataManagerInstance().getCurrentChattingUserJID().equals(userJID)) {
                 updateCurrentChattingJIDUserState(presence);
-                Log.e(TAG, "initializeContactsData updateCurrentChattingJIDUserState: userJID="+userJID );
+                Log.e(TAG, "initializeContactsData updateCurrentChattingJIDUserState: userJID=" + userJID);
 
             }
 
@@ -205,9 +205,9 @@ public class XmppListenerService extends Service implements XMPP
             try {
                 chat = getChatManager().createChat(baseItem.getUserJID());
                 dataManagerInstance.getChats().put(baseItem.getUserJID(), chat);
-                Log.e(TAG, "sendMessage: sendMsg="+baseItem.getMesage() );
+                Log.e(TAG, "sendMessage: sendMsg=" + baseItem.getMesage());
             } catch (NullPointerException e) {
-                Log.e(TAG, "sendMessage: getXmppTcpConnectionInstance()==null 没连接服务器 NullPointerException="+e.getMessage());
+                Log.e(TAG, "sendMessage: getXmppTcpConnectionInstance()==null 没连接服务器 NullPointerException=" + e.getMessage());
                 throw new ConnectException();
             }
         }
@@ -273,7 +273,7 @@ public class XmppListenerService extends Service implements XMPP
         BaseFragment currentFragment = currentActivity.getmCurrentFragment();
         if (currentFragment instanceof ChattingRoomFragment) {
             ((ChattingRoomFragment) currentFragment).refreshMessageContainer(false, messageItem);
-            SystemUtil.Vibrate(XmppListenerService.this,280);
+            SystemUtil.Vibrate(XmppListenerService.this, 280);
         }
     }
 
@@ -407,7 +407,7 @@ public class XmppListenerService extends Service implements XMPP
         isOnline = getUserStatus(isOnline, presence);
         DataManager.getDataManagerInstance().getIsOnline().put(JIDFromUser, isOnline);
         updateCurrentChattingJIDUserState(presence);
-        Log.e(TAG, "presenceChanged updateCurrentChattingJIDUserState: JIDFromUser="+JIDFromUser);
+        Log.e(TAG, "presenceChanged updateCurrentChattingJIDUserState: JIDFromUser=" + JIDFromUser);
 
     }
 
@@ -426,7 +426,6 @@ public class XmppListenerService extends Service implements XMPP
     //  - - - -- - - - - - -- - - - - -- - - - Below all are XMPP interface methods - - - Split Line  - - - -- - - - -- - - - - - -- - -
     @Override
     public void connectOpenfireServer(String serverIP) throws IOException, XMPPException, SmackException {
-        dataManagerInstance.setServerIP(serverIP);
         XMPPTCPConnectionConfiguration xmppConfigBuilder = XMPPTCPConnectionConfiguration.builder()
 //                .setHost(Constants.AppConfigConstants.OPEN_FIRE_SERVER_IP)
                 .setHost(serverIP)
@@ -440,7 +439,7 @@ public class XmppListenerService extends Service implements XMPP
 
         setXmppTcpConnectionInstance(new XMPPTCPConnection(xmppConfigBuilder));
         getXmppTcpConnectionInstance().connect();
-
+        dataManagerInstance.setServerIP(serverIP);
     }
 
     @Override
@@ -452,13 +451,14 @@ public class XmppListenerService extends Service implements XMPP
         getXmppTcpConnectionInstance().login(userName, password);
         setStatu(getXmppTcpConnectionInstance(), Presence.Type.available, Constants.KeyConstants.IS_ONLINE);
         setTheXmppListeners();
+        Log.e(TAG, "login: Service 中登陆成功");
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
                 initializeContactsData();
 //                这里需要优化
             }
-        },2000);
+        }, 2000);
     }
 
     private void setTheXmppListeners() {
@@ -614,7 +614,7 @@ public class XmppListenerService extends Service implements XMPP
             Intent intent = new Intent(Constants.KeyConstants
                     .CURRENT_ACCOUNT_IS_LOGINED_BY_OTHERS_EXCEPTION);
             sendBroadcast(intent);
-            Log.e(TAG, "connectionClosedOnError: 发广播了" );
+            Log.e(TAG, "connectionClosedOnError: 发广播了");
         }
     }
 
@@ -625,16 +625,35 @@ public class XmppListenerService extends Service implements XMPP
 //                clean the connection
                 setXmppTcpConnectionInstance(null);
                 MessageRecord loginInfo = DataBaseUtil.getDataBaseInstance(getApplicationContext()).retrive();
-                login(loginInfo.getUserName(), loginInfo.getMasterUserName(), loginInfo.getLatestMessageTimeStamp());
+                String userName = loginInfo.getUserName();
+                String password = loginInfo.getMasterUserName();
+                String serverIP = loginInfo.getLatestMessageTimeStamp();
+
+                if (!(isDataValid(userName) && isDataValid(password) && isDataValid(serverIP))) {
+                    Intent intent = new Intent(Constants.KeyConstants
+                            .CURRENT_ACCOUNT_IS_LOGINED_BY_OTHERS_EXCEPTION);
+                    sendBroadcast(intent);
+                    Log.e(TAG, "ReloginTimerTask run: userName/password/serverIP="
+                            + userName + "/" + password + "/" + serverIP);
+                    return;
+                }
+                login(userName, password, serverIP);
 //                clean all the dead Chat ,when it relogins to build a new connection.
                 DataManager.getDataManagerInstance().getChats().clear();
                 Log.e(TAG, "ReloginTimerTask run: 服务在监听切换网络时登陆成功了");
             } catch (Exception e) {
                 e.printStackTrace();
-                Log.e(TAG, "ReloginTimerTask run: 服务在监听切换网络时登陆出错了 Exception=" + e.getMessage());
+//                Log.e(TAG, "ReloginTimerTask run: 服务在监听切换网络时登陆出错了 Exception=" + e.getMessage());
                 scheduleTimer.schedule(new ReloginTimerTask(), (reloginInterval * reloginInterval));
             }
         }
+    }
+
+    private boolean isDataValid(String stringData) {
+        if (stringData == null || stringData.equals("")) {
+            return false;
+        }
+        return true;
     }
 
 

@@ -118,21 +118,27 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
                 .commit();
     }
 
-    private void saveTheLoginInfoToDB( String serverIP,  String userName,  String loginPsw) {
-//        Firstly , delete the old LoginInfo.After that insert the new LoginInfo,
+    private void saveTheLoginInfoToDB(final String serverIP, final String userName, final String loginPsw) {
+//        Firstly , delete the old LoginInfo.After that it the new LoginIno,
 //        because all the LoginInfo have the same ID.
-        DataBaseUtil
-                .getDataBaseInstance(mHoldingActivity
-                        .getApplicationContext()
-                        .getApplicationContext())
-                .deleteOldLoginInfo();
+        ThreadUtil.executeThreadTask(new Runnable() {
+            @Override
+            public void run() {
+                Log.e(TAG, "run: DB 插入LoginInfo中.....");
+                DataBaseUtil
+                        .getDataBaseInstance(mHoldingActivity
+                                .getApplicationContext()
+                                .getApplicationContext())
+                        .deleteOldLoginInfo();
 
-        MessageRecord newLoginInfo = new MessageRecord(Constants.DatabaseConstants.LOGIN_INGO_DB_ID
-                , userName, loginPsw, serverIP, null, null, null, null, -2, false, false);
+                MessageRecord newLoginInfo = new MessageRecord(Constants.DatabaseConstants.LOGIN_INGO_DB_ID
+                        , userName, loginPsw, serverIP, null, null, null, null, -2, false, false);
 
-        DataBaseUtil.getDataBaseInstance(mHoldingActivity.getApplicationContext()).create(
-                newLoginInfo);
-//        Log.e(TAG, "run: DB 插入LoginInfo中.....");
+                DataBaseUtil.getDataBaseInstance(mHoldingActivity.getApplicationContext()).create(
+                        newLoginInfo);
+                Log.e(TAG, "run: DB 插入成功");
+            }
+        });
 
     }
 

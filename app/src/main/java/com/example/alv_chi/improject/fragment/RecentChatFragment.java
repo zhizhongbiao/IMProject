@@ -67,6 +67,8 @@ public class RecentChatFragment extends BaseFragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN, priority = 10, sticky = true)
     public void onMessageCreatedEvent(OnMessageCreatedEvent event) {
+//        consume the sticky event
+        EventBus.getDefault().removeStickyEvent(event);
         RecentChatItem recentChatItem = event.getRecentChatItem();
         if (DataManager.getDataManagerInstance().getCurrentMasterUserName().equals(recentChatItem.getUserName()))
         {

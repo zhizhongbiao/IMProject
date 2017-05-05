@@ -13,7 +13,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/middle_margin"
         android:layout_marginBottom="@dimen/middle_margin"
-        android:src="@mipmap/meinv4"
+        android:src="@mipmap/avatar_gray"
         android:scaleType="centerCrop"
         />
 
