@@ -60,6 +60,7 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
     private int factor = 1;
 
 
+
     private ChatRoomActivity mHoldingActivity;
 
     private String readyToBeSentMessage;
@@ -165,7 +166,6 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
                             baseItem.getCurrentTimeStamp(), baseItem.getMesage(),
                             baseItem.getCurrentTimeStamp(), baseItem.getMesage(), baseItem.getUserJID(), baseItem.getTypeView()
                             , baseItem.isReceivedMessage(), baseItem.isOnline()));
-                    factor++;
                     if (messageRecords == null) {
                         HandlerHelper.sendMessageByHandler(mHandler, TAG, Constants.HandlerMessageType.FAILURE);
                         Log.e(TAG, "initialUltraPTR run: messageRecords==null");
@@ -240,7 +240,7 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
 
         } catch (Exception e) {
             e.printStackTrace();
-            Log.e(TAG, "sendMsgs: 发送消息失败 Exception="+e.getMessage() );
+            Log.e(TAG, "sendMsgs: 发送消息失败 Exception=" + e.getMessage());
             Toast.makeText(mHoldingActivity, "your account might have been logined in other device or Network is unavailable", Toast.LENGTH_SHORT).show();
             mHoldingActivity.showTheWarningText("you are offline , please login again");
         }
@@ -263,15 +263,16 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
                 if (isFromDatabase) {
                     textMessageItems.add(0, textMessageItem);
                     int currentSize = textMessageItems.size();
-                    if (currentSize > beforeSize) {
+                    if (factor == 2) {
+                        linearLayoutManager.scrollToPosition(textMessageItems.size() - 1);
+//                        Log.e(TAG, "run:  showMsgInTheRvBottom factor="+factor );
+                    } else if (currentSize > beforeSize) {
                         linearLayoutManager.scrollToPosition(currentSize - beforeSize);//不滚动到相应的位置问题有待解决
 //                        Log.e(TAG, "run: deltaSize="+(currentSize-beforeSize) );
                     }
                 } else {
                     textMessageItems.add(textMessageItem);
-                    if (textMessageItems.size() > 0) {
-                        linearLayoutManager.scrollToPosition(textMessageItems.size() - 1);//此处不生效，有待解决？？？？？？？？？？？
-                    }
+                    linearLayoutManager.scrollToPosition(textMessageItems.size() - 1);
 
                 }
                 messageRvAdapter.notifyDataSetChanged();
@@ -280,15 +281,16 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
 
     }
 
+
     @Override
     public void onThreadTaskFinished(int messageType) {
 
         switch (messageType) {
             case Constants.HandlerMessageType.SUCCESS:
+                factor++;
                 showTheMsgRecordFromDB();
                 break;
             case Constants.HandlerMessageType.FAILURE:
-                factor = 1;
                 Toast.makeText(mHoldingActivity, "加载消息记录出错", Toast.LENGTH_SHORT).show();
                 break;
         }
