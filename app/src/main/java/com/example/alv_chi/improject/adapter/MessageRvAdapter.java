@@ -5,7 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -13,6 +13,7 @@ import com.example.alv_chi.improject.R;
 import com.example.alv_chi.improject.bean.TextMessageItem;
 import com.example.alv_chi.improject.custom.CircleImageView;
 import com.example.alv_chi.improject.data.DataManager;
+import com.example.alv_chi.improject.util.GlideUtil;
 
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class MessageRvAdapter extends RecyclerView.Adapter<MessageRvAdapter.View
     public static final int PICTURE_MESSAGE_VIEW_TYPE = 4;
     private Context context;
     private LayoutInflater layoutInflater;
-    private FrameLayout rootItemView;
+    private LinearLayout rootItemView;
 
     private List<TextMessageItem> data;
 
@@ -44,76 +45,110 @@ public class MessageRvAdapter extends RecyclerView.Adapter<MessageRvAdapter.View
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        rootItemView = (FrameLayout) layoutInflater.inflate(R.layout.item_message, parent, false);
+        rootItemView = (LinearLayout) layoutInflater.inflate(R.layout.item_message, parent, false);
         return new ViewHolder(rootItemView);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        switch (getItemViewType(position))
-        {
+        switch (getItemViewType(position)) {
             case TEXT_MESSAGE_VIEW_TYPE:
-                showTextMessageInTheMessageContainer(holder,data.get(position));
+                showTextMessageInTheMessageContainer(holder, data.get(position));
+                break;
+            case PICTURE_MESSAGE_VIEW_TYPE:
+                showPicMessageInTheMessageContainer(holder, data.get(position));
                 break;
         }
+
+
     }
 
     private void showTextMessageInTheMessageContainer(ViewHolder viewHolder, TextMessageItem textMessageItem) {
-        if (!textMessageItem.isReceivedMessage()) {
-            viewHolder.llOtherTextMessage.setVisibility(View.GONE);
-            viewHolder.llYourTextMessage.setVisibility(View.VISIBLE);
+        if (textMessageItem.isReceivedMessage()) {
+            viewHolder.llYourMsg.setVisibility(View.GONE);
+            viewHolder.ivPicFromOthers.setVisibility(View.GONE);
+            viewHolder.llOthersMsg.setVisibility(View.VISIBLE);
 
-            viewHolder.tvYourCurrentTime.setText(textMessageItem.getCurrentTimeStamp());
-            viewHolder.tvYourChattingMessage.setText(textMessageItem.getMesage());
-            viewHolder.tvYourUserName.setText(DataManager.getDataManagerInstance().getCurrentMasterUserName());
-        } else {
-            viewHolder.llYourTextMessage.setVisibility(View.GONE);
-            viewHolder.llOtherTextMessage.setVisibility(View.VISIBLE);
 
-            viewHolder.tvOtherCurrentTime.setText(textMessageItem.getCurrentTimeStamp());
-            viewHolder.tvOtherChattingMessage.setText(textMessageItem.getMesage());
+            viewHolder.tvMessageFromOthers.setText(textMessageItem.getMesage());
             viewHolder.tvOtherUserName.setText(textMessageItem.getUserName());
-        }
+        } else {
+            viewHolder.llOthersMsg.setVisibility(View.GONE);
+            viewHolder.llYourMsg.setVisibility(View.VISIBLE);
+            viewHolder.ivPicFromYou.setVisibility(View.GONE);
 
+
+
+            viewHolder.tvMessageFromYou.setText(textMessageItem.getMesage());
+            viewHolder.tvYourUserName.setText(DataManager.getDataManagerInstance().getCurrentMasterUserName());
+        }
+        viewHolder.tvCurrentTime.setText(textMessageItem.getCurrentTimeStamp());
+
+    }
+
+    private void showPicMessageInTheMessageContainer(ViewHolder viewHolder, TextMessageItem textMessageItem) {
+        if (textMessageItem.isReceivedMessage()) {
+            viewHolder.llYourMsg.setVisibility(View.GONE);
+            viewHolder.llOthersMsg.setVisibility(View.VISIBLE);
+            viewHolder.tvMessageFromOthers.setVisibility(View.GONE);
+
+
+
+            GlideUtil.loadImage(context,textMessageItem.getImagePath(),viewHolder.ivPicFromOthers);
+            viewHolder.tvOtherUserName.setText(textMessageItem.getUserName());
+        } else {
+            viewHolder.llOthersMsg.setVisibility(View.GONE);
+            viewHolder.tvMessageFromYou.setVisibility(View.GONE);
+            viewHolder.llYourMsg.setVisibility(View.VISIBLE);
+
+
+            GlideUtil.loadImage(context,textMessageItem.getImagePath(),viewHolder.ivPicFromYou);
+            viewHolder.tvYourUserName.setText(DataManager.getDataManagerInstance().getCurrentMasterUserName());
+        }
+        viewHolder.tvCurrentTime.setText(textMessageItem.getCurrentTimeStamp());
 
     }
 
 
     @Override
     public int getItemCount() {
-        return data==null?0:data.size();
+        return data == null ? 0 : data.size();
     }
 
     @Override
     public int getItemViewType(int position) {
-        return data==null?-1: data.get(position).getTypeView();
+        return data == null ? -1 : data.get(position).getTypeView();
     }
 
+
     class ViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.tvOtherCurrentTime)
-        TextView tvOtherCurrentTime;
-        @BindView(R.id.tvOtherUserName)
-        TextView tvOtherUserName;
-        @BindView(R.id.civOtherAvatar)
-        CircleImageView civOtherAvatar;
-        @BindView(R.id.tvOtherChattingMessage)
-        TextView tvOtherChattingMessage;
-        @BindView(R.id.llOtherTextMessage)
-        LinearLayout llOtherTextMessage;
-        @BindView(R.id.tvYourCurrentTime)
-        TextView tvYourCurrentTime;
+        @BindView(R.id.tvMessageFromYou)
+        TextView tvMessageFromYou;
+        @BindView(R.id.ivPicFromYou)
+        ImageView ivPicFromYou;
         @BindView(R.id.tvYourUserName)
         TextView tvYourUserName;
-        @BindView(R.id.tvYourChattingMessage)
-        TextView tvYourChattingMessage;
         @BindView(R.id.civYourAvatar)
         CircleImageView civYourAvatar;
-        @BindView(R.id.llYourTextMessage)
-        LinearLayout llYourTextMessage;
+        @BindView(R.id.llYourMsg)
+        LinearLayout llYourMsg;
+        @BindView(R.id.tvOtherUserName)
+        TextView tvOtherUserName;
+        @BindView(R.id.civOthersAvatar)
+        CircleImageView civOthersAvatar;
+        @BindView(R.id.ivPicFromOthers)
+        ImageView ivPicFromOthers;
+        @BindView(R.id.tvMessageFromOthers)
+        TextView tvMessageFromOthers;
+        @BindView(R.id.llOthersMsg)
+        LinearLayout llOthersMsg;
+        @BindView(R.id.tvCurrentTime)
+        TextView tvCurrentTime;
 
         ViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
         }
     }
+
 }

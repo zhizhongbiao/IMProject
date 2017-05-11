@@ -15,6 +15,7 @@ public class MessageRecord {
     private String masterUserName;
     private String latestMessageTimeStamp;
     private String latestMessage;
+    private String imagePath;
 
     private String currentTimeStamp;
     private String mesage;
@@ -23,9 +24,9 @@ public class MessageRecord {
     private int typeView;
     private boolean isReceivedMessage;
     private boolean isOnline;
-    @Generated(hash = 1860373992)
+    @Generated(hash = 1135092099)
     public MessageRecord(Long id, String userName, String masterUserName,
-            String latestMessageTimeStamp, String latestMessage,
+            String latestMessageTimeStamp, String latestMessage, String imagePath,
             String currentTimeStamp, String mesage, String userJID, int typeView,
             boolean isReceivedMessage, boolean isOnline) {
         this.id = id;
@@ -33,6 +34,7 @@ public class MessageRecord {
         this.masterUserName = masterUserName;
         this.latestMessageTimeStamp = latestMessageTimeStamp;
         this.latestMessage = latestMessage;
+        this.imagePath = imagePath;
         this.currentTimeStamp = currentTimeStamp;
         this.mesage = mesage;
         this.userJID = userJID;
@@ -73,6 +75,12 @@ public class MessageRecord {
     public void setLatestMessage(String latestMessage) {
         this.latestMessage = latestMessage;
     }
+    public String getImagePath() {
+        return this.imagePath;
+    }
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
     public String getCurrentTimeStamp() {
         return this.currentTimeStamp;
     }
@@ -109,5 +117,7 @@ public class MessageRecord {
     public void setIsOnline(boolean isOnline) {
         this.isOnline = isOnline;
     }
+
+
     
 }

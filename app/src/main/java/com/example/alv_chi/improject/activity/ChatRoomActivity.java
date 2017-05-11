@@ -1,32 +1,40 @@
 package com.example.alv_chi.improject.activity;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.alv_chi.improject.R;
+import com.example.alv_chi.improject.adapter.MessageRvAdapter;
 import com.example.alv_chi.improject.bean.BaseItem;
+import com.example.alv_chi.improject.bean.TextMessageItem;
 import com.example.alv_chi.improject.custom.IconfontTextView;
 import com.example.alv_chi.improject.data.DataManager;
 import com.example.alv_chi.improject.data.constant.Constants;
 import com.example.alv_chi.improject.eventbus.OnUserStatusChangeEvent;
+import com.example.alv_chi.improject.exception.ConnectException;
 import com.example.alv_chi.improject.fragment.BaseFragment;
 import com.example.alv_chi.improject.fragment.ChattingRoomFragment;
+import com.example.alv_chi.improject.util.SystemUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.packet.Presence;
 
 import java.util.ArrayList;
 
 public class ChatRoomActivity extends BaseActivity {
 
-
     private static final String TAG = "ChatRoomActivity";
-
 
     private BaseItem baseItem;
     private ArrayList<BaseItem> messages;
@@ -75,9 +83,8 @@ public class ChatRoomActivity extends BaseActivity {
 
             DataManager.getDataManagerInstance().getXmppListenerService().initializeContactsData();
             isOnline = DataManager.getDataManagerInstance().getIsOnline().get(baseItem.getUserJID());
-        }else
-        {
-            Log.e(TAG, "intializeToolbar: "+baseItem.getUserJID()+"-isOnLine="+isOnline );
+        } else {
+            Log.e(TAG, "intializeToolbar: " + baseItem.getUserJID() + "-isOnLine=" + isOnline);
         }
         setUserChattingToIsOnline(isOnline);
 
@@ -156,4 +163,81 @@ public class ChatRoomActivity extends BaseActivity {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
     }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == Constants.KeyConstants.LOAD_SYSTEM_IMAGE_REQUEST_CODE
+                && resultCode == RESULT_OK && data != null) {
+            Log.e(TAG, "onActivityResult: 图片拿到了");
+            Uri selectedImage = data.getData();
+            String[] filePathColumn = {MediaStore.Images.Media.DATA};
+
+            Cursor cursor = getContentResolver().query(selectedImage,
+                    filePathColumn, null, null, null);
+            cursor.moveToFirst();
+
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            String picturePath = cursor.getString(columnIndex);
+            cursor.close();
+
+//            BitmapFactory.Options options = new BitmapFactory.Options();
+//            options.inSampleSize = 2;
+
+            Log.e(TAG, "onActivityResult: picturePath=" + picturePath);
+            try {
+                DataManager.getDataManagerInstance().getXmppListenerService()
+                        .sendFile(baseItem.getUserJID()
+                                , picturePath
+                                , SystemUtil.getCurrentSystemTime());
+
+
+                TextMessageItem textMessageItem = new TextMessageItem(baseItem.getUserName()
+                        , SystemUtil.getCurrentSystemTime(), ""
+                        , null, baseItem.getUserJID()
+                        , MessageRvAdapter.PICTURE_MESSAGE_VIEW_TYPE, picturePath
+                        , false, baseItem.isOnline());
+
+                DataManager.getDataManagerInstance()
+                        .getXmppListenerService()
+                        .sendMessage(textMessageItem);
+
+
+            } catch (SmackException e) {
+                Toast.makeText(this, "发送图片失败", Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
+            } catch (ConnectException e) {
+                Toast.makeText(this, "发送图片失败", Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
+            }
+//            Bitmap bitmap = BitmapFactory.decodeFile(picturePath, options);
+//            Log.e(TAG, "onActivityResult: selectedImage/bitmap="+selectedImage+"/"+bitmap );
+//
+        }
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+
+        if (requestCode == Constants.AppConfigConstants.MY_PERMISSIONS_REQUEST_LOAD_IMAGES) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                requestTheImages();
+            } else {
+                // Permission Denied
+                Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    public void requestTheImages() {
+        Intent intent = new Intent(Intent.ACTION_PICK,
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent
+                , Constants.KeyConstants.LOAD_SYSTEM_IMAGE_REQUEST_CODE);
+    }
+
 }

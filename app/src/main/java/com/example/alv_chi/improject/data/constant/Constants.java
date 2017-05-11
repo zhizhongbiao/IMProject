@@ -10,7 +10,7 @@ public class Constants {
     }
 
     public static class FileNameConstants {
-
+        public static final String RECEIVED_IMAGES_PATH = "IMProjectReceivedImages";
     }
 
     public static class KeyConstants {
@@ -35,10 +35,14 @@ public class Constants {
         public static final String STUDENT_ID = "Id";
         public static final String STUDENT_REGISTER_DATE = "Id";
 
+
+        //        startActivityForResult RequestCode:
+        public static final int LOAD_SYSTEM_IMAGE_REQUEST_CODE =123;
+
     }
 
     public static class AppConfigConstants {
-//                public static final String OPEN_FIRE_SERVER_IP = "172.27.156.177";
+        //                public static final String OPEN_FIRE_SERVER_IP = "172.27.156.177";
         public static final String OPEN_FIRE_SERVER_IP = "192.168.23.1";
 
         public static final String OPEN_FIRE_SERVER_HOST_NAME = "windows10.microdone.cn";
@@ -53,18 +57,16 @@ public class Constants {
         public static final String CLIENT_PASSWORD = "zhizhongbiao";
         public static final String CLIENT_EMAIL = "B@test.com";
 
-//        public static final String OTHER_EMAIL = "Test@test.com";
+        //        public static final String OTHER_EMAIL = "Test@test.com";
         public static boolean ifNeedToLoginManually = true;
 
 
-//        public static String CURRENT_ACCOUNT_IS_LOGINED_IN_OTHER_DEVICE_EXCEPTION_MESSAGE=
-//                "conflict You can read more about the meaning of this stream error at" +
-//                " http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions" +
-//                "<stream:error><conflict xmlns='urn:ietf:params:xml:ns:xmpp-streams'/></stream:error>";
 
-
-        public static String CURRENT_ACCOUNT_IS_LOGINED_IN_OTHER_DEVICE_EXCEPTION_MESSAGE=
+        public static String CURRENT_ACCOUNT_IS_LOGINED_IN_OTHER_DEVICE_EXCEPTION_MESSAGE =
                 "conflict You can read more about the meaning";
+
+//      request system permissions
+        public static final int MY_PERMISSIONS_REQUEST_LOAD_IMAGES = 7;
 
     }
 

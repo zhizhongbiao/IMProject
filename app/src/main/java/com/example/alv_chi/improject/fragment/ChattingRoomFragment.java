@@ -1,7 +1,11 @@
 package com.example.alv_chi.improject.fragment;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -9,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.alv_chi.improject.R;
@@ -46,19 +51,24 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
 
     private static final String TAG = "ChattingRoomFragment";
 
-    @BindView(R.id.itvMoreMessageType)
-    IconfontTextView itvMoreMessageType;
-    @BindView(R.id.etPenddingMessage)
-    EditText etPenddingMessage;
+    @BindView(R.id.btnMoreMessageType)
+    Button btnMoreMessageType;
+    @BindView(R.id.etPenddingSendedMessage)
+    EditText etPenddingSendedMessage;
     @BindView(R.id.btnSend)
     Button btnSend;
     @BindView(R.id.rvMessageContainer)
     RecyclerView rvMessageContainer;
     @BindView(R.id.pcfl)
     PtrClassicFrameLayout pcfl;
+    @BindView(R.id.itvSendPic)
+    IconfontTextView itvSendPic;
+    @BindView(R.id.itvSendAudio)
+    IconfontTextView itvSendAudio;
+    @BindView(R.id.llSendMoreMsgTypeBar)
+    LinearLayout llSendMoreMsgTypeBar;
 
     private int factor = 1;
-
 
 
     private ChatRoomActivity mHoldingActivity;
@@ -72,10 +82,11 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
     private List<MessageRecord> messageRecords;
     private int beforeSize;
     private int afterSize;
+    private boolean isTheMsgOptionBarShowing = false;
 
 
     public static ChattingRoomFragment newInstance(Bundle bundle) {
-        ChattingRoomFragment chattingRoomFragment = new ChattingRoomFragment();
+        ChattingRoomFragment chattingRoomFragment =  new ChattingRoomFragment();
         chattingRoomFragment.setArguments(bundle);
         return chattingRoomFragment;
     }
@@ -119,8 +130,11 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
     }
 
     private void initViews() {
+        itvSendPic.setOnClickListener(this);
+        itvSendAudio.setOnClickListener(this);
         btnSend.setOnClickListener(this);
-        etPenddingMessage.setOnFocusChangeListener(this);
+        btnMoreMessageType.setOnClickListener(this);
+        etPenddingSendedMessage.setOnFocusChangeListener(this);
 
         initialUltraPTR();
 
@@ -161,10 +175,12 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
             public void run() {
                 if (baseItem != null) {
 
-                    messageRecords = DataBaseUtil.getDataBaseInstance(mHoldingActivity.getApplicationContext()).retrive(20 * factor, new MessageRecord(null, baseItem.getUserName()
+                    messageRecords = DataBaseUtil.getDataBaseInstance(mHoldingActivity.getApplicationContext()).retrive(20 * factor
+                            , new MessageRecord(null, baseItem.getUserName()
                             , DataManager.getDataManagerInstance().getCurrentMasterUserName(),
-                            baseItem.getCurrentTimeStamp(), baseItem.getMesage(),
-                            baseItem.getCurrentTimeStamp(), baseItem.getMesage(), baseItem.getUserJID(), baseItem.getTypeView()
+                            baseItem.getCurrentTimeStamp(), baseItem.getMesage(),baseItem.getImagePath()
+                            ,baseItem.getCurrentTimeStamp(), baseItem.getMesage()
+                                    , baseItem.getUserJID(), baseItem.getTypeView()
                             , baseItem.isReceivedMessage(), baseItem.isOnline()));
                     if (messageRecords == null) {
                         HandlerHelper.sendMessageByHandler(mHandler, TAG, Constants.HandlerMessageType.FAILURE);
@@ -193,6 +209,7 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
     @Override
     public void onStop() {
         super.onStop();
+        SystemUtil.hideSoftInput(mHoldingActivity, etPenddingSendedMessage);
         DataManager.getDataManagerInstance().setCurrentChattingUserJID("");
     }
 
@@ -200,10 +217,10 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
     public void onFocusChange(View v, boolean hasFocus) {
         if (hasFocus) {
             SystemUtil.showSoftInput(mHoldingActivity, v);
-//            linearLayoutManager.scrollToPosition(textMessageItems.size()-1);
+
         } else {
             SystemUtil.hideSoftInput(mHoldingActivity, v);
-//            linearLayoutManager.scrollToPosition(textMessageItems.size()-1);
+
         }
 
     }
@@ -219,20 +236,63 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
             case R.id.btnSend:
                 sendMsgs();
                 break;
+            case R.id.btnMoreMessageType:
+                SystemUtil.hideSoftInput(mHoldingActivity, etPenddingSendedMessage);
+                showAndHindTheSendMsgOptions();
+                break;
+            case R.id.itvSendAudio:
+                showAndHindTheSendMsgOptions();
+                Toast.makeText(mHoldingActivity, "Temporarily Not Support", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.itvSendPic:
+                showAndHindTheSendMsgOptions();
+                if (ContextCompat.checkSelfPermission(mHoldingActivity,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED)
+                {
+                    ActivityCompat.requestPermissions(mHoldingActivity,
+                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            Constants.AppConfigConstants.MY_PERMISSIONS_REQUEST_LOAD_IMAGES);
+
+                }else {
+                    mHoldingActivity.requestTheImages();
+                }
+
+                break;
+
         }
+    }
+
+
+    private void showAndHindTheSendMsgOptions() {
+
+        if (isTheMsgOptionBarShowing) {
+            itvSendAudio.setVisibility(View.GONE);
+            itvSendPic.setVisibility(View.GONE);
+            llSendMoreMsgTypeBar.setVisibility(View.GONE);
+            isTheMsgOptionBarShowing = false;
+        } else {
+            llSendMoreMsgTypeBar.setVisibility(View.VISIBLE);
+            itvSendAudio.setVisibility(View.VISIBLE);
+            itvSendPic.setVisibility(View.VISIBLE);
+            isTheMsgOptionBarShowing = true;
+        }
+
     }
 
     private void sendMsgs() {
         String message = getReadyToBeSentMessage();
-        etPenddingMessage.setText("");
+        etPenddingSendedMessage.setText("");
         if (message == null || message.equals("")) {
             Toast.makeText(mHoldingActivity, "不能发空信息", Toast.LENGTH_SHORT).show();
             return;
         }
         try {
             TextMessageItem textMessageItem = new TextMessageItem(baseItem.getUserName()
-                    , SystemUtil.getCurrentSystemTime()
-                    , message, null, baseItem.getUserJID(), MessageRvAdapter.TEXT_MESSAGE_VIEW_TYPE, false, baseItem.isOnline());
+                    , SystemUtil.getCurrentSystemTime(), message
+                    , null, baseItem.getUserJID()
+                    , MessageRvAdapter.TEXT_MESSAGE_VIEW_TYPE,baseItem.getImagePath()
+                    , false, baseItem.isOnline());
 
             DataManager.getDataManagerInstance().getXmppListenerService().sendMessage(textMessageItem);
             refreshMessageContainer(false, textMessageItem);
@@ -249,7 +309,7 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
 
 
     public String getReadyToBeSentMessage() {
-        Editable editableMessage = etPenddingMessage.getText();
+        Editable editableMessage = etPenddingSendedMessage.getText();
         readyToBeSentMessage = editableMessage.toString();
         readyToBeSentMessage = readyToBeSentMessage.trim();
         return readyToBeSentMessage;
@@ -307,8 +367,9 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
             textMessageItems.clear();
             DataManager.getDataManagerInstance().getAllUsersMessageRecords().get(baseItem.getUserJID()).clear();
             for (MessageRecord messageRecord : messageRecords) {
-                TextMessageItem textMessageItem = new TextMessageItem(messageRecord.getUserName(), messageRecord.getLatestMessageTimeStamp()
-                        , messageRecord.getMesage(), null, messageRecord.getUserJID(), messageRecord.getTypeView()
+                TextMessageItem textMessageItem = new TextMessageItem(messageRecord.getUserName()
+                        , messageRecord.getLatestMessageTimeStamp(), messageRecord.getMesage()
+                        , null, messageRecord.getUserJID(), messageRecord.getTypeView(),baseItem.getImagePath()
                         , messageRecord.getIsReceivedMessage(), messageRecord.getIsOnline());
                 refreshMessageContainer(true, textMessageItem);
                 DataManager.getDataManagerInstance().getAllUsersMessageRecords().get(baseItem.getUserJID()).add(0, textMessageItem);
@@ -340,4 +401,5 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
             msgRecords.remove(0);
         }
     }
+
 }

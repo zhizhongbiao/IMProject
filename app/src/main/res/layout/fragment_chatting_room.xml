@@ -6,18 +6,16 @@
     android:orientation="vertical">
 
     <in.srain.cube.views.ptr.PtrClassicFrameLayout
+        android:id="@+id/pcfl"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:id="@+id/pcfl"
-        >
+        android:layout_weight="1">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rvMessageContainer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="start"
-             />
+            android:layout_gravity="start" />
     </in.srain.cube.views.ptr.PtrClassicFrameLayout>
 
 
@@ -33,20 +31,20 @@
         android:minHeight="@dimen/big_margin_IIII"
         android:orientation="horizontal">
 
-        <com.example.alv_chi.improject.custom.IconfontTextView
-            android:id="@+id/itvMoreMessageType"
+        <Button
+            android:id="@+id/btnMoreMessageType"
             style="@style/BigBlackTextStyleII"
             android:layout_width="0dp"
             android:layout_height="@dimen/big_margin_III"
             android:layout_margin="@dimen/small_margin"
-            android:layout_weight="1.5"
-            android:background="@color/gray"
+            android:layout_weight="1.2"
+            android:background="@drawable/shape_orange_bg"
             android:gravity="center"
-            android:text="@string/more" />
+            android:text="+" />
 
 
         <EditText
-            android:id="@+id/etPenddingMessage"
+            android:id="@+id/etPenddingSendedMessage"
             style="@style/BigBlackTextStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -70,5 +68,38 @@
 
     </LinearLayout>
 
+
+    <LinearLayout
+        android:id="@+id/llSendMoreMsgTypeBar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/big_margin_IIIII"
+        android:background="@color/grayTransparent"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <com.example.alv_chi.improject.custom.IconfontTextView
+            android:id="@+id/itvSendPic"
+            style="@style/BigBlackTextStyleII"
+            android:layout_width="@dimen/big_margin_III"
+            android:layout_height="@dimen/big_margin_III"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/big_padding"
+            android:background="@drawable/shape_green_bg"
+            android:gravity="center"
+            android:text="@string/send_picture" />
+
+        <com.example.alv_chi.improject.custom.IconfontTextView
+            android:id="@+id/itvSendAudio"
+            style="@style/BigBlackTextStyleII"
+            android:layout_width="@dimen/big_margin_III"
+            android:layout_height="@dimen/big_margin_III"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/big_padding"
+            android:background="@drawable/shape_sky_blue_bg"
+            android:gravity="center"
+            android:text="@string/send_audio" />
+
+
+    </LinearLayout>
 
 </LinearLayout>

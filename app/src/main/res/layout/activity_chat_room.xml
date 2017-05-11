@@ -4,9 +4,5 @@
     android:id="@+id/flFragmentContainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
     tools:context="com.example.alv_chi.improject.activity.ChatRoomActivity">
-
-
-
 </FrameLayout>

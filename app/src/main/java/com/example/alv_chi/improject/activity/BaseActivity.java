@@ -257,7 +257,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         this.mCurrentFragment = mCurrentFragment;
     }
 
-    public BaseFragment getmCurrentFragment() {
+    public BaseFragment getCurrentFragment() {
         return this.mCurrentFragment;
     }
 

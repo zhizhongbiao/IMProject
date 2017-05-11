@@ -103,7 +103,7 @@ public class DataManager {
         return recentChats;
     }
 
-    public ArrayList<RecentChatItem> collectRecentChat(RecentChatItem recentChatItem) {
+    public ArrayList<RecentChatItem> collectRecentChatItems(RecentChatItem recentChatItem) {
         if (getRecentChats().contains(recentChatItem)) {
             getRecentChats().remove(recentChatItem);
         }

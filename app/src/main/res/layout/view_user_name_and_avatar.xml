@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:layout_marginLeft="@dimen/big_padding"
+    android:layout_marginRight="@dimen/big_padding"
+    >
+
+
+    <TextView
+        android:id="@+id/tvYourUserName"
+        style="@style/MiddleBlackTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxWidth="65dp"
+        android:gravity="center"
+        android:text="UserName"
+        android:layout_marginBottom="@dimen/small_padding"
+        />
+
+
+    <com.example.alv_chi.improject.custom.CircleImageView
+        android:id="@+id/civYourAvatar"
+        android:layout_width="@dimen/big_margin_IIII"
+        android:layout_height="46dp"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/avatar_green" />
+
+
+</LinearLayout>

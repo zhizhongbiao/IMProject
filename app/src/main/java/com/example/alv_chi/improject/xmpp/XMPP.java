@@ -7,6 +7,7 @@ import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
+import org.jivesoftware.smackx.filetransfer.FileTransferManager;
 import org.jivesoftware.smackx.iqregister.AccountManager;
 
 import java.io.IOException;
@@ -40,4 +41,10 @@ public interface XMPP {
     HashMap<String, String> getaccountAttibutes(String email, String studentId);
 
     AccountManager getAccountManager();
+
+    FileTransferManager getFileTransferManager();
+
+    void sendFile(String userJID,String filePath,String fileDescription) throws SmackException;
+
+
 }

@@ -76,7 +76,7 @@ public class RecentChatFragment extends BaseFragment {
             return;
         }
 
-        DataManager.getDataManagerInstance().collectRecentChat(recentChatItem);
+        DataManager.getDataManagerInstance().collectRecentChatItems(recentChatItem);
         if (rvRecentChatAdapter != null) {
             rvRecentChatAdapter.notifyDataSetChanged();
         }

@@ -132,7 +132,7 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
                         .deleteOldLoginInfo();
 
                 MessageRecord newLoginInfo = new MessageRecord(Constants.DatabaseConstants.LOGIN_INGO_DB_ID
-                        , userName, loginPsw, serverIP, null, null, null, null, -2, false, false);
+                        , userName, loginPsw, serverIP, null, null,null, null, null, -2, false, false);
 
                 DataBaseUtil.getDataBaseInstance(mHoldingActivity.getApplicationContext()).create(
                         newLoginInfo);

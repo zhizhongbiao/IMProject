@@ -173,6 +173,11 @@ public class RecentChatItem implements BaseItem, Parcelable {
         isOnline = online;
     }
 
+    @Override
+    public String getImagePath() {
+        return null;
+    }
+
     //    override this method to differ the different message
     @Override
     public boolean equals(Object obj) {

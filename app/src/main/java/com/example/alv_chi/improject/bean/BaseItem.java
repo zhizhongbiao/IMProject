@@ -41,4 +41,6 @@ public interface BaseItem extends Parcelable{
 
     public boolean isOnline();
     public void setOnline(boolean online);
+
+    String getImagePath();
 }

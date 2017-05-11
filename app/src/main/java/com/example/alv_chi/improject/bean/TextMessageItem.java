@@ -18,10 +18,14 @@ public class TextMessageItem implements Parcelable,BaseItem{
     private int typeView;
     private boolean isReceivedMessage;
     private boolean isOnline;
+    private String imagePath;
 
-    public TextMessageItem(String userName, String currentTimeStamp, String mesage, Bitmap userAvatar, String userJID, int typeView, boolean isReceivedMessage, boolean isOnline) {
+    public TextMessageItem(String userName, String currentTimeStamp, String mesage
+            , Bitmap userAvatar, String userJID, int typeView , String imagePath
+            , boolean isReceivedMessage, boolean isOnline) {
         this.userName = userName;
         this.currentTimeStamp = currentTimeStamp;
+        this.imagePath = imagePath;
         this.mesage = mesage;
         this.userAvatar = userAvatar;
         this.userJID = userJID;
@@ -29,6 +33,7 @@ public class TextMessageItem implements Parcelable,BaseItem{
         this.isReceivedMessage = isReceivedMessage;
         this.isOnline = isOnline;
     }
+
 
     protected TextMessageItem(Parcel in) {
         userName = in.readString();
@@ -39,6 +44,7 @@ public class TextMessageItem implements Parcelable,BaseItem{
         typeView = in.readInt();
         isReceivedMessage = in.readByte() != 0;
         isOnline = in.readByte() != 0;
+        imagePath = in.readString();
     }
 
     @Override
@@ -51,6 +57,7 @@ public class TextMessageItem implements Parcelable,BaseItem{
         dest.writeInt(typeView);
         dest.writeByte((byte) (isReceivedMessage ? 1 : 0));
         dest.writeByte((byte) (isOnline ? 1 : 0));
+        dest.writeString(imagePath);
     }
 
     @Override
@@ -149,4 +156,16 @@ public class TextMessageItem implements Parcelable,BaseItem{
     public void setOnline(boolean online) {
         isOnline = online;
     }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
+
+
+
 }

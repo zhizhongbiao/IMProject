@@ -132,6 +132,11 @@ public class ContactItem implements Comparable<ContactItem>, Parcelable, BaseIte
         isOnline = online;
     }
 
+    @Override
+    public String getImagePath() {
+        return null;
+    }
+
 
     //    Override this method for sorting these items;
     @Override
