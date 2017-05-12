@@ -59,7 +59,7 @@ public class DataBaseUtil {
 
     //    delete;
     public void deleteOldLoginInfo() {
-        MessageRecord oldLoginInfo = messageRecordDao.loadByRowId(Constants.DatabaseConstants.LOGIN_INGO_DB_ID);
+        MessageRecord oldLoginInfo = messageRecordDao.loadByRowId(Constants.DatabaseConstants.LOGIN_INFO_DB_ID);
         messageRecordDao.delete(oldLoginInfo);
 //        Log.e(TAG, "delete: 旧的LoginInfo删除成功！");
 
@@ -72,7 +72,7 @@ public class DataBaseUtil {
         Log.e(TAG, "update: 消息更新成功！");
     }
 
-    //    retrive message records;
+    //    retriveLoginInfo message records;
     public List<MessageRecord> retrive(int numOfMsgRecords
             , MessageRecord messageRecord) {
 
@@ -86,15 +86,15 @@ public class DataBaseUtil {
                 .limit(numOfMsgRecords)
                 .build()
                 .list();
-        Log.e(TAG, "retrive: 消息查询成功！messageRecords.size()=" + messageRecords.size());
+        Log.e(TAG, "retriveLoginInfo: 消息查询成功！messageRecords.size()=" + messageRecords.size());
         return messageRecords;
     }
 
     //    only for retriving  loginInfo record;
-    public MessageRecord retrive() {
+    public MessageRecord retriveLoginInfo() {
 
-        MessageRecord loginInfo = (MessageRecord) messageRecordDao.loadByRowId(Constants.DatabaseConstants.LOGIN_INGO_DB_ID);
-//        Log.e(TAG, "retrive: 获取登陆信息成功！serverIP=" + loginInfo.getLatestMessageTimeStamp());
+        MessageRecord loginInfo = (MessageRecord) messageRecordDao.loadByRowId(Constants.DatabaseConstants.LOGIN_INFO_DB_ID);
+//        Log.e(TAG, "retriveLoginInfo: 获取登陆信息成功！serverIP=" + loginInfo.getCurrentTimeStamp());
         return loginInfo;
     }
 

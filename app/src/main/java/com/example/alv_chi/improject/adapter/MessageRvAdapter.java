@@ -10,7 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.alv_chi.improject.R;
-import com.example.alv_chi.improject.bean.TextMessageItem;
+import com.example.alv_chi.improject.bean.MessageItem;
 import com.example.alv_chi.improject.custom.CircleImageView;
 import com.example.alv_chi.improject.data.DataManager;
 import com.example.alv_chi.improject.util.GlideUtil;
@@ -34,9 +34,9 @@ public class MessageRvAdapter extends RecyclerView.Adapter<MessageRvAdapter.View
     private LayoutInflater layoutInflater;
     private LinearLayout rootItemView;
 
-    private List<TextMessageItem> data;
+    private List<MessageItem> data;
 
-    public MessageRvAdapter(Context context, List<TextMessageItem> data) {
+    public MessageRvAdapter(Context context, List<MessageItem> data) {
         this.context = context;
         this.data = data;
         layoutInflater = LayoutInflater.from(this.context);
@@ -63,15 +63,15 @@ public class MessageRvAdapter extends RecyclerView.Adapter<MessageRvAdapter.View
 
     }
 
-    private void showTextMessageInTheMessageContainer(ViewHolder viewHolder, TextMessageItem textMessageItem) {
-        if (textMessageItem.isReceivedMessage()) {
+    private void showTextMessageInTheMessageContainer(ViewHolder viewHolder, MessageItem messageItem) {
+        if (messageItem.isReceivedMessage()) {
             viewHolder.llYourMsg.setVisibility(View.GONE);
             viewHolder.ivPicFromOthers.setVisibility(View.GONE);
             viewHolder.llOthersMsg.setVisibility(View.VISIBLE);
 
 
-            viewHolder.tvMessageFromOthers.setText(textMessageItem.getMesage());
-            viewHolder.tvOtherUserName.setText(textMessageItem.getUserName());
+            viewHolder.tvMessageFromOthers.setText(messageItem.getMesage());
+            viewHolder.tvOtherUserName.setText(messageItem.getUserName());
         } else {
             viewHolder.llOthersMsg.setVisibility(View.GONE);
             viewHolder.llYourMsg.setVisibility(View.VISIBLE);
@@ -79,33 +79,36 @@ public class MessageRvAdapter extends RecyclerView.Adapter<MessageRvAdapter.View
 
 
 
-            viewHolder.tvMessageFromYou.setText(textMessageItem.getMesage());
+            viewHolder.tvMessageFromYou.setText(messageItem.getMesage());
             viewHolder.tvYourUserName.setText(DataManager.getDataManagerInstance().getCurrentMasterUserName());
         }
-        viewHolder.tvCurrentTime.setText(textMessageItem.getCurrentTimeStamp());
+        viewHolder.tvCurrentTime.setText(messageItem.getCurrentTimeStamp());
 
     }
 
-    private void showPicMessageInTheMessageContainer(ViewHolder viewHolder, TextMessageItem textMessageItem) {
-        if (textMessageItem.isReceivedMessage()) {
+    private void showPicMessageInTheMessageContainer(ViewHolder viewHolder, MessageItem messageItem) {
+        if (messageItem.isReceivedMessage()) {
             viewHolder.llYourMsg.setVisibility(View.GONE);
             viewHolder.llOthersMsg.setVisibility(View.VISIBLE);
             viewHolder.tvMessageFromOthers.setVisibility(View.GONE);
 
 
 
-            GlideUtil.loadImage(context,textMessageItem.getImagePath(),viewHolder.ivPicFromOthers);
-            viewHolder.tvOtherUserName.setText(textMessageItem.getUserName());
+            GlideUtil.loadImage(context,
+                    messageItem.getImagePath(),viewHolder.ivPicFromOthers);
+            viewHolder.tvOtherUserName.setText(messageItem.getUserName());
         } else {
             viewHolder.llOthersMsg.setVisibility(View.GONE);
             viewHolder.tvMessageFromYou.setVisibility(View.GONE);
             viewHolder.llYourMsg.setVisibility(View.VISIBLE);
 
 
-            GlideUtil.loadImage(context,textMessageItem.getImagePath(),viewHolder.ivPicFromYou);
+            GlideUtil.loadImage(context,
+                    messageItem.getImagePath(),viewHolder.ivPicFromYou);
             viewHolder.tvYourUserName.setText(DataManager.getDataManagerInstance().getCurrentMasterUserName());
         }
-        viewHolder.tvCurrentTime.setText(textMessageItem.getCurrentTimeStamp());
+        viewHolder.tvCurrentTime.setText(messageItem.getCurrentTimeStamp());
+//        Log.e(TAG, "showPicMessageInTheMessageContainer: messageItem.getImagePath()="+ messageItem.getImagePath() );
 
     }
 

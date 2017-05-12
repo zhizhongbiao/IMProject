@@ -28,8 +28,7 @@ public  class OnRvRecentChatAndRvContactsAdapterItemClickListener implements Vie
     @Override
     public void onClick(View v) {
         Intent intent = new Intent(context, ChatRoomActivity.class);
-        DataManager.getDataManagerInstance().collectMessages(DataManager.getDataManagerInstance().getAllUsersMessageRecords()
-                ,baseItem);
+        DataManager.getDataManagerInstance().collectMessages(baseItem);
         intent.putExtra(Constants.KeyConstants.USER_MESSAGES_RECORD
                 ,DataManager.getDataManagerInstance().getAllUsersMessageRecords().get(baseItem.getUserJID()) );
         context.startActivity(intent);

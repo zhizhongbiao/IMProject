@@ -14,12 +14,11 @@ import android.widget.Toast;
 import com.example.alv_chi.improject.R;
 import com.example.alv_chi.improject.adapter.MessageRvAdapter;
 import com.example.alv_chi.improject.bean.BaseItem;
-import com.example.alv_chi.improject.bean.TextMessageItem;
+import com.example.alv_chi.improject.bean.MessageItem;
 import com.example.alv_chi.improject.custom.IconfontTextView;
 import com.example.alv_chi.improject.data.DataManager;
 import com.example.alv_chi.improject.data.constant.Constants;
 import com.example.alv_chi.improject.eventbus.OnUserStatusChangeEvent;
-import com.example.alv_chi.improject.exception.ConnectException;
 import com.example.alv_chi.improject.fragment.BaseFragment;
 import com.example.alv_chi.improject.fragment.ChattingRoomFragment;
 import com.example.alv_chi.improject.util.SystemUtil;
@@ -46,6 +45,7 @@ public class ChatRoomActivity extends BaseActivity {
 
         messages = intentFromLastContext.getParcelableArrayListExtra(Constants.KeyConstants.USER_MESSAGES_RECORD);
         baseItem = messages.get(0);
+//        Log.e(TAG, "handleIntent: "+baseItem+"/"+messages.size() );
 
 
     }
@@ -186,35 +186,31 @@ public class ChatRoomActivity extends BaseActivity {
 //            BitmapFactory.Options options = new BitmapFactory.Options();
 //            options.inSampleSize = 2;
 
-            Log.e(TAG, "onActivityResult: picturePath=" + picturePath);
+//            Log.e(TAG, "onActivityResult: picturePath/Environment=" + picturePath+"/"
+//                    + Environment.getExternalStorageDirectory().getAbsolutePath());
+            //            Bitmap bitmap = BitmapFactory.decodeFile(picturePath, options);
+//            Log.e(TAG, "onActivityResult: selectedImage/bitmap="+selectedImage+"/"+bitmap );
+
             try {
+
+                MessageItem imageMessageItem = new MessageItem(
+                        baseItem.getUserJID(),baseItem.getUserName()
+                        ,null , "IMAGE_MSG"
+                        , SystemUtil.getCurrentSystemTime()
+                        , MessageRvAdapter.PICTURE_MESSAGE_VIEW_TYPE, false
+                        , picturePath);
+
                 DataManager.getDataManagerInstance().getXmppListenerService()
                         .sendFile(baseItem.getUserJID()
                                 , picturePath
-                                , SystemUtil.getCurrentSystemTime());
-
-
-                TextMessageItem textMessageItem = new TextMessageItem(baseItem.getUserName()
-                        , SystemUtil.getCurrentSystemTime(), ""
-                        , null, baseItem.getUserJID()
-                        , MessageRvAdapter.PICTURE_MESSAGE_VIEW_TYPE, picturePath
-                        , false, baseItem.isOnline());
-
-                DataManager.getDataManagerInstance()
-                        .getXmppListenerService()
-                        .sendMessage(textMessageItem);
-
+                                , SystemUtil.getCurrentSystemTime(),imageMessageItem);
 
             } catch (SmackException e) {
                 Toast.makeText(this, "发送图片失败", Toast.LENGTH_SHORT).show();
                 e.printStackTrace();
-            } catch (ConnectException e) {
-                Toast.makeText(this, "发送图片失败", Toast.LENGTH_SHORT).show();
-                e.printStackTrace();
             }
-//            Bitmap bitmap = BitmapFactory.decodeFile(picturePath, options);
-//            Log.e(TAG, "onActivityResult: selectedImage/bitmap="+selectedImage+"/"+bitmap );
-//
+
+
         }
     }
 

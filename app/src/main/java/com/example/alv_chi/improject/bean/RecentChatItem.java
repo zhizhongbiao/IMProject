@@ -10,7 +10,7 @@ import android.os.Parcelable;
 
 public class RecentChatItem implements BaseItem, Parcelable {
 
-    private static final String TAG="RecentChatItem";
+
 
     private String userName;
     private String latestMessageTimeStamp;
@@ -24,13 +24,17 @@ public class RecentChatItem implements BaseItem, Parcelable {
     private boolean isReceivedMessage;
     private boolean isOnline;
 
-    public RecentChatItem(String userName, String latestMessageTimeStamp, String latestMessage, Bitmap userAvatar, String userJID, boolean isOnline) {
-        this.userName = userName;
-        this.latestMessageTimeStamp = latestMessageTimeStamp;
-        this.latestMessage = latestMessage;
-        this.userAvatar = userAvatar;
+    public RecentChatItem(String userJID, String userName
+            , Bitmap userAvatar, String latestMessage
+            , String latestMessageTimeStamp, int typeView
+            , boolean isReceivedMessage) {
         this.userJID = userJID;
-        this.isOnline = isOnline;
+        this.userName = userName;
+        this.userAvatar = userAvatar;
+        this.latestMessage = latestMessage;
+        this.latestMessageTimeStamp = latestMessageTimeStamp;
+        this.typeView = typeView;
+        this.isReceivedMessage = isReceivedMessage;
     }
 
     protected RecentChatItem(Parcel in) {
@@ -87,26 +91,6 @@ public class RecentChatItem implements BaseItem, Parcelable {
         this.userName = userName;
     }
 
-    @Override
-    public String getCurrentTimeStamp() {
-        return null;
-    }
-
-    @Override
-    public void setCurrentTimeStamp(String currentTimeStamp) {
-
-    }
-
-    @Override
-    public String getMesage() {
-        return null;
-    }
-
-    @Override
-    public void setMesage(String mesage) {
-
-    }
-
     public String getLatestMessageTimeStamp() {
         return latestMessageTimeStamp;
     }
@@ -121,6 +105,26 @@ public class RecentChatItem implements BaseItem, Parcelable {
 
     public void setLatestMessage(String latestMessage) {
         this.latestMessage = latestMessage;
+    }
+
+    @Override
+    public String getCurrentTimeStamp() {
+        return currentTimeStamp;
+    }
+
+    @Override
+    public void setCurrentTimeStamp(String currentTimeStamp) {
+        this.currentTimeStamp = currentTimeStamp;
+    }
+
+    @Override
+    public String getMesage() {
+        return mesage;
+    }
+
+    @Override
+    public void setMesage(String mesage) {
+        this.mesage = mesage;
     }
 
     @Override
@@ -145,22 +149,22 @@ public class RecentChatItem implements BaseItem, Parcelable {
 
     @Override
     public int getTypeView() {
-        return 0;
+        return typeView;
     }
 
     @Override
     public void setTypeView(int typeView) {
-
+        this.typeView = typeView;
     }
 
     @Override
     public boolean isReceivedMessage() {
-        return false;
+        return isReceivedMessage;
     }
 
     @Override
     public void setReceivedMessage(boolean receivedMessage) {
-
+        isReceivedMessage = receivedMessage;
     }
 
     @Override
@@ -175,14 +179,14 @@ public class RecentChatItem implements BaseItem, Parcelable {
 
     @Override
     public String getImagePath() {
-        return null;
+        return "getImagePath";
     }
 
-    //    override this method to differ the different message
+
+//    override this method to differ the different message
     @Override
     public boolean equals(Object obj) {
 
         return getUserJID().equals(((RecentChatItem) obj).getUserJID());
     }
-
 }

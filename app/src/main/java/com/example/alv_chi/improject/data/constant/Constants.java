@@ -6,7 +6,7 @@ package com.example.alv_chi.improject.data.constant;
 
 public class Constants {
     public static class DatabaseConstants {
-        public static final long LOGIN_INGO_DB_ID = 1000000L;
+        public static final long LOGIN_INFO_DB_ID = 1L;
     }
 
     public static class FileNameConstants {
@@ -17,6 +17,9 @@ public class Constants {
         //        Bundle or Intent key
         public static final String PARCELABLE_BASE_ITEM_KEY = "BaseItem";
         public static final String USER_MESSAGES_RECORD = "UserMessagesRecord";
+        public static final String RECEIVE_IMAGE_MSG_FAILED = "receiveImageMsgFailed";
+        public static final String SEND_IMAGE_MSG_FAILED = "sendImageMsgFailed";
+
         //        public static final String PARCELABLE_MESSAGE_ITEM_KEY ="MessageItem";
         public static final String IS_THIS_INTEN_FROM_PENDING_INTENT = "isThisIntenFromPendingIntent";
         public static final String CURRENT_ACCOUNT_IS_LOGINED_BY_OTHERS_EXCEPTION = "currentIsLoginedInOtherDevice";

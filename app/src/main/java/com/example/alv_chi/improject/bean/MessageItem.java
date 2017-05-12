@@ -8,7 +8,8 @@ import android.os.Parcelable;
  * Created by Alv_chi on 2017/2/22.
  */
 
-public class TextMessageItem implements Parcelable,BaseItem{
+public class MessageItem implements Parcelable, BaseItem {
+
 
     private String userName;
     private String currentTimeStamp;
@@ -20,22 +21,20 @@ public class TextMessageItem implements Parcelable,BaseItem{
     private boolean isOnline;
     private String imagePath;
 
-    public TextMessageItem(String userName, String currentTimeStamp, String mesage
-            , Bitmap userAvatar, String userJID, int typeView , String imagePath
-            , boolean isReceivedMessage, boolean isOnline) {
-        this.userName = userName;
-        this.currentTimeStamp = currentTimeStamp;
-        this.imagePath = imagePath;
-        this.mesage = mesage;
-        this.userAvatar = userAvatar;
+    public MessageItem(String userJID, String userName, Bitmap userAvatar
+            , String mesage, String currentTimeStamp
+            , int typeView, boolean isReceivedMessage, String imagePath) {
         this.userJID = userJID;
+        this.userName = userName;
+        this.userAvatar = userAvatar;
+        this.mesage = mesage;
+        this.currentTimeStamp = currentTimeStamp;
         this.typeView = typeView;
         this.isReceivedMessage = isReceivedMessage;
-        this.isOnline = isOnline;
+        this.imagePath = imagePath;
     }
 
-
-    protected TextMessageItem(Parcel in) {
+    protected MessageItem(Parcel in) {
         userName = in.readString();
         currentTimeStamp = in.readString();
         mesage = in.readString();
@@ -65,15 +64,15 @@ public class TextMessageItem implements Parcelable,BaseItem{
         return 0;
     }
 
-    public static final Creator<TextMessageItem> CREATOR = new Creator<TextMessageItem>() {
+    public static final Creator<MessageItem> CREATOR = new Creator<MessageItem>() {
         @Override
-        public TextMessageItem createFromParcel(Parcel in) {
-            return new TextMessageItem(in);
+        public MessageItem createFromParcel(Parcel in) {
+            return new MessageItem(in);
         }
 
         @Override
-        public TextMessageItem[] newArray(int size) {
-            return new TextMessageItem[size];
+        public MessageItem[] newArray(int size) {
+            return new MessageItem[size];
         }
     };
 
@@ -157,6 +156,7 @@ public class TextMessageItem implements Parcelable,BaseItem{
         isOnline = online;
     }
 
+    @Override
     public String getImagePath() {
         return imagePath;
     }
@@ -164,8 +164,4 @@ public class TextMessageItem implements Parcelable,BaseItem{
     public void setImagePath(String imagePath) {
         this.imagePath = imagePath;
     }
-
-
-
-
 }

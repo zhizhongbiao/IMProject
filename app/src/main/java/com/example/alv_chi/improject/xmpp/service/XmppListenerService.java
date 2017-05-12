@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -18,8 +19,8 @@ import com.example.alv_chi.improject.activity.MainActivity;
 import com.example.alv_chi.improject.adapter.MessageRvAdapter;
 import com.example.alv_chi.improject.bean.BaseItem;
 import com.example.alv_chi.improject.bean.ContactItem;
+import com.example.alv_chi.improject.bean.MessageItem;
 import com.example.alv_chi.improject.bean.RecentChatItem;
-import com.example.alv_chi.improject.bean.TextMessageItem;
 import com.example.alv_chi.improject.data.DataManager;
 import com.example.alv_chi.improject.data.constant.Constants;
 import com.example.alv_chi.improject.eventbus.OnMessageCreatedEvent;
@@ -190,8 +191,8 @@ public class XmppListenerService extends Service implements XMPP
 
             isOnline = getUserStatus(isOnline, presence);
             DataManager.getDataManagerInstance().getContactItems()
-                    .add(new ContactItem(userJID, navigationLetter, name
-                            , null, isOnline));//avatar temporary set null
+                    .add(new ContactItem(userJID, name
+                            , null, navigationLetter));//avatar temporary set null
             DataManager.getDataManagerInstance().getIsOnline().put(userJID, isOnline);
         }
         //sort the ContactItems
@@ -229,7 +230,7 @@ public class XmppListenerService extends Service implements XMPP
         message.setTo(baseItem.getUserJID());
         chat.sendMessage(message);
 
-        dataManagerInstance.collectMessages(dataManagerInstance.getAllUsersMessageRecords(), baseItem);
+        dataManagerInstance.collectMessages(baseItem);
 
 //        show the message in the ChattingRoomFragment
         createRecentChatRecord(baseItem);
@@ -251,13 +252,14 @@ public class XmppListenerService extends Service implements XMPP
         }
         if (receivedMsg != null) {
             Log.e(TAG, "processMessage: receivedMsg=" + receivedMsg);
-            receiveAndSaveMsg(JIDFromUserSendMsg, receivedMsg, userNameFrom,MessageRvAdapter.TEXT_MESSAGE_VIEW_TYPE,"");///暂时设置为null
+            receiveAndSaveMsg(JIDFromUserSendMsg, receivedMsg, userNameFrom, MessageRvAdapter.TEXT_MESSAGE_VIEW_TYPE, "");///暂时设置为null
         }
     }
 
-    private synchronized void receiveAndSaveMsg(String JIDFromUserSendMsg, String receivedMsg, String userNameFrom, int viewType, String imagePath) {
+    private synchronized void receiveAndSaveMsg(String JIDFromUserSendMsg, String receivedMsg
+            , String userNameFrom, int viewType, String imagePath) {
 
-        TextMessageItem messageItem = saveTheMessageInfo(JIDFromUserSendMsg, receivedMsg, userNameFrom
+        MessageItem messageItem = saveTheMessageInfo(JIDFromUserSendMsg, receivedMsg, userNameFrom
                 , true, viewType, imagePath);
 
         createRecentChatRecord(messageItem);
@@ -273,43 +275,28 @@ public class XmppListenerService extends Service implements XMPP
 
 
     @Override
-    public void sendFile(String userJID, String filePath, String fileDescription) throws SmackException {
+    public void sendFile(String userJID, String filePath
+            , String fileDescription, MessageItem imageMessageItem) throws SmackException {
 
         Presence p = getRoster().getPresence(userJID);
-        if(p==null){
-            Log.e(TAG, "sendFile: 用户不存在" );
+        if (p == null) {
+            Log.e(TAG, "sendFile: 用户不存在");
             return;
         }
         String toUser = p.getFrom();//提取完整的用户名称
-        Log.e(TAG, "sendFile: toUser="+toUser );
+        if (!toUser.endsWith("/Smack"))
+            toUser = toUser + "/Smack";
+        toUser = toUser.replace("windows10.microdone.cn", dataManagerInstance.getServerIP());
+        Log.e(TAG, "sendFile: toUser/IP=" + toUser + "/" + dataManagerInstance.getServerIP());
 
         OutgoingFileTransfer outGoingFile = getFileTransferManager().createOutgoingFileTransfer(toUser);
-        Log.e(TAG, "sendFile: filePath="+filePath );
+//        Log.e(TAG, "sendFile: filePath=" + filePath);
         outGoingFile.sendFile(new File(filePath), fileDescription);
         Log.e(TAG, "sendFile: sending file status=" + outGoingFile.getStatus());
 
-        listnerFileTransferProccession(outGoingFile);
+        listnerFileTransferProcession(outGoingFile, imageMessageItem, false);
     }
 
-    private void listnerFileTransferProccession(FileTransfer fileTransfer) {
-        long startTime = -1;
-        while (!fileTransfer.isDone()) {
-            if (fileTransfer.getStatus().equals(FileTransfer.Status.error)) {
-//                此处应发个广播告诉用户失败了
-                Log.e(TAG, "sendFile: error!!!=" + fileTransfer.getError());
-
-            } else {
-                double progress = fileTransfer.getProgress();
-                if (progress > 0.0 && startTime == -1) {
-                    startTime = System.currentTimeMillis();
-                }
-                progress *= 100;
-//                Log.e(TAG, "sendFile: status/progress=" + fileTransfer.getStatus() + "/" + progress + "%");
-
-            }
-
-        }
-    }
 
     //    文件接收监听的监听
     @Override
@@ -329,23 +316,23 @@ public class XmppListenerService extends Service implements XMPP
 
             final IncomingFileTransfer inTransfer = request.accept();
 
-            Log.e(TAG, "fileTransferRequest: 接收到文件发送请求，文件名称：" + request.getFileName() );
+            Log.e(TAG, "fileTransferRequest: 接收到文件发送请求，文件名称：" + request.getFileName());
 
-            final String filePath = getExternalFilesDir(null)
+            final String filePath = Environment.getExternalStorageDirectory()
                     .getAbsolutePath() + File.separator +
                     Constants.FileNameConstants.RECEIVED_IMAGES_PATH +
                     File.separator + request.getFileName();
             inTransfer.recieveFile(new File(filePath));
-//            如果要时时获取文件接收的状态必须在线程中监听，如果在当前线程监听文件状态会导致一下接收为0
 
-            final ContactItem finalItemFileFrom = itemFileFrom;
-            ThreadUtil.executeThreadTask(new Runnable() {
-                @Override
-                public void run() {
-                    listnerFileTransferProccession(inTransfer);
-                    receiveAndSaveMsg(userJIDFileFrom, "PIC_MSG", finalItemFileFrom.getUserName(),MessageRvAdapter.PICTURE_MESSAGE_VIEW_TYPE,filePath);
-                }
-            });
+            MessageItem imageMessageItem = new MessageItem(
+                    itemFileFrom.getUserJID(), itemFileFrom.getUserName()
+                    , null, "MSG"
+                    , SystemUtil.getCurrentSystemTime()
+                    , MessageRvAdapter.PICTURE_MESSAGE_VIEW_TYPE, false
+                    , filePath);
+
+//            如果要时时获取文件接收的状态必须在线程中监听，如果在当前线程监听文件状态会导致一下接收为0
+            listnerFileTransferProcession(inTransfer, imageMessageItem, true);
 
 
         } catch (SmackException e) {
@@ -353,6 +340,68 @@ public class XmppListenerService extends Service implements XMPP
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+
+    private void listnerFileTransferProcession(final FileTransfer fileTransfer
+            , final MessageItem imageMessageItem, final boolean isReceivedMsg) {
+
+        ThreadUtil.executeThreadTask(new Runnable() {
+            @Override
+            public void run() {
+
+                try {
+                    long startTime = -1;
+                    boolean isSuccess = true;
+                    while (!fileTransfer.isDone()) {
+                        Thread.sleep(2000);
+                        if (fileTransfer.getStatus().equals(FileTransfer.Status.error)) {
+                            isSuccess = false;
+                            Log.e(TAG, "listnerFileTransferProcession: error=" + fileTransfer.getError());
+                            Intent intent = new Intent();
+                            if (isReceivedMsg) {
+                                intent.setAction(Constants.KeyConstants.RECEIVE_IMAGE_MSG_FAILED);
+                            } else {
+                                intent.setAction(Constants.KeyConstants.SEND_IMAGE_MSG_FAILED);
+                            }
+//                            send a broadcast to notify the user receive or send Pic failed
+                            sendBroadcast(intent);
+
+                        } else {
+                            double progress = fileTransfer.getProgress();
+                            if (progress > 0.0 && startTime == -1) {
+                                startTime = System.currentTimeMillis();
+                            }
+                            progress *= 100;
+                            Log.e(TAG, "sendFile: status/progress=" + fileTransfer.getStatus() + "/" + progress + "%");
+                        }
+                    }
+                    if (isSuccess) {
+                        if (isReceivedMsg) {
+                            receiveAndSaveMsg(imageMessageItem.getUserJID(), "IMAGE_MSG", imageMessageItem.getUserName()
+                                    , MessageRvAdapter.PICTURE_MESSAGE_VIEW_TYPE, imageMessageItem.getImagePath());
+                        } else {
+                            sendMessage(imageMessageItem);
+                            Log.e(TAG, " sendMessage(imageMessageItem);");
+                            if (currentActivity != null && imageMessageItem.getUserJID()
+                                    .equals(DataManager.getDataManagerInstance().getCurrentChattingUserJID())) {
+//                                show massage
+                                showMessageIntheChattingRoomFragment(imageMessageItem);
+
+                            }
+                        }
+                    }
+
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Log.e(TAG, "listnerFileTransferProcession: send IMG failed Exception=" + e.getMessage());
+                }
+            }
+        });
+
     }
 
     private ContactItem searchTheSameContactItem(String userJIDFileFrom, ContactItem itemFileFrom) {
@@ -368,20 +417,22 @@ public class XmppListenerService extends Service implements XMPP
 
 
     @NonNull
-    private TextMessageItem saveTheMessageInfo(String JIDFromUserSendMsg, String receivedMsg
+    private MessageItem saveTheMessageInfo(String JIDFromUserSendMsg, String receivedMsg
             , String userNameFrom, Boolean isOnline, int typeView, String imagePath) {
-        TextMessageItem messageItem = new TextMessageItem(userNameFrom
+        MessageItem messageItem = new MessageItem(
+                JIDFromUserSendMsg, userNameFrom
+                , null, receivedMsg
                 , SystemUtil.getCurrentSystemTime()
-                , receivedMsg, null, JIDFromUserSendMsg, typeView, imagePath, true, isOnline);
+                , typeView, true, imagePath);
 
         if (!dataManagerInstance.getMessageNotificationIds().containsKey(JIDFromUserSendMsg)) {
             dataManagerInstance.getMessageNotificationIds().put(JIDFromUserSendMsg, ++singleUserJIDMessageId);
         }
-        dataManagerInstance.collectMessages(dataManagerInstance.getAllUsersMessageRecords(), messageItem);
+        dataManagerInstance.collectMessages(messageItem);
         return messageItem;
     }
 
-    private void showMessageIntheChattingRoomFragment(TextMessageItem messageItem) {
+    private void showMessageIntheChattingRoomFragment(MessageItem messageItem) {
         BaseFragment currentFragment = currentActivity.getCurrentFragment();
         if (currentFragment instanceof ChattingRoomFragment) {
             ((ChattingRoomFragment) currentFragment).refreshMessageContainer(false, messageItem);
@@ -416,12 +467,15 @@ public class XmppListenerService extends Service implements XMPP
 
     // notify the RecentChatFragment create recentChatItem;
     private void createRecentChatRecord(final BaseItem baseItem) {
-        RecentChatItem recentChatItem = new RecentChatItem(baseItem.getUserName()
-                , baseItem.getCurrentTimeStamp()
-                , baseItem.getMesage()
+        RecentChatItem recentChatItem = new RecentChatItem(
+                baseItem.getUserJID()
+                , baseItem.getUserName()
                 , baseItem.getUserAvatar()
-                , baseItem.getUserJID()
-                , baseItem.isOnline());
+                , baseItem.getMesage()
+                , baseItem.getCurrentTimeStamp()
+                , baseItem.getTypeView()
+                , baseItem.isReceivedMessage()
+        );
 //        this is to RecentChatFragment
         EventBus.getDefault().postSticky(new OnMessageCreatedEvent(recentChatItem));
 //        Log.e(TAG, "createRecentChatRecord: TimeStamp/Message="+baseItem.getCurrentTimeStamp()+"/"+baseItem.getMesage() );
@@ -433,9 +487,11 @@ public class XmppListenerService extends Service implements XMPP
                 DataBaseUtil.getDataBaseInstance(XmppListenerService.this.getApplicationContext())
                         .create(new MessageRecord(null, baseItem.getUserName()
                                 , dataManagerInstance.getCurrentMasterUserName(),
-                                baseItem.getCurrentTimeStamp(), baseItem.getMesage(), null
-                                , baseItem.getCurrentTimeStamp(), baseItem.getMesage(), baseItem.getUserJID(), baseItem.getTypeView()
-                                , baseItem.isReceivedMessage(), baseItem.isOnline()));
+                                baseItem.getCurrentTimeStamp(), baseItem.getMesage()
+                                , baseItem.getUserJID(), baseItem.getTypeView()
+                                , baseItem.isReceivedMessage(), baseItem.isOnline()
+                                , baseItem.getImagePath()
+                        ));
 //                Log.e(TAG, "createRecentChatRecord run: 插入消息记录线程完成执行");
             }
         });
@@ -729,7 +785,7 @@ public class XmppListenerService extends Service implements XMPP
                 .CURRENT_ACCOUNT_IS_LOGINED_IN_OTHER_DEVICE_EXCEPTION_MESSAGE);
         if (!isAccountLoginedOther) {
 //            relogin current account
-            scheduleTimer.schedule(new ReloginTimerTask(), (reloginInterval * reloginInterval));
+            scheduleTimer.schedule(new ReloginTimerTask(), reloginInterval);
 
         } else {
             Intent intent = new Intent(Constants.KeyConstants
@@ -745,10 +801,11 @@ public class XmppListenerService extends Service implements XMPP
             try {
 //                clean the connection
                 setXmppTcpConnectionInstance(null);
-                MessageRecord loginInfo = DataBaseUtil.getDataBaseInstance(getApplicationContext()).retrive();
+                MessageRecord loginInfo = DataBaseUtil.getDataBaseInstance(getApplicationContext()).retriveLoginInfo();
+                Log.e(TAG, "run: loginInfo=" + loginInfo);
                 String userName = loginInfo.getUserName();
                 String password = loginInfo.getMasterUserName();
-                String serverIP = loginInfo.getLatestMessageTimeStamp();
+                String serverIP = loginInfo.getCurrentTimeStamp();
 
                 if (!(isDataValid(userName) && isDataValid(password) && isDataValid(serverIP))) {
                     Intent intent = new Intent(Constants.KeyConstants
@@ -764,8 +821,8 @@ public class XmppListenerService extends Service implements XMPP
                 Log.e(TAG, "ReloginTimerTask run: 服务在监听切换网络时登陆成功了");
             } catch (Exception e) {
                 e.printStackTrace();
-//                Log.e(TAG, "ReloginTimerTask run: 服务在监听切换网络时登陆出错了 Exception=" + e.getMessage());
-                scheduleTimer.schedule(new ReloginTimerTask(), (reloginInterval * reloginInterval));
+                Log.e(TAG, "ReloginTimerTask run: 服务在监听切换网络时登陆出错了 Exception=" + e.getMessage());
+                scheduleTimer.schedule(new ReloginTimerTask(), (reloginInterval=reloginInterval * reloginInterval));
             }
         }
     }

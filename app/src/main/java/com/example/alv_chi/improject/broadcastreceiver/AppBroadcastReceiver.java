@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
+import android.widget.Toast;
 
 import com.example.alv_chi.improject.activity.BaseActivity;
 import com.example.alv_chi.improject.data.constant.Constants;
@@ -18,12 +19,12 @@ import static android.content.Context.CONNECTIVITY_SERVICE;
  * Listen the Network info to know if it needs to connect again
  */
 
-public class NetworkChangeBroadcastReceiver extends BroadcastReceiver {
+public class AppBroadcastReceiver extends BroadcastReceiver {
 
     private static final String TAG = "NetChangeBroadReceiver";
     private BaseActivity baseActivity;
 
-    public NetworkChangeBroadcastReceiver(BaseActivity baseActivity) {
+    public AppBroadcastReceiver(BaseActivity baseActivity) {
         this.baseActivity = baseActivity;
     }
 
@@ -42,6 +43,12 @@ public class NetworkChangeBroadcastReceiver extends BroadcastReceiver {
             case WifiManager.WIFI_STATE_CHANGED_ACTION:
                 int wifiState = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, 0);
 //                Log.e("TAG", "这是接收wifi关闭开启的广播wifiState:" + wifiState);
+                break;
+            case Constants.KeyConstants.SEND_IMAGE_MSG_FAILED:
+                Toast.makeText(context, "发送图片失败", Toast.LENGTH_LONG).show();
+                break;
+            case Constants.KeyConstants.RECEIVE_IMAGE_MSG_FAILED:
+                Toast.makeText(context, "接收图片失败", Toast.LENGTH_LONG).show();
                 break;
 
 

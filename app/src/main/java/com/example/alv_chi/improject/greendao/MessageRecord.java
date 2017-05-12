@@ -13,10 +13,6 @@ public class MessageRecord {
     private Long id;
     private String userName;
     private String masterUserName;
-    private String latestMessageTimeStamp;
-    private String latestMessage;
-    private String imagePath;
-
     private String currentTimeStamp;
     private String mesage;
 //    private Bitmap userAvatar;
@@ -24,23 +20,21 @@ public class MessageRecord {
     private int typeView;
     private boolean isReceivedMessage;
     private boolean isOnline;
-    @Generated(hash = 1135092099)
+    private String imagePath;
+    @Generated(hash = 1519777874)
     public MessageRecord(Long id, String userName, String masterUserName,
-            String latestMessageTimeStamp, String latestMessage, String imagePath,
             String currentTimeStamp, String mesage, String userJID, int typeView,
-            boolean isReceivedMessage, boolean isOnline) {
+            boolean isReceivedMessage, boolean isOnline, String imagePath) {
         this.id = id;
         this.userName = userName;
         this.masterUserName = masterUserName;
-        this.latestMessageTimeStamp = latestMessageTimeStamp;
-        this.latestMessage = latestMessage;
-        this.imagePath = imagePath;
         this.currentTimeStamp = currentTimeStamp;
         this.mesage = mesage;
         this.userJID = userJID;
         this.typeView = typeView;
         this.isReceivedMessage = isReceivedMessage;
         this.isOnline = isOnline;
+        this.imagePath = imagePath;
     }
     @Generated(hash = 772980815)
     public MessageRecord() {
@@ -62,24 +56,6 @@ public class MessageRecord {
     }
     public void setMasterUserName(String masterUserName) {
         this.masterUserName = masterUserName;
-    }
-    public String getLatestMessageTimeStamp() {
-        return this.latestMessageTimeStamp;
-    }
-    public void setLatestMessageTimeStamp(String latestMessageTimeStamp) {
-        this.latestMessageTimeStamp = latestMessageTimeStamp;
-    }
-    public String getLatestMessage() {
-        return this.latestMessage;
-    }
-    public void setLatestMessage(String latestMessage) {
-        this.latestMessage = latestMessage;
-    }
-    public String getImagePath() {
-        return this.imagePath;
-    }
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
     }
     public String getCurrentTimeStamp() {
         return this.currentTimeStamp;
@@ -117,7 +93,12 @@ public class MessageRecord {
     public void setIsOnline(boolean isOnline) {
         this.isOnline = isOnline;
     }
-
-
+    public String getImagePath() {
+        return this.imagePath;
+    }
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+    
     
 }

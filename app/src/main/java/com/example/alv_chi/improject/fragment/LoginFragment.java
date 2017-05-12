@@ -119,23 +119,36 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
     }
 
     private void saveTheLoginInfoToDB(final String serverIP, final String userName, final String loginPsw) {
-//        Firstly , delete the old LoginInfo.After that it the new LoginIno,
-//        because all the LoginInfo have the same ID.
+
         ThreadUtil.executeThreadTask(new Runnable() {
             @Override
             public void run() {
                 Log.e(TAG, "run: DB 插入LoginInfo中.....");
-                DataBaseUtil
-                        .getDataBaseInstance(mHoldingActivity
-                                .getApplicationContext()
-                                .getApplicationContext())
-                        .deleteOldLoginInfo();
 
-                MessageRecord newLoginInfo = new MessageRecord(Constants.DatabaseConstants.LOGIN_INGO_DB_ID
-                        , userName, loginPsw, serverIP, null, null,null, null, null, -2, false, false);
+                MessageRecord newLoginInfo = new MessageRecord(Constants.DatabaseConstants.LOGIN_INFO_DB_ID
+                        , userName, loginPsw, serverIP, null, null, -2, false, false, null);
+//                Needs to create the record first time ,or update failed
+                if (DataBaseUtil.getDataBaseInstance(mHoldingActivity).retrive(1,newLoginInfo).size()==0)
+                {
+                    DataBaseUtil.getDataBaseInstance(mHoldingActivity.getApplicationContext()).create(
+                            newLoginInfo);
+                }
+                DataBaseUtil.getDataBaseInstance(mHoldingActivity).update(newLoginInfo);
 
-                DataBaseUtil.getDataBaseInstance(mHoldingActivity.getApplicationContext()).create(
-                        newLoginInfo);
+//                if (DataBaseUtil.getDataBaseInstance(mHoldingActivity).retrive(1,newLoginInfo).size()!=0)
+//                {
+ //                   Firstly , delete the old LoginInfo.After that create the new LoginIno record,
+//                   because all the LoginInfo have the same ID.
+//                    DataBaseUtil
+//                            .getDataBaseInstance(mHoldingActivity
+//                                    .getApplicationContext()
+//                                    .getApplicationContext())
+//                            .deleteOldLoginInfo();
+//                }
+
+//                DataBaseUtil.getDataBaseInstance(mHoldingActivity.getApplicationContext()).create(
+//                        newLoginInfo);
+
                 Log.e(TAG, "run: DB 插入成功");
             }
         });
@@ -144,7 +157,7 @@ public class LoginFragment extends BaseFragment implements OnThreadTaskFinishedL
 
     private void saveTheCurrentLoginInfoToDataManager(String masterLoginName, String masterLoginPassWord, String serverIP) {
         DataManager.getDataManagerInstance().setServerIP(serverIP);
-//            this is for testting
+//            this is for testing
 //        DataManager.getDataManagerInstance().setServerIP(Constants.AppConfigConstants.OPEN_FIRE_SERVER_IP);
 //        Log.e(TAG, "saveLoginInfoToSp: setIP=" + serverIP);
 

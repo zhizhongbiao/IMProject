@@ -21,6 +21,8 @@
     <dimen name="big_margin_III">38dp</dimen>
     <dimen name="big_margin_IIII">45dp</dimen>
     <dimen name="big_margin_IIIII">50dp</dimen>
+    <dimen name="super_big_margin">65dp</dimen>
+    <dimen name="super_big_margin_II">85dp</dimen>
 
     <dimen name="toolbar_title_margin">30dp</dimen>
 

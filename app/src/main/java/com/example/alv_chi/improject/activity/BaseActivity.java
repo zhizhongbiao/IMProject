@@ -31,7 +31,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.alv_chi.improject.R;
-import com.example.alv_chi.improject.broadcastreceiver.NetworkChangeBroadcastReceiver;
+import com.example.alv_chi.improject.broadcastreceiver.AppBroadcastReceiver;
 import com.example.alv_chi.improject.custom.CircleImageView;
 import com.example.alv_chi.improject.custom.IconfontTextView;
 import com.example.alv_chi.improject.data.constant.Constants;
@@ -53,7 +53,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected MyHandler mHandler;
     private TextView mWarningText;
     private IntentFilter intentFilter;
-    private NetworkChangeBroadcastReceiver networkChangeBroadcastReceiver;
+    private AppBroadcastReceiver appBroadcastReceiver;
 
 
     //       subclasses can override this method for customing the toolbar
@@ -87,7 +87,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);//to tell window that activity need transition animation;
         super.setContentView(R.layout.activity_base);
 
-//        register the NetworkChangeBroadcastReceiver
+//        register the AppBroadcastReceiver
         initialNetworkChangeListen();
 
         mHandler = getMyHandler();
@@ -107,8 +107,10 @@ public abstract class BaseActivity extends AppCompatActivity {
         intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
         intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         intentFilter.addAction(Constants.KeyConstants.CURRENT_ACCOUNT_IS_LOGINED_BY_OTHERS_EXCEPTION);
-        networkChangeBroadcastReceiver = new NetworkChangeBroadcastReceiver(this);
-        registerReceiver(networkChangeBroadcastReceiver, intentFilter);
+        intentFilter.addAction(Constants.KeyConstants.SEND_IMAGE_MSG_FAILED);
+        intentFilter.addAction(Constants.KeyConstants.RECEIVE_IMAGE_MSG_FAILED);
+        appBroadcastReceiver = new AppBroadcastReceiver(this);
+        registerReceiver(appBroadcastReceiver, intentFilter);
     }
 
 
@@ -119,7 +121,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 //            kill all tasks in the queue when BacicActivity is destroy:
             myHandler.removeCallbacksAndMessages(null);
         }
-        unregisterReceiver(networkChangeBroadcastReceiver);
+        unregisterReceiver(appBroadcastReceiver);
     }
 
 

@@ -116,12 +116,12 @@ public class DataManager {
         return chats;
     }
 
-    public void collectMessages(HashMap<String, ArrayList<BaseItem>> map, BaseItem baseItem) {
-        if (!map.containsKey(baseItem.getUserJID())) {
+    public void collectMessages(BaseItem baseItem) {
+        if (!allUsersMessageRecords.containsKey(baseItem.getUserJID())) {
             ArrayList<BaseItem> baseItems = new ArrayList<>();
-            map.put(baseItem.getUserJID(), baseItems);
+            allUsersMessageRecords.put(baseItem.getUserJID(), baseItems);
         }
-        map.get(baseItem.getUserJID()).add(baseItem);
+        allUsersMessageRecords.get(baseItem.getUserJID()).add(baseItem);
     }
 
 
@@ -141,9 +141,4 @@ public class DataManager {
         contactItems.clear();
         isOnline.clear();
     }
-
-
-
-
-
 }

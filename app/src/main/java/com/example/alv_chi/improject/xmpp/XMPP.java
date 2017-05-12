@@ -1,5 +1,7 @@
 package com.example.alv_chi.improject.xmpp;
 
+import com.example.alv_chi.improject.bean.MessageItem;
+
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.chat.ChatManager;
@@ -44,7 +46,7 @@ public interface XMPP {
 
     FileTransferManager getFileTransferManager();
 
-    void sendFile(String userJID,String filePath,String fileDescription) throws SmackException;
+    void sendFile(String userJID,String filePath,String fileDescription,MessageItem imageMessageItem) throws SmackException;
 
 
 }

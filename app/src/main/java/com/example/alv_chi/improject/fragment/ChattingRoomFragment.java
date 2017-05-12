@@ -21,7 +21,7 @@ import com.example.alv_chi.improject.activity.BaseActivity;
 import com.example.alv_chi.improject.activity.ChatRoomActivity;
 import com.example.alv_chi.improject.adapter.MessageRvAdapter;
 import com.example.alv_chi.improject.bean.BaseItem;
-import com.example.alv_chi.improject.bean.TextMessageItem;
+import com.example.alv_chi.improject.bean.MessageItem;
 import com.example.alv_chi.improject.custom.IconfontTextView;
 import com.example.alv_chi.improject.data.DataManager;
 import com.example.alv_chi.improject.data.constant.Constants;
@@ -77,7 +77,7 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
 
     private LinearLayoutManager linearLayoutManager;
     private MessageRvAdapter messageRvAdapter;
-    private ArrayList<TextMessageItem> textMessageItems;
+    private ArrayList<MessageItem> messageItems;
     private BaseItem baseItem;
     private List<MessageRecord> messageRecords;
     private int beforeSize;
@@ -98,8 +98,8 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
 
             boolean ifNeedGetMsgsFromDB = true;
             for (BaseItem message : messages) {
-                if (message instanceof TextMessageItem) {
-                    refreshMessageContainer(false, (TextMessageItem) message);
+                if (message instanceof MessageItem) {
+                    refreshMessageContainer(false, (MessageItem) message);
                     ifNeedGetMsgsFromDB = false;
                 }
             }
@@ -140,8 +140,8 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
 
         linearLayoutManager = new LinearLayoutManager(mHoldingActivity, LinearLayoutManager.VERTICAL, false);
         rvMessageContainer.setLayoutManager(linearLayoutManager);
-        textMessageItems = new ArrayList<>();
-        messageRvAdapter = new MessageRvAdapter(mHoldingActivity, textMessageItems);
+        messageItems = new ArrayList<>();
+        messageRvAdapter = new MessageRvAdapter(mHoldingActivity, messageItems);
         rvMessageContainer.setAdapter(messageRvAdapter);
 
     }
@@ -176,12 +176,12 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
                 if (baseItem != null) {
 
                     messageRecords = DataBaseUtil.getDataBaseInstance(mHoldingActivity.getApplicationContext()).retrive(20 * factor
-                            , new MessageRecord(null, baseItem.getUserName()
-                            , DataManager.getDataManagerInstance().getCurrentMasterUserName(),
-                            baseItem.getCurrentTimeStamp(), baseItem.getMesage(),baseItem.getImagePath()
-                            ,baseItem.getCurrentTimeStamp(), baseItem.getMesage()
-                                    , baseItem.getUserJID(), baseItem.getTypeView()
-                            , baseItem.isReceivedMessage(), baseItem.isOnline()));
+                            , new  MessageRecord(null, baseItem.getUserName()
+                                    , DataManager.getDataManagerInstance().getCurrentMasterUserName(),
+                                    baseItem.getCurrentTimeStamp(), baseItem.getMesage()
+                                    ,  baseItem.getUserJID(), baseItem.getTypeView()
+                                    , baseItem.isReceivedMessage(), baseItem.isOnline()
+                                    ,baseItem.getImagePath()));
                     if (messageRecords == null) {
                         HandlerHelper.sendMessageByHandler(mHandler, TAG, Constants.HandlerMessageType.FAILURE);
                         Log.e(TAG, "initialUltraPTR run: messageRecords==null");
@@ -288,11 +288,13 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
             return;
         }
         try {
-            TextMessageItem textMessageItem = new TextMessageItem(baseItem.getUserName()
-                    , SystemUtil.getCurrentSystemTime(), message
-                    , null, baseItem.getUserJID()
-                    , MessageRvAdapter.TEXT_MESSAGE_VIEW_TYPE,baseItem.getImagePath()
-                    , false, baseItem.isOnline());
+
+            MessageItem textMessageItem = new MessageItem(
+                    baseItem.getUserJID(),baseItem.getUserName()
+                    ,null , message
+                    , SystemUtil.getCurrentSystemTime()
+                    , MessageRvAdapter.TEXT_MESSAGE_VIEW_TYPE, false
+                    , baseItem.getImagePath());
 
             DataManager.getDataManagerInstance().getXmppListenerService().sendMessage(textMessageItem);
             refreshMessageContainer(false, textMessageItem);
@@ -316,23 +318,23 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
     }
 
 
-    public synchronized void refreshMessageContainer(final boolean isFromDatabase, final TextMessageItem textMessageItem) {
+    public synchronized void refreshMessageContainer(final boolean isFromDatabase, final MessageItem messageItem) {
         getHoldingActivity().getMyHandler().post(new Runnable() {
             @Override
             public void run() {
                 if (isFromDatabase) {
-                    textMessageItems.add(0, textMessageItem);
-                    int currentSize = textMessageItems.size();
+                    messageItems.add(0, messageItem);
+                    int currentSize = messageItems.size();
                     if (factor == 2) {
-                        linearLayoutManager.scrollToPosition(textMessageItems.size() - 1);
+                        linearLayoutManager.scrollToPosition(messageItems.size() - 1);
 //                        Log.e(TAG, "run:  showMsgInTheRvBottom factor="+factor );
                     } else if (currentSize > beforeSize) {
                         linearLayoutManager.scrollToPosition(currentSize - beforeSize);//不滚动到相应的位置问题有待解决
 //                        Log.e(TAG, "run: deltaSize="+(currentSize-beforeSize) );
                     }
                 } else {
-                    textMessageItems.add(textMessageItem);
-                    linearLayoutManager.scrollToPosition(textMessageItems.size() - 1);
+                    messageItems.add(messageItem);
+                    linearLayoutManager.scrollToPosition(messageItems.size() - 1);
 
                 }
                 messageRvAdapter.notifyDataSetChanged();
@@ -360,19 +362,22 @@ public class ChattingRoomFragment extends BaseFragment implements View.OnClickLi
 
     private void showTheMsgRecordFromDB() {
         afterSize = messageRecords.size();
-        beforeSize = textMessageItems.size();
+        beforeSize = messageItems.size();
         if (afterSize == beforeSize) {
             Toast.makeText(mHoldingActivity, "无更多消息记录", Toast.LENGTH_SHORT).show();
         } else {
-            textMessageItems.clear();
+            messageItems.clear();
             DataManager.getDataManagerInstance().getAllUsersMessageRecords().get(baseItem.getUserJID()).clear();
             for (MessageRecord messageRecord : messageRecords) {
-                TextMessageItem textMessageItem = new TextMessageItem(messageRecord.getUserName()
-                        , messageRecord.getLatestMessageTimeStamp(), messageRecord.getMesage()
-                        , null, messageRecord.getUserJID(), messageRecord.getTypeView(),baseItem.getImagePath()
-                        , messageRecord.getIsReceivedMessage(), messageRecord.getIsOnline());
-                refreshMessageContainer(true, textMessageItem);
-                DataManager.getDataManagerInstance().getAllUsersMessageRecords().get(baseItem.getUserJID()).add(0, textMessageItem);
+                MessageItem messageItem = new MessageItem(
+                        messageRecord.getUserJID(),messageRecord.getUserName()
+                        ,null,messageRecord.getMesage()
+                        ,messageRecord.getCurrentTimeStamp(),messageRecord.getTypeView()
+                        , messageRecord.getIsReceivedMessage(),messageRecord.getImagePath()
+                        );
+//                Log.e(TAG, "showTheMsgRecordFromDB: messageRecord.getImagePath()="+messageRecord.getImagePath() );
+                refreshMessageContainer(true, messageItem);
+                DataManager.getDataManagerInstance().getAllUsersMessageRecords().get(baseItem.getUserJID()).add(0, messageItem);
             }
         }
     }

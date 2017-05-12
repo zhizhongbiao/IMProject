@@ -30,14 +30,17 @@
                 android:background="@mipmap/messag_from_yourself"
                 android:maxWidth="@dimen/message_width"
                 android:padding="@dimen/middle_padding"
-                android:text="MessagFromYourself" />
+                android:text="MessagFromYourself"
+
+                />
 
             <ImageView
                 android:id="@+id/ivPicFromYou"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/super_big_margin"
+                android:layout_height="@dimen/super_big_margin_II"
                 android:scaleType="centerInside"
-                android:src="@mipmap/meinv4" />
+                android:src="@mipmap/meinv4"
+                 />
             <include
                 layout="@layout/view_user_name_and_avatar" />
         </LinearLayout>
@@ -88,10 +91,11 @@
 
             <ImageView
                 android:id="@+id/ivPicFromOthers"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/super_big_margin"
+                android:layout_height="@dimen/super_big_margin_II"
                 android:scaleType="centerInside"
-                android:src="@mipmap/meinv4" />
+                android:src="@mipmap/meinv4"
+                />
 
             <TextView
                 android:id="@+id/tvMessageFromOthers"
