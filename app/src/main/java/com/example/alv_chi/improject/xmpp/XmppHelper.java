@@ -226,7 +226,7 @@
 //            return false;
 //        }
 //
-//        HashMap<String, String> accountAttributes = getaccountAttibutes(email, studentId);
+//        HashMap<String, String> accountAttributes = getAccountAttibutes(email, studentId);
 //
 //        accountManager.createAccount(loginName, password, accountAttributes);
 //
@@ -275,10 +275,10 @@
 //    }
 //
 //    @NonNull
-//    private HashMap<String, String> getaccountAttibutes(String email, String studentId) {
+//    private HashMap<String, String> getAccountAttibutes(String email, String studentId) {
 //        if (email==null||studentId==null)
 //        {
-//            Log.e(TAG, "getaccountAttibutes: email/studentId="+email+"/"+studentId );
+//            Log.e(TAG, "getAccountAttibutes: email/studentId="+email+"/"+studentId );
 //            return null;
 //        }
 //        HashMap<String, String> accountAttributes = new HashMap<>();

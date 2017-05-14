@@ -11,6 +11,8 @@ import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smackx.filetransfer.FileTransferManager;
 import org.jivesoftware.smackx.iqregister.AccountManager;
+import org.jivesoftware.smackx.muc.MultiUserChat;
+import org.jivesoftware.smackx.muc.MultiUserChatManager;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -40,7 +42,7 @@ public interface XMPP {
 
     boolean userRegister(String loginName, String password, String email, String studentId,String serverIP) throws SmackException, XMPPException, IOException;
 
-    HashMap<String, String> getaccountAttibutes(String email, String studentId);
+    HashMap<String, String> getAccountAttibutes(String email, String studentId);
 
     AccountManager getAccountManager();
 
@@ -48,5 +50,10 @@ public interface XMPP {
 
     void sendFile(String userJID,String filePath,String fileDescription,MessageItem imageMessageItem) throws SmackException;
 
+    MultiUserChat createChatRoom(String roomName, String nickName, String password) throws XMPPException.XMPPErrorException, SmackException;
+
+    MultiUserChatManager getMultiUserManager();
+
+    MultiUserChat joinChatRoom(String roomName,  String nickName, String password) throws XMPPException.XMPPErrorException, SmackException;
 
 }

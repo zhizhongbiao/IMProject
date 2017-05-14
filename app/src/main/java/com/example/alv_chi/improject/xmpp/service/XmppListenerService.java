@@ -59,11 +59,19 @@ import org.jivesoftware.smackx.filetransfer.FileTransferRequest;
 import org.jivesoftware.smackx.filetransfer.IncomingFileTransfer;
 import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 import org.jivesoftware.smackx.iqregister.AccountManager;
+import org.jivesoftware.smackx.muc.DiscussionHistory;
+import org.jivesoftware.smackx.muc.InvitationListener;
+import org.jivesoftware.smackx.muc.MultiUserChat;
+import org.jivesoftware.smackx.muc.MultiUserChatManager;
+import org.jivesoftware.smackx.xdata.Form;
+import org.jivesoftware.smackx.xdata.FormField;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -74,7 +82,7 @@ import java.util.TimerTask;
 
 public class XmppListenerService extends Service implements XMPP
         , ChatManagerListener, ChatMessageListener, RosterListener
-        , ConnectionListener, FileTransferListener {
+        , ConnectionListener, FileTransferListener, InvitationListener {
 
     private static final String TAG = "XmppListenerService";
     private BaseActivity currentActivity;
@@ -197,7 +205,7 @@ public class XmppListenerService extends Service implements XMPP
         }
         //sort the ContactItems
         Collections.sort(DataManager.getDataManagerInstance().getContactItems());
-//            Log.e(TAG, "initializeContactsData: 联系人在服务初始化了DataManager.getDataManagerInstance().getContactItems().size()="+DataManager.getDataManagerInstance().getContactItems().size() );
+//            Log.e(TAG, "initializeContactsData: 联系人在服务初始化了DataManager.getDataManagerInstance().getDatas().size()="+DataManager.getDataManagerInstance().getDatas().size() );
     }
 
     @Override
@@ -536,6 +544,7 @@ public class XmppListenerService extends Service implements XMPP
         getRoster().removeRosterListener(this);
         getXmppTcpConnectionInstance().removeConnectionListener(XmppListenerService.this);
         getFileTransferManager().removeFileTransferListener(XmppListenerService.this);
+        getMultiUserManager().removeInvitationListener(XmppListenerService.this);
     }
 
     private void clearNotification() {
@@ -585,6 +594,13 @@ public class XmppListenerService extends Service implements XMPP
     private void updateCurrentChattingJIDUserState(Presence presence) {
 //      this event is posted to  notify the ChattingActivity to change its toolbar status and update DataMangae;
         EventBus.getDefault().postSticky(new OnUserStatusChangeEvent(presence));
+    }
+
+
+    //    MultiUserChat's invitation
+    @Override
+    public void invitationReceived(XMPPConnection conn, MultiUserChat room, String inviter, String reason, String password, Message message) {
+
     }
 
 
@@ -638,6 +654,7 @@ public class XmppListenerService extends Service implements XMPP
         getRoster().addRosterListener(XmppListenerService.this);
         getXmppTcpConnectionInstance().addConnectionListener(XmppListenerService.this);
         getFileTransferManager().addFileTransferListener(XmppListenerService.this);
+        getMultiUserManager().addInvitationListener(XmppListenerService.this);
     }
 
     @Override
@@ -694,7 +711,7 @@ public class XmppListenerService extends Service implements XMPP
             return false;
         }
 
-        HashMap<String, String> accountAttributes = getaccountAttibutes(email, studentId);
+        HashMap<String, String> accountAttributes = getAccountAttibutes(email, studentId);
 
         accountManager.createAccount(loginName, password, accountAttributes);
 
@@ -722,9 +739,9 @@ public class XmppListenerService extends Service implements XMPP
      * @param studentId
      */
     @Override
-    public HashMap<String, String> getaccountAttibutes(String email, String studentId) {
+    public HashMap<String, String> getAccountAttibutes(String email, String studentId) {
         if (email == null || studentId == null) {
-            Log.e(TAG, "getaccountAttibutes: email/studentId=" + email + "/" + studentId);
+            Log.e(TAG, "getAccountAttibutes: email/studentId=" + email + "/" + studentId);
             return null;
         }
         HashMap<String, String> accountAttributes = new HashMap<>();
@@ -755,6 +772,92 @@ public class XmppListenerService extends Service implements XMPP
 //        kill all the TimerTask
         scheduleTimer.cancel();
         scheduleTimer.purge();
+    }
+
+    @Override
+    public MultiUserChatManager getMultiUserManager() {
+        return MultiUserChatManager.getInstanceFor(getXmppTcpConnectionInstance());
+    }
+
+
+    @Override
+    public MultiUserChat createChatRoom(String roomName, String nickName, String password) throws XMPPException.XMPPErrorException, SmackException {
+        if(!(isDataValid(roomName)&&isDataValid(nickName)&&isDataValid(password)))
+        {
+            return null;
+        }
+        String multiUserChatJid = roomName + "@conference."
+                + getXmppTcpConnectionInstance().getServiceName();
+        MultiUserChat multiUserChat = getMultiUserManager()
+                .getMultiUserChat(multiUserChatJid);
+        Log.e(TAG, "createChatRoom: multiUserChatJid=" + multiUserChatJid);
+
+        boolean isCreated = multiUserChat.createOrJoin(nickName);
+
+        if (isCreated) {
+            // 获得聊天室的配置表单
+            Form form = multiUserChat.getConfigurationForm();
+            // 根据原始表单创建一个要提交的新表单。
+            Form submitForm = form.createAnswerForm();
+            // 向要提交的表单添加默认答复
+            List fields = form.getFields();
+            for (int i = 0; fields != null && i < fields.size(); i++) {
+                FormField field = (FormField) fields.get(i);
+                if (FormField.Type.hidden != field.getType() &&
+                        field.getVariable() != null) {
+                    // 设置默认值作为答复
+                    submitForm.setDefaultAnswer(field.getVariable());
+                }
+            }
+            // 设置聊天室的新拥有者
+            List owners = new ArrayList();
+            owners.add(dataManagerInstance.getCurrentMasterUserName() + "@" + Constants.AppConfigConstants.OPEN_FIRE_SERVER_DOMAIN_NAME);// 用户JID
+            submitForm.setAnswer("muc#roomconfig_roomowners", owners);
+            // 设置聊天室是持久聊天室，即将要被保存下来
+            submitForm.setAnswer("muc#roomconfig_persistentroom", true);
+            // 房间仅对成员开放
+            submitForm.setAnswer("muc#roomconfig_membersonly", false);
+            // 允许占有者邀请其他人
+            submitForm.setAnswer("muc#roomconfig_allowinvites", true);
+            if (password != null && password.length() != 0) {
+                // 进入是否需要密码
+                submitForm.setAnswer("muc#roomconfig_passwordprotectedroom", true);
+                // 设置进入密码
+                submitForm.setAnswer("muc#roomconfig_roomsecret", password);
+            }
+            // 能够发现占有者真实 JID 的角色
+            // submitForm.setAnswer("muc#roomconfig_whois", "anyone");
+            // 登录房间对话
+            submitForm.setAnswer("muc#roomconfig_enablelogging", true);
+            // 仅允许注册的昵称登录
+            submitForm.setAnswer("x-muc#roomconfig_reservednick", true);
+            // 允许使用者修改昵称
+            submitForm.setAnswer("x-muc#roomconfig_canchangenick", false);
+            // 允许用户注册房间
+            submitForm.setAnswer("x-muc#roomconfig_registration", false);
+            // 发送已完成的表单（有默认值）到服务器来配置聊天室
+            multiUserChat.sendConfigurationForm(submitForm);
+        }
+        return multiUserChat;
+    }
+
+    @Override
+    public MultiUserChat joinChatRoom(String roomName, String nickName, String password) throws XMPPException.XMPPErrorException, SmackException {
+        if(!(isDataValid(roomName)&&isDataValid(nickName)&&isDataValid(password)))
+        {
+            return null;
+        }
+        MultiUserChat multiUserChat = getMultiUserManager()
+                .getMultiUserChat(roomName + "@conference."
+                        + getXmppTcpConnectionInstance().getServiceName());
+
+        DiscussionHistory history = new DiscussionHistory();
+        history.setMaxChars(0);
+        history.setSince(new Date());
+        multiUserChat.join(nickName,password,history
+                ,getXmppTcpConnectionInstance().getPacketReplyTimeout());
+        return multiUserChat;
+
     }
 
 
@@ -822,7 +925,7 @@ public class XmppListenerService extends Service implements XMPP
             } catch (Exception e) {
                 e.printStackTrace();
                 Log.e(TAG, "ReloginTimerTask run: 服务在监听切换网络时登陆出错了 Exception=" + e.getMessage());
-                scheduleTimer.schedule(new ReloginTimerTask(), (reloginInterval=reloginInterval * reloginInterval));
+                scheduleTimer.schedule(new ReloginTimerTask(), (reloginInterval = reloginInterval * reloginInterval));
             }
         }
     }

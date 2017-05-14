@@ -1,6 +1,7 @@
 package com.example.alv_chi.improject.fragment;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,11 +14,12 @@ import com.example.alv_chi.improject.activity.BaseActivity;
 import com.example.alv_chi.improject.activity.MainActivity;
 import com.example.alv_chi.improject.adapter.OnRecyclerViewScrollListener;
 import com.example.alv_chi.improject.adapter.ReUsableAdapter;
+import com.example.alv_chi.improject.bean.BaseItem;
 import com.example.alv_chi.improject.bean.ContactItem;
 import com.example.alv_chi.improject.custom.LetterNavigationView;
 import com.example.alv_chi.improject.data.DataManager;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -59,7 +61,7 @@ public class ContactsFragment extends BaseFragment implements LetterNavigationVi
     }
 
     private void initializeRvContacts() {
-        List<ContactItem> contactItems = DataManager.getDataManagerInstance().getContactItems();
+        ArrayList<BaseItem> contactItems = getBaseItems();
 
         linearLayoutManager = new LinearLayoutManager(mHoldingActivity);
         rvContactItem.setLayoutManager(linearLayoutManager);
@@ -67,11 +69,20 @@ public class ContactsFragment extends BaseFragment implements LetterNavigationVi
                 , contactItems
                 , ReUsableAdapter.CONTACTS_ITEM_VIEW_TYPE);
         rvContactItem.setAdapter(reUsableAdapter);
-//        Log.e(TAG, "intializeRvContacts: 联系人展示完毕DataManager.getDataManagerInstance().getContactItems().size()=" + DataManager.getDataManagerInstance().getContactItems().size());
-//        Log.e(TAG, "intializeRvContacts: 联系人展示完毕reUsableAdapter.getContactItems().size()=" + reUsableAdapter.getContactItems().size());
+//        Log.e(TAG, "intializeRvContacts: 联系人展示完毕DataManager.getDataManagerInstance().getDatas().size()=" + DataManager.getDataManagerInstance().getDatas().size());
+//        Log.e(TAG, "intializeRvContacts: 联系人展示完毕reUsableAdapter.getDatas().size()=" + reUsableAdapter.getDatas().size());
 
         RvSetScrollListener();
 
+    }
+
+    @NonNull
+    private ArrayList<BaseItem> getBaseItems() {
+        ArrayList<BaseItem> contactItems = new ArrayList<>();
+        for (ContactItem contactItem : DataManager.getDataManagerInstance().getContactItems()) {
+            contactItems.add(contactItem);
+        }
+        return contactItems;
     }
 
     private void RvSetScrollListener() {
@@ -105,7 +116,7 @@ public class ContactsFragment extends BaseFragment implements LetterNavigationVi
 
                DataManager.getDataManagerInstance().getXmppListenerService().initializeContactsData();
 
-                reUsableAdapter.setContactItems(DataManager.getDataManagerInstance().getContactItems());
+                reUsableAdapter.setDatas(getBaseItems());
                 reUsableAdapter.notifyDataSetChanged();
                 autoRefreshCount++;
                 autoRefreshContactItems();
@@ -118,7 +129,9 @@ public class ContactsFragment extends BaseFragment implements LetterNavigationVi
 
     private void updateLetterNavigationView() {
         if (isTouchingOnLetterNavigationView) return;
-        String navigationLetter = reUsableAdapter.getContactItems().get(linearLayoutManager.findFirstCompletelyVisibleItemPosition()).getNavigationLetter();
+        String navigationLetter = (((ContactItem) reUsableAdapter.getDatas()
+                .get(linearLayoutManager.findFirstCompletelyVisibleItemPosition()))
+                .getNavigationLetter());
         lnvLetterNavigationView.setChosenLetter(navigationLetter);
     }
 
